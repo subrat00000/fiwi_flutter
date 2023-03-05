@@ -1,4 +1,5 @@
 import 'package:fiwi/cubits/internet_cubit.dart';
+import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,8 +20,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => InternetCubit(),
-      child: const MaterialApp(home: SplashScreen())
-    );
+        create: (context) => InternetCubit(),
+        child: const MaterialApp(
+          home: SplashScreen(),
+          onGenerateRoute: Routers.generateRoute,
+          initialRoute: '',
+        ));
   }
 }
