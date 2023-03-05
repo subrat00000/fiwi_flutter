@@ -6,6 +6,7 @@ class CustomButton extends StatelessWidget {
   final Color bgcolor;
   final Color color;
   final IconData icon;
+  final Color iconcolor;
 
   const CustomButton(
       {super.key,
@@ -13,7 +14,8 @@ class CustomButton extends StatelessWidget {
       required this.onPressed,
       this.bgcolor = Colors.white,
       this.color = Colors.purple,
-      this.icon = Icons.adb});
+      this.icon = Icons.adb,
+      this.iconcolor = Colors.purple});
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +30,19 @@ class CustomButton extends StatelessWidget {
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(color: color)),
+                side: const BorderSide(color: Colors.purple)),
           ),
         ),
         // icon: const Icon(Icons.group),
         // label:  Text(text, style: const TextStyle(fontSize: 16)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisSize: MainAxisSize.min,
           children: [
+            SizedBox(width: MediaQuery.of(context).size.width*0.04),
+            icon==Icons.adb?Image.asset('assets/search32.png',width: MediaQuery.of(context).size.width*0.05,):Icon(icon,color: iconcolor),
+            SizedBox(width: MediaQuery.of(context).size.width*0.05),
             Text(text, style: const TextStyle(fontSize: 16)),
-            SizedBox(width: MediaQuery.of(context).size.width*0.24),
-            icon==Icons.adb?Image.asset('assets/search32.png'):Icon(icon)
           ],
         ),
       ),

@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     },
                     text: "Signin with Google",
                     bgcolor: Colors.white,
-                    color:Colors.red
+                    color:const Color.fromARGB(255, 139, 139, 139),
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
@@ -92,7 +92,9 @@ class _SplashScreenState extends State<SplashScreen> {
                       );
                     },
                     text: "Signin with Phone",
-                    icon: Icons.phone_outlined
+                    color:const Color.fromARGB(255, 139, 139, 139),
+                    icon: Icons.phone_outlined,
+                    iconcolor: const Color.fromARGB(255, 58, 190, 126),
                     
                   ),
                   const SizedBox(height: 20),
@@ -106,7 +108,9 @@ class _SplashScreenState extends State<SplashScreen> {
                       );
                     },
                     text: "Signin with Email",
-                    icon: Icons.email_outlined
+                    color: const Color.fromARGB(255, 139, 139, 139),
+                    icon: Icons.email_outlined,
+                    iconcolor: Colors.red,
                   )
                 ],
               ),
