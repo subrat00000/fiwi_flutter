@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SplashCubit extends Cubit<int> {
-  SplashCubit(): super(0);
+enum SplashState {splash}
+class SplashCubit extends Cubit<SplashState> {
+  SplashCubit(): super(SplashState.splash);
   
 }

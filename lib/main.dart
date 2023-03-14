@@ -19,12 +19,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => InternetCubit(),
-        child: const MaterialApp(
-          home: SplashScreen(),
-          onGenerateRoute: Routers.generateRoute,
-          initialRoute: '',
-        ));
+    return const MaterialApp(
+      // home: SplashScreen(),
+      onGenerateRoute: Routers.generateRoute,
+      initialRoute: '/splash',
+    );
   }
 }
+// BlocConsumer<InternetCubit, InternetState>(
+//                     listener: (context, state) {
+//       if (state == InternetState.gained && internet == false) {
+//         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+//           content: Text("Internet conntected"),
+//           backgroundColor: Colors.green,
+//           behavior: SnackBarBehavior.floating,
+//         ));
+//         internet = true;
+//       } else if (state == InternetState.lost) {
+//         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+//           content: Text("No Internet Connection found"),
+//           backgroundColor: Colors.red,
+//           behavior: SnackBarBehavior.floating,
+//         ));
+//         internet = false;
+//       }
+//     }, builder: (context, state) {
