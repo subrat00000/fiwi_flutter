@@ -13,8 +13,14 @@ class AuthCodeVerifiedState extends AuthState {}
 class AuthLoggedInState extends AuthState {
   final User firebaseUser;
   AuthLoggedInState(this.firebaseUser);
+  // final bool isAdmin;
+  // AuthLoggedInState(this.firebaseUser,this.isAdmin);
   
 }
+
+class AuthUserCreateState extends AuthState {}
+
+class ConfirmationState extends AuthState {}
 
 class AuthLoggedOutState extends AuthState {}
 

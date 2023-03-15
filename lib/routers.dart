@@ -1,7 +1,7 @@
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
-import 'package:fiwi/cubits/otp/otp_cubit.dart';
+import 'package:fiwi/cubits/google_signin/otp_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/cubits/wrong_page_cubit.dart';

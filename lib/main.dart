@@ -1,6 +1,7 @@
+import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
+import 'package:fiwi/cubits/google_signin/phone_signin_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
-import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/splash_screen.dart';
@@ -22,15 +23,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PhoneSigninCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => PhoneSigninCubit(),
+        ),
+        BlocProvider(
+          create: (context) => GoogleSigninCubit(),
+        ),
+      ],
       child: MaterialApp(
         home: BlocBuilder<PhoneSigninCubit, AuthState>(
-          buildWhen:(oldState, newState){
+          buildWhen: (oldState, newState) {
             return oldState is AuthInitialState;
           },
           builder: (context, state) {
-            if (state is AuthLoggedInState) {
+            if (state is AuthUserCreateState) {
               return const HomeScreen();
             } else {
               return const SplashScreen();

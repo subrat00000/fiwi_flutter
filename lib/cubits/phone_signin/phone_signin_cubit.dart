@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
+import 'package:fiwi/cubits/google_signin/phone_signin_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
