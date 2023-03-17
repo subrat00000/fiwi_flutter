@@ -5,8 +5,10 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color bgcolor;
   final Color color;
-  final IconData icon;
+  final IconData? icon;
+  final String? imgicon;
   final Color iconcolor;
+  final bool icontext;
 
   const CustomButton(
       {super.key,
@@ -14,8 +16,10 @@ class CustomButton extends StatelessWidget {
       required this.onPressed,
       this.bgcolor = Colors.white,
       this.color = Colors.purple,
-      this.icon = Icons.adb,
-      this.iconcolor = Colors.purple});
+      this.icon,
+      this.imgicon,
+      this.iconcolor = Colors.purple,
+      this.icontext = true});
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +39,26 @@ class CustomButton extends StatelessWidget {
         ),
         // icon: const Icon(Icons.group),
         // label:  Text(text, style: const TextStyle(fontSize: 16)),
-        child: Row(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          // mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(width: MediaQuery.of(context).size.width*0.04),
-            icon==Icons.adb?Image.asset('assets/search32.png',width: MediaQuery.of(context).size.width*0.05,):Icon(icon,color: iconcolor),
-            SizedBox(width: MediaQuery.of(context).size.width*0.05),
-            Text(text, style: const TextStyle(fontSize: 16)),
-          ],
-        ),
+        child: icontext
+            ? Row(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                // mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+                  icon != null ? Icon(icon, color: iconcolor) : Container(),
+                  imgicon != null
+                      ? Image.asset(
+                          imgicon!,
+                          width: MediaQuery.of(context).size.width * 0.05,
+                        )
+                      : Container(),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                  Text(text, style: const TextStyle(fontSize: 16)),
+                ],
+              )
+            : Center(
+                child: Text(text, style: const TextStyle(fontSize: 16)),
+              ),
       ),
     );
   }

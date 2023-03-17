@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
+import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
+import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/splash_screen.dart';
@@ -25,9 +27,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateRoute: Routers.generateRoute,
-      initialRoute: _auth.currentUser != null ? '/home' : '/splash',
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => SplashCubit(),
+        ),
+        BlocProvider(
+          create: (context) => PhoneSigninCubit(),
+        ),
+        BlocProvider(
+          create: (context) => GoogleSigninCubit(),
+        ),
+        BlocProvider(
+          create: (context) => HomeCubit(),
+        ),
+        BlocProvider(
+          create: (context) => InternetCubit(),
+        ),
+      ],
+      child: MaterialApp(
+        onGenerateRoute: Routers.generateRoute,
+        initialRoute: _auth.currentUser != null ? '/home' : '/splash',
+      ),
     );
   }
 }

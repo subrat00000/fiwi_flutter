@@ -1,30 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-abstract class AuthState{ }
+abstract class PhoneAuthState {}
 
-class AuthInitialState extends AuthState {}
+class PhoneAuthInitialState extends PhoneAuthState {}
 
-class AuthLoadingState extends AuthState {}
+class PhoneAuthLoadingState extends PhoneAuthState {}
 
-class AuthCodeSentState extends AuthState {}
-
-class AuthCodeVerifiedState extends AuthState {}
-
-class AuthLoggedInState extends AuthState {
-  final User firebaseUser;
-  AuthLoggedInState(this.firebaseUser);
-  // final bool isAdmin;
-  // AuthLoggedInState(this.firebaseUser,this.isAdmin);
-  
+class PhoneAuthCodeSentState extends PhoneAuthState {
+  final String vID;
+  PhoneAuthCodeSentState(this.vID);
 }
 
-class AuthUserCreateState extends AuthState {}
+class PhoneAuthUserCreateState
+    extends PhoneAuthState {} //When phone is authenticated with otp user has to enter details to create profile
 
-class ConfirmationState extends AuthState {}
+class PhoneAuthLoggedInState extends PhoneAuthState {
+  final User firebaseUser;
+  PhoneAuthLoggedInState(this.firebaseUser);
+  // final bool isAdmin;
+  // AuthLoggedInState(this.firebaseUser,this.isAdmin);
+} //After user profile is created it will be this state
 
-class AuthLoggedOutState extends AuthState {}
+class PhoneAuthLoggedOutState extends PhoneAuthState {}
 
-class AuthErrorState extends AuthState {
+class PhoneAuthErrorState extends PhoneAuthState {
   final String error;
-  AuthErrorState(this.error);
+  PhoneAuthErrorState(this.error);
 }

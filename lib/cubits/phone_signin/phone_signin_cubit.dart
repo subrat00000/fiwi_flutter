@@ -1,34 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class PhoneSigninCubit extends Cubit<AuthState> {
+class PhoneSigninCubit extends Cubit<PhoneAuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  PhoneSigninCubit() : super(AuthInitialState()){
-    User? currentUser = _auth.currentUser;
-    if(currentUser != null){
-      emit(AuthLoggedInState(currentUser));
-    } else {
-      emit(AuthLoggedOutState());
-    }
-  }
+  final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
+  PhoneSigninCubit() : super(PhoneAuthInitialState());
 
   String? _verificationId;
 
   void sendOtp(String phoneNumber) async {
-    emit(AuthLoadingState());
+    emit(PhoneAuthLoadingState());
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (phoneAuthCredential) {
         signInWithPhone(phoneAuthCredential);
       },
       verificationFailed: (error) {
-        emit(AuthErrorState(error.message.toString()));
+        emit(PhoneAuthErrorState(error.message.toString()));
       },
       codeSent: (verificationId, forceResendingToken) {
         _verificationId = verificationId;
-        emit(AuthCodeSentState());
+        emit(PhoneAuthCodeSentState(verificationId));
       },
       codeAutoRetrievalTimeout: (verificationId) {
         _verificationId = verificationId;
@@ -37,7 +32,7 @@ class PhoneSigninCubit extends Cubit<AuthState> {
   }
 
   void verifyOtp(String otp) async {
-    emit(AuthLoadingState());
+    emit(PhoneAuthLoadingState());
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId!, smsCode: otp);
     signInWithPhone(credential);
@@ -48,17 +43,33 @@ class PhoneSigninCubit extends Cubit<AuthState> {
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       if (userCredential.user != null) {
-        emit(AuthLoggedInState(userCredential.user!));
+        // final snapshot = await ref.child(userCredential.user!.uid).get();
+        // if (snapshot.exists) {
+        //   print(snapshot.value);
+        // } else {
+        //   print('No data available.');
+        // }
+        emit(PhoneAuthUserCreateState());
       }
     } on FirebaseAuthException catch (ex) {
-      emit(AuthErrorState(ex.message.toString()));
+      emit(PhoneAuthErrorState(ex.message.toString()));
     } catch (ex) {
-      emit(AuthErrorState(ex.toString()));
+      emit(PhoneAuthErrorState(ex.toString()));
     }
   }
 
-  void logOut() async{
+  void test(uid) async {
+    final snapshot = await ref.child(uid).get();
+    if (snapshot.exists) {
+      print(snapshot.value);
+    } else {
+      print('No data available.');
+    }
+    emit(PhoneAuthUserCreateState());
+  }
+
+  void logOut() async {
     await _auth.signOut();
-    emit(AuthLoggedOutState());
+    emit(PhoneAuthLoggedOutState());
   }
 }

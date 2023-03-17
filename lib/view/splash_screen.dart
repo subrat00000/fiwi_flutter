@@ -72,6 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
               text: "Signin with Google",
               bgcolor: Colors.white,
               color: const Color.fromARGB(255, 139, 139, 139),
+              imgicon:"assets/search32.png"
             ),
             const SizedBox(height: 20),
             CustomButton(
