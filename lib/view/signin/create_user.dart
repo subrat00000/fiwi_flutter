@@ -26,7 +26,7 @@ class CreateUserState extends State<CreateUser> {
           
                   SizedBox(height: height * 0.03),
                   const Text(
-                    "Register",
+                    "Create your Profile",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

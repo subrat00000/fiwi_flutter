@@ -1,4 +1,5 @@
 import 'package:fiwi/view/home_screen.dart';
+import 'package:fiwi/view/signin/create_user.dart';
 import 'package:fiwi/view/signin/google_signin.dart';
 import 'package:fiwi/view/signin/otp.dart';
 import 'package:fiwi/view/signin/phone_signin.dart';
@@ -20,6 +21,9 @@ class Routers {
       case '/otp':
         return MaterialPageRoute(
             builder: (context) => const Otp());
+      case '/createuser':
+        return MaterialPageRoute(
+            builder: (context) => const CreateUser());
       case '/home':
         return MaterialPageRoute(
             builder: (context) => const HomeScreen());

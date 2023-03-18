@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class PhoneSigninCubit extends Cubit<PhoneAuthState> {
@@ -10,6 +13,7 @@ class PhoneSigninCubit extends Cubit<PhoneAuthState> {
   PhoneSigninCubit() : super(PhoneAuthInitialState());
 
   String? _verificationId;
+  var box = Hive.box('user');
 
   void sendOtp(String phoneNumber) async {
     emit(PhoneAuthLoadingState());
@@ -45,6 +49,8 @@ class PhoneSigninCubit extends Cubit<PhoneAuthState> {
       if (userCredential.user != null) {
         DatabaseEvent de = await ref.child(userCredential.user!.uid).once();
         if (de.snapshot.exists) {
+          log("User Exists");
+          box.putAll(de.snapshot.value as Map<dynamic, dynamic>);
           emit(PhoneAuthLoggedInState());
         } else {
           emit(PhoneAuthUserCreateState(userCredential.user!));

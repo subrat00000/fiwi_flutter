@@ -9,9 +9,7 @@ import 'package:hive/hive.dart';
 class AuthCubit extends Cubit<AuthState> {
   var box = Hive.box('user');
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
   AuthCubit() : super(AuthInitialState()) {
-    log("**************************************");
     emit(AuthLoadingState());
     if (_auth.currentUser != null) {
       checkRegistration(_auth.currentUser?.uid);
@@ -20,6 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void checkRegistration(uid) async {
     if(box.get('uid')!=null){
+      log(box.get('name'));
       emit(AuthLoggedInState());
     } else {
       emit(AuthUserCreateState());

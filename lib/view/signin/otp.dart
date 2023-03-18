@@ -26,8 +26,9 @@ class OtpState extends State<Otp> {
             child: BlocConsumer<PhoneSigninCubit, PhoneAuthState>(
               listener: (context, state) {
                 if (state is PhoneAuthUserCreateState) {
-                  // Navigator.popUntil(context, (route) => route.isFirst);
-                  Navigator.pushReplacementNamed(context, '/home');
+                  Navigator.pushNamed(context, '/createuser');
+                } else if(state is PhoneAuthLoggedInState){
+                  Navigator.pushNamed(context,'/home');
                 } else if (state is PhoneAuthErrorState) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(state.error),

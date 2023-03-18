@@ -15,10 +15,6 @@ class PhoneAuthUserCreateState
 } //When phone is authenticated with otp user has to enter details to create profile
 
 class PhoneAuthLoggedInState extends PhoneAuthState {
-  // final User firebaseUser;
-  // PhoneAuthLoggedInState(this.firebaseUser);
-  // final bool isAdmin;
-  // AuthLoggedInState(this.firebaseUser,this.isAdmin);
 } //After user profile is created it will be this state
 
 class PhoneAuthLoggedOutState extends PhoneAuthState {}

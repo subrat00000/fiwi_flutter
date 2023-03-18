@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -22,7 +23,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // await Hive.initFlutter();
+  await Hive.initFlutter();
+  await Hive.openBox('user');
   runApp(MyApp());
 }
 
@@ -57,11 +59,12 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           return MaterialApp(
               onGenerateRoute: Routers.generateRoute,
-              home: state is AuthUserCreateState
-                  ? const CreateUser()
-                  : state is AuthLoggedInState
-                      ? const HomeScreen()
-                      : const SplashScreen());
+              home: state is AuthLoggedInState
+                  ? const HomeScreen()
+                  : state is AuthUserCreateState
+                      ? const CreateUser()
+                      : const SplashScreen()
+                      );
         },
       ),
     );
