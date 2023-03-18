@@ -23,7 +23,7 @@ class PhoneSigninCubit extends Cubit<PhoneAuthState> {
       },
       codeSent: (verificationId, forceResendingToken) {
         _verificationId = verificationId;
-        emit(PhoneAuthCodeSentState(verificationId));
+        emit(PhoneAuthCodeSentState());
       },
       codeAutoRetrievalTimeout: (verificationId) {
         _verificationId = verificationId;
@@ -43,33 +43,17 @@ class PhoneSigninCubit extends Cubit<PhoneAuthState> {
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       if (userCredential.user != null) {
-        // final snapshot = await ref.child(userCredential.user!.uid).get();
-        // if (snapshot.exists) {
-        //   print(snapshot.value);
-        // } else {
-        //   print('No data available.');
-        // }
-        emit(PhoneAuthUserCreateState());
+        DatabaseEvent de = await ref.child(userCredential.user!.uid).once();
+        if (de.snapshot.exists) {
+          emit(PhoneAuthLoggedInState());
+        } else {
+          emit(PhoneAuthUserCreateState(userCredential.user!));
+        }
       }
     } on FirebaseAuthException catch (ex) {
       emit(PhoneAuthErrorState(ex.message.toString()));
     } catch (ex) {
       emit(PhoneAuthErrorState(ex.toString()));
     }
-  }
-
-  void test(uid) async {
-    final snapshot = await ref.child(uid).get();
-    if (snapshot.exists) {
-      print(snapshot.value);
-    } else {
-      print('No data available.');
-    }
-    emit(PhoneAuthUserCreateState());
-  }
-
-  void logOut() async {
-    await _auth.signOut();
-    emit(PhoneAuthLoggedOutState());
   }
 }

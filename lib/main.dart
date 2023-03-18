@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiwi/cubits/auth/auth_cubit.dart';
+import 'package:fiwi/cubits/auth/auth_state.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
@@ -7,10 +9,12 @@ import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
+import 'package:fiwi/view/signin/create_user.dart';
 import 'package:fiwi/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -18,6 +22,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // await Hive.initFlutter();
   runApp(MyApp());
 }
 
@@ -44,10 +49,20 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => InternetCubit(),
         ),
+        BlocProvider(
+          create: (context) => AuthCubit(),
+        ),
       ],
-      child: MaterialApp(
-        onGenerateRoute: Routers.generateRoute,
-        initialRoute: _auth.currentUser != null ? '/home' : '/splash',
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          return MaterialApp(
+              onGenerateRoute: Routers.generateRoute,
+              home: state is AuthUserCreateState
+                  ? const CreateUser()
+                  : state is AuthLoggedInState
+                      ? const HomeScreen()
+                      : const SplashScreen());
+        },
       ),
     );
   }
