@@ -5,10 +5,13 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color bgcolor;
   final Color color;
+  final Color bordercolor;
   final IconData? icon;
   final String? imgicon;
   final Color iconcolor;
   final bool icontext;
+  final bool istextleft;
+  final double elevation;
 
   const CustomButton(
       {super.key,
@@ -19,6 +22,9 @@ class CustomButton extends StatelessWidget {
       this.icon,
       this.imgicon,
       this.iconcolor = Colors.purple,
+      this.bordercolor = Colors.purple,
+      this.istextleft = false,
+      this.elevation = 0,
       this.icontext = true});
 
   @override
@@ -29,20 +35,17 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
+          elevation: MaterialStateProperty.all(elevation),
           foregroundColor: MaterialStateProperty.all<Color>(color),
           backgroundColor: MaterialStateProperty.all<Color>(bgcolor),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                side: const BorderSide(color: Colors.purple)),
+                side: BorderSide(color: bordercolor)),
           ),
         ),
-        // icon: const Icon(Icons.group),
-        // label:  Text(text, style: const TextStyle(fontSize: 16)),
         child: icontext
             ? Row(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                // mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(width: MediaQuery.of(context).size.width * 0.04),
                   icon != null ? Icon(icon, color: iconcolor) : Container(),
@@ -56,9 +59,17 @@ class CustomButton extends StatelessWidget {
                   Text(text, style: const TextStyle(fontSize: 16)),
                 ],
               )
-            : Center(
-                child: Text(text, style: const TextStyle(fontSize: 16)),
-              ),
+            : istextleft
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.left,
+                    ),
+                  )
+                : Center(
+                    child: Text(text, style: const TextStyle(fontSize: 16)),
+                  ),
       ),
     );
   }
