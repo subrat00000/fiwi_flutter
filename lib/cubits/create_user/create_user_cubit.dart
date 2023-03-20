@@ -22,9 +22,9 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
         'address': address
       };
       await ref.child(_auth.currentUser!.uid).set(user);
-      DatabaseEvent de = await ref.child(_auth.currentUser!.uid).once();
-      if (de.snapshot.exists) {
-        box.putAll(de.snapshot.value as Map<dynamic, dynamic>);
+      DataSnapshot de = await ref.child(_auth.currentUser!.uid).get();
+      if (de.exists) {
+        box.putAll(de.value as Map<dynamic, dynamic>);
         emit(CreateUserProfileSuccessState());
       }
     } on Exception catch (e) {

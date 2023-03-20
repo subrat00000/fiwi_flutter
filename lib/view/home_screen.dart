@@ -1,5 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_state.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
@@ -17,22 +20,43 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  _showExitDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: const Text('Do you want to exit the app?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('No'),
-                ),
-                TextButton(
-                  onPressed: () => exit(0),
-                  child: const Text('Yes'),
-                ),
-              ],
-            ));
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  DatabaseReference ref = FirebaseDatabase.instance.ref('users');
+  String? mtoken;
+
+  @override
+  void initState() {
+    super.initState();
+    requestPermission();
+    getToken();
+    saveToken();
+  }
+
+  void getToken() async {
+    await messaging.getToken().then((token) {
+      setState(() {
+        mtoken = token;
+      });
+      log(token!);
+    });
+  }
+
+  void saveToken(String token,uid) async {
+    final userToken = {
+      'mtoken': token,
+    };
+    await ref.child(uid).update(userToken);
+  }
+
+  void requestPermission() async {
+    NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true);
   }
 
   var internet = true;
@@ -73,12 +97,16 @@ class HomeScreenState extends State<HomeScreen> {
         ],
         child: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
-            if(state is AuthLoggedOutState){
-              Navigator.pushNamed(context,'/splash');
+            if (state is AuthLoggedOutState) {
+              Navigator.pushNamed(context, '/splash');
             }
           },
           builder: (context, state) {
-            return TextButton(onPressed: (){BlocProvider.of<AuthCubit>(context).logOut();}, child: const Text("Logout"));
+            return TextButton(
+                onPressed: () {
+                  BlocProvider.of<AuthCubit>(context).logOut();
+                },
+                child: const Text("Logout"));
           },
         ),
       ))),

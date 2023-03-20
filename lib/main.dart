@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_state.dart';
 import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
@@ -24,6 +25,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseMessaging.instance.getInitialMessage();
   await Hive.initFlutter();
   await Hive.openBox('user');
   runApp(const MyApp());

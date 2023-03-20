@@ -47,10 +47,10 @@ class PhoneSigninCubit extends Cubit<PhoneAuthState> {
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       if (userCredential.user != null) {
-        DatabaseEvent de = await ref.child(userCredential.user!.uid).once();
-        if (de.snapshot.exists) {
+        DataSnapshot de = await ref.child(userCredential.user!.uid).get();
+        if (de.exists) {
           log("User Exists");
-          box.putAll(de.snapshot.value as Map<dynamic, dynamic>);
+          box.putAll(de.value as Map<dynamic, dynamic>);
           emit(PhoneAuthLoggedInState());
         } else {
           emit(PhoneAuthUserCreateState(userCredential.user!));

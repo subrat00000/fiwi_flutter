@@ -27,10 +27,10 @@ class GoogleAuthCubit extends Cubit<GoogleAuthState>{
           await _firebaseAuth.signInWithCredential(credential);
       final User? user = userCredential.user;
       if (user != null) {
-        DatabaseEvent de = await ref.child(userCredential.user!.uid).once();
-        if (de.snapshot.exists) {
+        DataSnapshot de = await ref.child(userCredential.user!.uid).get();
+        if (de.exists) {
           log("User Exists");
-          box.putAll(de.snapshot.value as Map<dynamic, dynamic>);
+          box.putAll(de.value as Map<dynamic, dynamic>);
           emit(GoogleAuthLoggedInState());
         } else {
           emit(GoogleAuthUserCreateState(user));
