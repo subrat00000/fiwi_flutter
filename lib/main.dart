@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
           create: (context) => PhoneSigninCubit(),
         ),
         BlocProvider(
-          create: (context) => GoogleSigninCubit(),
+          create: (context) => GoogleAuthCubit(),
         ),
         BlocProvider(
           create: (context) => HomeCubit(),

@@ -55,6 +55,8 @@ class PhoneSigninCubit extends Cubit<PhoneAuthState> {
         } else {
           emit(PhoneAuthUserCreateState(userCredential.user!));
         }
+      } else {
+        emit(PhoneAuthErrorState("Authentication Error"));
       }
     } on FirebaseAuthException catch (ex) {
       emit(PhoneAuthErrorState(ex.message.toString()));

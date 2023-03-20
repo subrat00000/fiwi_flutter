@@ -10,7 +10,7 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
   CreateUserCubit() : super(CreateUserProfileInitialState());
   var box = Hive.box('user');
 
-  Future<void> createUser(String name, String email, String semester,
+  Future<void> createUser(String name, String email, 
       String address, String dob) async {
         emit(CreateUserProfileLoadingState());
     try {
@@ -18,7 +18,6 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
         'name': name,
         'email': email,
         'uid': _auth.currentUser!.uid,
-        'semester': semester,
         'dob': dob,
         'address': address
       };
