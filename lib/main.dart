@@ -19,6 +19,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
+import 'dart:developer';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  log('handling background message');
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +31,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Hive.initFlutter();
   await Hive.openBox('user');
   runApp(const MyApp());
