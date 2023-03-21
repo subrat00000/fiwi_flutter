@@ -39,25 +39,23 @@ class HomeScreenState extends State<HomeScreen> {
     initInfo();
   }
 
-  initInfo() {
-    var androidInitialize =
+  initInfo() async {
+    var initializationSettingsAndroid =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iOSInitialize = const IOSInitializationSettings();
-    var initializationSettings =
-        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) async {
-      try {
-        if (payload != null && payload.isNotEmpty) {
-        } else {}
-      } catch (e) {
-        log(e.toString());
-      }
-      return;
-    });
+    var initializationSettingsIOS = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+        onDidReceiveLocalNotification:
+            (int id, String? title, String? body, String? payload) async {});
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse:
+            (NotificationResponse notificationResponse) async {});
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       log("*******************************onMessage*******************************");
-      log("ONMESSAGE: ${message.notification!.title}/${message.notification!.body}");
+      log("onMessage: ${message.notification!.title}/${message.notification!.body}");
 
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
           message.notification!.body.toString(),
@@ -66,13 +64,14 @@ class HomeScreenState extends State<HomeScreen> {
           htmlFormatContentTitle: true);
       AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
-              'id', 'fiwi', 'full screen channel description',
+              'id', 'fiwi',
               importance: Importance.max,
               styleInformation: bigTextStyleInformation,
               priority: Priority.max,
-              playSound: false);
-      NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics,iOS: const IOSNotificationDetails());
+              playSound: true);
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+          android: androidPlatformChannelSpecifics,
+          iOS: const DarwinNotificationDetails());
       await flutterLocalNotificationsPlugin.show(0, message.notification?.title,
           message.notification?.body, platformChannelSpecifics,
           payload: message.data['body']);

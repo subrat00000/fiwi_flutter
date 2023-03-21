@@ -21,7 +21,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'dart:developer';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
   log('handling background message');
 }
 

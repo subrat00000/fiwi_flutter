@@ -49,7 +49,7 @@ dependencies:
   firebase_app_check: ^0.1.1+14
   google_sign_in: ^6.0.2
   firebase_messaging: ^14.3.0
-  flutter_local_notifications: ^8.2.0
+  flutter_local_notifications: ^13.0.0
 
 dev_dependencies:
   flutter_test:
