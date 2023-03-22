@@ -15,6 +15,7 @@ import 'package:fiwi/view/signin/create_user.dart';
 import 'package:fiwi/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -71,13 +72,26 @@ class MyApp extends StatelessWidget {
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           return MaterialApp(
+              theme: ThemeData(
+                primarySwatch: Colors.purple,
+                appBarTheme: const AppBarTheme(
+                  color: Colors.white10,
+                  systemOverlayStyle: SystemUiOverlayStyle(
+                    statusBarColor: Colors.white10,
+                    statusBarIconBrightness: Brightness.dark,
+                    statusBarBrightness: Brightness.light,
+                  ),
+                  elevation: 0.0,
+                  iconTheme: IconThemeData(color: Colors.white),
+                  // systemOverlayStyle: SystemUiOverlayStyle.dark,
+                ),
+              ),
               onGenerateRoute: Routers.generateRoute,
               home: state is AuthLoggedInState
                   ? const HomeScreen()
                   : state is AuthUserCreateState
                       ? const CreateUser()
-                      : const SplashScreen()
-                      );
+                      : const SplashScreen());
         },
       ),
     );
