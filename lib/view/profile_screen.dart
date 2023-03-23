@@ -8,6 +8,7 @@ import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,8 +17,43 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
+class ChartData {
+  ChartData(this.month, this.totalClass, this.attendedClass);
+
+  final String month;
+  final double totalClass;
+  final double attendedClass;
+}
+
 class _ProfileScreenState extends State<ProfileScreen> {
+  late TrackballBehavior _trackballBehavior;
+  String chartValue='Day';
+  List<String> items = ['Semester','Month','Week','Day'];
+  final List<ChartData> data = <ChartData>[
+    ChartData('Jan', 15, 10),
+    ChartData('Feb', 20, 13),
+    ChartData('Mar', 25, 25),
+    ChartData('May', 13, 10),
+    ChartData('Apr', 21, 21),
+    ChartData('Jun', 18, 18),
+    ChartData('Jul', 24, 24),
+    ChartData('Aug', 23, 23),
+    ChartData('Sep', 19, 19),
+    ChartData('Oct', 31, 31),
+    ChartData('Nov', 39, 39),
+    ChartData('Dec', 50, 30),
+  ];
   var internet = true;
+
+  @override
+  void initState() {
+    _trackballBehavior = TrackballBehavior(
+      enable: true,
+      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -27,57 +63,146 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Stack(
         children: [
           Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
                 height: height * 0.17,
                 color: Colors.purple[400],
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child:Container(
-                  
-              width: width * 0.28,
-              height: height * 0.04,
-              margin: const EdgeInsets.all(6),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              decoration: BoxDecoration(color:Colors.white,border:Border.all(color: Color.fromARGB(255, 226, 226, 226),),borderRadius: BorderRadius.circular(30) ),
-                child: TextButton(
-                    onPressed: () {},
-                    child: const Text("Edit Profile",
-                        style: TextStyle(color: Colors.black))),
-              ),),
-              const SizedBox(height: 30),
-              Center(
-                  child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 105, horizontal: 35),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/image1.png",
-                      height: 300,
+              // Container( child:,
+              //           // width: width * 0.28,
+              //           ),
+              Container(
+                // height: height * 0.2,
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 226, 226, 226),
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Let's get started",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                    borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10))),
+                child: Container(
+                  margin: EdgeInsets.only(left: width * 0.05),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          width: width * 0.28,
+                          height: height * 0.04,
+                          margin: const EdgeInsets.all(6),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 226, 226, 226),
+                              ),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: TextButton(
+                              onPressed: () {},
+                              child: const Text("Edit Profile",
+                                  style: TextStyle(color: Colors.black))),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "Never a better time than now to start.",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black38,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text("Subrat Meher",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    fontSize: 23, fontWeight: FontWeight.w500)),
+                            SizedBox(height: 8),
+                            Text("Software engineer with 2+ years of experience in developing and integrating software solutions. Possesses strong analytical, problem-solving and time-management skills. Adept at developing software solutions for various platforms with a focus on efficiency, user-friendliness and performance. Experienced in coding, testing, debugging and designing programs according to requirements. Developed multiple successful projects under tight deadlines",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                )),
+                            SizedBox(height: 8),
+                            Text("Titilagarh, Odisha, India",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 12,
+                                )),
+                            SizedBox(height: 10),
+
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )),
+              ),
+              SizedBox(height: height*0.02,),
+              Container(
+                margin: EdgeInsets.only(left: width * 0.02,right:width*0.02),
+                  // height: height * 0.2,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 226, 226, 226),
+                      ),
+                      borderRadius:BorderRadius.circular(10)),
+                  child: Column(
+                    children: [
+                      
+                      Align(alignment: Alignment.centerRight,child: 
+                      Container(
+                        width:width*0.3,
+                        height: height*0.05,
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            hint: const Text("Semester"),
+                            
+                            items:
+                                items.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            value: chartValue,
+                            onChanged: (value) {
+                              setState(() {
+                                chartValue = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ),),
+                      SizedBox(height: height*0.02,),
+                      Container(
+                        height: height * 0.2,
+                        child: SfCartesianChart(
+                          enableAxisAnimation: true,
+                            primaryXAxis: CategoryAxis(),
+                            trackballBehavior: _trackballBehavior,
+                            series: <LineSeries<ChartData, String>>[
+                              LineSeries<ChartData, String>(
+                                dataSource: data,
+                                markerSettings: MarkerSettings(isVisible: true),
+                                name: 'Total No. of class',
+                                xValueMapper: (ChartData sales, _) => sales.month,
+                                yValueMapper: (ChartData sales, _) =>
+                                    sales.totalClass,
+                              ),
+                              LineSeries<ChartData, String>(
+                                dataSource: data,
+                                markerSettings: MarkerSettings(isVisible: true),
+                                name: 'Attended Class',
+                                xValueMapper: (ChartData sales, _) => sales.month,
+                                yValueMapper: (ChartData sales, _) =>
+                                    sales.attendedClass,
+                              ),
+                            ]),
+                      ),
+                    ],
+                  ))
             ],
           ),
           Transform.translate(
@@ -93,14 +218,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ], shape: BoxShape.circle),
                 height: height * 0.12,
-                child: IconButton(
-                    onPressed: () {
-                      var a;
-                    },
-                    icon: const Icon(
-                      Icons.more_vert_rounded,
-                      color: Colors.white,
-                    )),
+                child: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert_rounded,color: Colors.white,),
+          onSelected: (value){},
+          itemBuilder: (BuildContext context) {
+            return items.map((String choice) {
+              return PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice),
+              );
+            }).toList();
+          },
+        ),
               )),
           Transform.translate(
               offset: Offset(width * 0.82, height * 0.04),

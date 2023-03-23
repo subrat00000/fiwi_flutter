@@ -21,8 +21,8 @@ class CreateUserState extends State<CreateUser> {
   TextEditingController email = TextEditingController();
   TextEditingController address = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  String? semesterValue;
-  List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
+  // String? semesterValue;
+  // List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
