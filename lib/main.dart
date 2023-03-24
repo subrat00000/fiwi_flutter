@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_state.dart';
+import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
@@ -67,6 +68,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CreateUserCubit(),
+        ),
+        BlocProvider(
+          create: (context) => BottomNavCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(

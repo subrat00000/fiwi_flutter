@@ -7,10 +7,14 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_state.dart';
+import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/home/home_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/repositories/exit.dart';
+import 'package:fiwi/view/attendance_screen.dart';
+import 'package:fiwi/view/home_screen_helper.dart';
+import 'package:fiwi/view/library_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +39,7 @@ class HomeScreenState extends State<HomeScreen> {
   String? mtoken;
   Box box = Hive.box('user');
   int todayAsDay = 6;
+  var internet = true;
 
   @override
   void initState() {
@@ -127,7 +132,35 @@ class HomeScreenState extends State<HomeScreen> {
         sound: true);
   }
 
-  var internet = true;
+  final _pageNavigation = [
+    HomeScreenHelper(),
+    AttendanceScreen(),
+    LibraryScreen(),
+  ];
+
+  Widget _buildBottomNav() {
+    return SizedBox(
+      child: BottomNavigationBar(
+        
+        currentIndex: context.read<BottomNavCubit>().state,
+        type: BottomNavigationBarType.fixed,
+        onTap: _getChangeBottomNav,
+        items: [
+          BottomNavigationBarItem(
+              icon: Image.asset('assets/home.png',cacheHeight: 25),label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Image.asset('assets/attendances.png',cacheHeight: 25),label: 'Attendance'),
+          BottomNavigationBarItem(
+              icon: Image.asset('assets/librarys.png',cacheHeight: 25), label: 'Library'),
+        ],
+      ),
+    );
+  }
+
+  void _getChangeBottomNav(int index) {
+    context.read<BottomNavCubit>().updateIndex(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -136,208 +169,123 @@ class HomeScreenState extends State<HomeScreen> {
       onWillPop: () async {
         return Exit().showExitDialog(context);
       },
-      child: Scaffold(
-          appBar: AppBar(
-            actions: [
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.notifications_outlined,
-                    color: Colors.black54,
-                  ))
-            ],
-            leading: Transform.translate(
-              offset: const Offset(10, 0),
-              child: Container(
-                margin: const EdgeInsets.all(6.5),
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                decoration: const BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    offset: Offset(0.001, 0.001), //(x,y)
-                    blurRadius: 0.05,
-                  ),
-                ], shape: BoxShape.circle),
-                child: Material(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      margin: const EdgeInsets.all(3),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      decoration: const BoxDecoration(boxShadow: [
-                        BoxShadow(
-                          color: Colors.white,
-                        ),
-                      ], shape: BoxShape.circle),
-                      child: Material(
-                        color: Colors.white,
+      child: BlocBuilder<BottomNavCubit, int>(
+        builder: (context, state) {
+          return Scaffold(
+              bottomNavigationBar: _buildBottomNav(),
+              appBar: AppBar(
+                actions: [
+                  IconButton(
+                      onPressed: () {Navigator.pushNamed(context, '/notification');},
+                      icon: Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.black54,
+                      ))
+                ],
+                leading: Transform.translate(
+                  offset: const Offset(10, 0),
+                  child: Container(
+                    margin: const EdgeInsets.all(6.5),
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    decoration: const BoxDecoration(boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey,
+                        offset: Offset(0.001, 0.001), //(x,y)
+                        blurRadius: 0.05,
+                      ),
+                    ], shape: BoxShape.circle),
+                    child: Material(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
-                          imageUrl: "http://via.placeholder.com/350x150",
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) =>
-                                  CircularProgressIndicator(
-                                      value: downloadProgress.progress),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+                        child: Container(
+                          margin: const EdgeInsets.all(3),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          decoration: const BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: Colors.white,
+                            ),
+                          ], shape: BoxShape.circle),
+                          child: Material(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            child: CachedNetworkImage(
+                              imageUrl: "http://via.placeholder.com/350x150",
+                              fit: BoxFit.cover,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      CircularProgressIndicator(
+                                          value: downloadProgress.progress),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
                         ),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/profile');
+                        },
                       ),
                     ),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
                   ),
                 ),
+                title: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: width * 0.23,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            title: Row(
-              children: <Widget>[
-                SizedBox(
-                  width: width * 0.23,
-                ),
-              ],
-            ),
-          ),
-          key: _scaffoldKey,
-          body: SafeArea(
-              child: MultiBlocListener(
-                  listeners: [
-                BlocListener<InternetCubit, InternetState>(
-                  listener: (context, state) {
-                    if (state == InternetState.gained && internet == false) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Internet conntected"),
-                        backgroundColor: Colors.green,
-                        behavior: SnackBarBehavior.floating,
-                      ));
-                      internet = true;
-                    } else if (state == InternetState.lost) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("No Internet Connection found"),
-                        backgroundColor: Colors.red,
-                        behavior: SnackBarBehavior.floating,
-                      ));
-                      internet = false;
-                    }
-                  },
-                ),
-                BlocListener<HomeCubit, HomeState>(
-                  listener: (context, state) {
-                    // TODO: implement listener
-                  },
-                ),
-              ],
-                  // child: BlocConsumer<AuthCubit, AuthState>(
-                  //   listener: (context, state) {
-                  //     if (state is AuthLoggedOutState) {
-                  //       Navigator.pushNamed(context, '/splash');
-                  //     }
-                  //   },
-                  //   builder: (context, state) {
-                  //     return TextButton(
-                  //         onPressed: () {
-                  //           BlocProvider.of<AuthCubit>(context).logOut();
-                  //         },
-                  //         child: const Text("Logout"));
-                  //   },
-                  // ),
-                  child: Column(
-                    children: [
-                      Card(
-                        color: Colors.grey,
-                        elevation: 6,
-                        child: Column(children: <Widget>[
-                          InkWell(
-                            onTap: () {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (BuildContext context) =>
-                              //             TimeTable()));
-                            },
-                            child: const Align(
-                                alignment: Alignment.topLeft,
-                                child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: InkWell(
-                                    child: Text(
-                                      'Today\'s Time Table',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16),
-                                    ),
-                                  ),
-                                )),
-                          ),
-                          (todayAsDay == 7)
-                              ? Card(
-                                  color: Colors.cyanAccent,
-                                  elevation: 0,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.8,
-                                    height:
-                                        150, //MediaQuery.of(context).size.height * 0.3,
-                                    child: const Center(
-                                      child: Text('Sunday is fun day',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w500)),
-                                    ),
-                                  ),
-                                )
-                              : Card(
-                                  color: Colors.grey[350],
-                                  elevation: 6,
-                                  child: Column(children: <Widget>[
-                                    Container(
-                                      height:
-                                          150, //MediaQuery.of(context).size.height * 0.3,
-                                      child: StreamBuilder(
-                                        stream: FirebaseDatabase.instance
-                                            .ref('timetable/sem1/sun')
-                                            .onValue,
-                                        builder: (context, snapshot) {
-                                          if (!snapshot.hasData ||
-                                              snapshot.data == null ||
-                                              snapshot.data!.snapshot.value ==
-                                                  null) {
-                                            return const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            );
-                                          } else {
-                                            final itemsMap = snapshot
-                                                .data!
-                                                .snapshot
-                                                .value as Map<dynamic, dynamic>;
-                                            final itemsList =
-                                                itemsMap.entries.toList();
-                                            return ListView.builder(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              itemBuilder: (context, index) {
-                                                return showPeriod(
-                                                    context, itemsList[index]);
-                                              },
-                                              itemCount: itemsList.length,
-                                              scrollDirection: Axis.horizontal,
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ]),
-                                ),
-                        ]),
-                      ),
-                    ],
-                  )))),
+              key: _scaffoldKey,
+              body: SafeArea(
+                  child: MultiBlocListener(
+                      listeners: [
+                    BlocListener<InternetCubit, InternetState>(
+                      listener: (context, state) {
+                        if (state == InternetState.gained &&
+                            internet == false) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("Internet conntected"),
+                            backgroundColor: Colors.green,
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                          internet = true;
+                        } else if (state == InternetState.lost) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("No Internet Connection found"),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                          internet = false;
+                        }
+                      },
+                    ),
+                    BlocListener<HomeCubit, HomeState>(
+                      listener: (context, state) {
+                        // TODO: implement listener
+                      },
+                    ),
+                  ],
+                      // child: BlocConsumer<AuthCubit, AuthState>(
+                      //   listener: (context, state) {
+                      //     if (state is AuthLoggedOutState) {
+                      //       Navigator.pushNamed(context, '/splash');
+                      //     }
+                      //   },
+                      //   builder: (context, state) {
+                      //     return TextButton(
+                      //         onPressed: () {
+                      //           BlocProvider.of<AuthCubit>(context).logOut();
+                      //         },
+                      //         child: const Text("Logout"));
+                      //   },
+                      // ),
+                      child: _pageNavigation.elementAt(state))));
+        },
+      ),
     );
   }
 
@@ -350,9 +298,9 @@ class HomeScreenState extends State<HomeScreen> {
     String showStartTime = document.value['startTime'].toString();
     String showEndTime = document.value['endTime'].toString();
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+      decoration: BoxDecoration(
+        color: Colors.grey[400],
+        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
       ),
       padding: const EdgeInsets.only(left: 5, top: 5, bottom: 5, right: 5),
       width: 220,
@@ -379,7 +327,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           myText(
             Colors.black,
-            document.value['sem'],
+            document.value['subject'],
           ),
           myText(
             Colors.black,

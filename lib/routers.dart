@@ -1,4 +1,5 @@
 import 'package:fiwi/view/home_screen.dart';
+import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile_screen.dart';
 import 'package:fiwi/view/signin/create_user.dart';
 import 'package:fiwi/view/signin/google_signin.dart';
@@ -31,6 +32,8 @@ class Routers {
             builder: (context) => const HomeScreen());
       case '/profile':
         return PageTransition(child: const ProfileScreen(), type: PageTransitionType.leftToRight);
+      case '/notification':
+        return PageTransition(child: const NotificationScreen(), type: PageTransitionType.rightToLeft);
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(
