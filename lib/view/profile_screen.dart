@@ -27,8 +27,8 @@ class ChartData {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late TrackballBehavior _trackballBehavior;
-  String chartValue='Day';
-  List<String> items = ['Semester','Month','Week','Day'];
+  String chartValue = 'Day';
+  List<String> items = ['Semester', 'Month', 'Week', 'Day'];
   final List<ChartData> data = <ChartData>[
     ChartData('Jan', 15, 10),
     ChartData('Feb', 20, 13),
@@ -116,7 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 style: TextStyle(
                                     fontSize: 23, fontWeight: FontWeight.w500)),
                             SizedBox(height: 8),
-                            Text("Software engineer with 2+ years of experience in developing and integrating software solutions. Possesses strong analytical, problem-solving and time-management skills. Adept at developing software solutions for various platforms with a focus on efficiency, user-friendliness and performance. Experienced in coding, testing, debugging and designing programs according to requirements. Developed multiple successful projects under tight deadlines",
+                            Text(
+                                "Software engineer with 2+ years of experience in developing and integrating software solutions. Possesses strong analytical, problem-solving and time-management skills. Adept at developing software solutions for various platforms with a focus on efficiency, user-friendliness and performance. Experienced in coding, testing, debugging and designing programs according to requirements. Developed multiple successful projects under tight deadlines",
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontSize: 14,
@@ -129,7 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   fontSize: 12,
                                 )),
                             SizedBox(height: 10),
-
                           ],
                         ),
                       )
@@ -137,9 +137,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: height*0.02,),
+              SizedBox(
+                height: height * 0.02,
+              ),
               Container(
-                margin: EdgeInsets.only(left: width * 0.02,right:width*0.02),
+                  margin:
+                      EdgeInsets.only(left: width * 0.02, right: width * 0.02),
                   // height: height * 0.2,
                   clipBehavior: Clip.antiAliasWithSaveLayer,
                   decoration: BoxDecoration(
@@ -147,39 +150,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       border: Border.all(
                         color: const Color.fromARGB(255, 226, 226, 226),
                       ),
-                      borderRadius:BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10)),
                   child: Column(
                     children: [
-                      
-                      Align(alignment: Alignment.centerRight,child: 
-                      Container(
-                        width:width*0.3,
-                        height: height*0.05,
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: const Text("Semester"),
-                            
-                            items:
-                                items.map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            value: chartValue,
-                            onChanged: (value) {
-                              setState(() {
-                                chartValue = value!;
-                              });
-                            },
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          width: width * 0.3,
+                          height: height * 0.05,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              hint: const Text("Semester"),
+                              items: items.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              value: chartValue,
+                              onChanged: (value) {
+                                setState(() {
+                                  chartValue = value!;
+                                });
+                              },
+                            ),
                           ),
                         ),
-                      ),),
-                      SizedBox(height: height*0.02,),
+                      ),
+                      SizedBox(
+                        height: height * 0.02,
+                      ),
                       Container(
                         height: height * 0.2,
                         child: SfCartesianChart(
-                          enableAxisAnimation: true,
+                            enableAxisAnimation: true,
                             primaryXAxis: CategoryAxis(),
                             trackballBehavior: _trackballBehavior,
                             series: <LineSeries<ChartData, String>>[
@@ -187,7 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 dataSource: data,
                                 markerSettings: MarkerSettings(isVisible: true),
                                 name: 'Total No. of class',
-                                xValueMapper: (ChartData sales, _) => sales.month,
+                                xValueMapper: (ChartData sales, _) =>
+                                    sales.month,
                                 yValueMapper: (ChartData sales, _) =>
                                     sales.totalClass,
                               ),
@@ -195,7 +201,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 dataSource: data,
                                 markerSettings: MarkerSettings(isVisible: true),
                                 name: 'Attended Class',
-                                xValueMapper: (ChartData sales, _) => sales.month,
+                                xValueMapper: (ChartData sales, _) =>
+                                    sales.month,
                                 yValueMapper: (ChartData sales, _) =>
                                     sales.attendedClass,
                               ),
@@ -219,17 +226,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ], shape: BoxShape.circle),
                 height: height * 0.12,
                 child: PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert_rounded,color: Colors.white,),
-          onSelected: (value){},
-          itemBuilder: (BuildContext context) {
-            return items.map((String choice) {
-              return PopupMenuItem<String>(
-                value: choice,
-                child: Text(choice),
-              );
-            }).toList();
-          },
-        ),
+                  icon: const Icon(
+                    Icons.more_vert_rounded,
+                    color: Colors.white,
+                  ),
+                  onSelected: (value) {},
+                  itemBuilder: (BuildContext context) {
+                    return items.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                ),
               )),
           Transform.translate(
               offset: Offset(width * 0.82, height * 0.04),
@@ -282,8 +292,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(50),
                       child: CachedNetworkImage(
-                        imageUrl: "http://via.placeholder.com/350x150",
-                        fit: BoxFit.cover,
+                        imageUrl:
+                            "https://images.news18.com/ibnlive/uploads/2017/11/Shah-Rukh-Khan-at-the-Millennium-Dome-London.jpg?impolicy=website&width=0&height=0",
+                        // fit: BoxFit.scaleDown,
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
                                 CircularProgressIndicator(

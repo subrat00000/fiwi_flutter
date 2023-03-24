@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,13 +34,29 @@ class HomeScreenState extends State<HomeScreen> {
   DatabaseReference ref = FirebaseDatabase.instance.ref('users');
   String? mtoken;
   Box box = Hive.box('user');
-
+  int todayAsDay =6;
+  
   @override
   void initState() {
     super.initState();
     requestPermission();
     getToken();
     initInfo();
+
+    // final databaseReference = FirebaseDatabase.instance.ref('timetable/sem1/sun');
+
+    // final newChildData = [{
+    //   'faculty': 'Nihar R. Nayak',
+    //   'subject': 'DSA',
+    //   'startTime': '09:00 am',
+    //   'endTime': '10:00 am'
+    // },{'faculty': 'P. K. Tripathy', 'startTime':'08:00 am','subject':'CSA', 'endTime':'09:00 am'}];
+    // for(int i =0;i< newChildData.length;i++){
+    //   final newChildRef = databaseReference.child(newChildData[i]['subject']!.toLowerCase()); // Get a reference to the new child
+    //   newChildRef.set(newChildData[i]); 
+    // }
+    // // Set the new child data
+  
   }
 
   initInfo() async {
@@ -122,6 +139,7 @@ class HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
           appBar: AppBar(
+            actions: [IconButton(onPressed: (){}, icon: Icon(Icons.notifications_outlined,color: Colors.black54,))],
             leading: Transform.translate(
               offset: const Offset(10, 0),
               child: Container(
@@ -207,21 +225,176 @@ class HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ],
-            child: BlocConsumer<AuthCubit, AuthState>(
-              listener: (context, state) {
-                if (state is AuthLoggedOutState) {
-                  Navigator.pushNamed(context, '/splash');
-                }
-              },
-              builder: (context, state) {
-                return TextButton(
-                    onPressed: () {
-                      BlocProvider.of<AuthCubit>(context).logOut();
-                    },
-                    child: const Text("Logout"));
-              },
-            ),
+            // child: BlocConsumer<AuthCubit, AuthState>(
+            //   listener: (context, state) {
+            //     if (state is AuthLoggedOutState) {
+            //       Navigator.pushNamed(context, '/splash');
+            //     }
+            //   },
+            //   builder: (context, state) {
+            //     return TextButton(
+            //         onPressed: () {
+            //           BlocProvider.of<AuthCubit>(context).logOut();
+            //         },
+            //         child: const Text("Logout"));
+            //   },
+            // ),
+            child:Column(
+              children: [
+                Card(
+                    color: Colors.grey,
+                    elevation: 6,
+                    child: Column(children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (BuildContext context) =>
+                          //             TimeTable()));
+                        },
+                        child: const Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: InkWell(
+                                child: Text(
+                                  'Today\'s Time Table',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16),
+                                ),
+                              ),
+                            )),
+                      ),
+                      (todayAsDay == 7)
+                          ? Card(
+                              color: Colors.cyanAccent,
+                              elevation: 0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                height:
+                                    150, //MediaQuery.of(context).size.height * 0.3,
+                                child: const Center(
+                                  child: Text('Sunday is fun day',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500)),
+                                ),
+                              ),
+                            )
+                          : Card(
+                              color: Colors.grey[350],
+                              elevation: 6,
+                              child: Column(children: <Widget>[
+                                Container(
+                                  height:
+                                      150, //MediaQuery.of(context).size.height * 0.3,
+                                  child: StreamBuilder(
+                                    stream: FirebaseDatabase.instance.ref('timetable/sem1/sun').onValue,
+                                    builder: (context, snapshot) {
+                                      if (!snapshot.hasData || snapshot.data == null || snapshot.data!.snapshot.value == null) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      
+                                      } else {
+                                        final itemsMap = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+                                        final itemsList = itemsMap.entries.toList();
+                                        return ListView.builder(
+                                          padding: const EdgeInsets.all(10.0),
+                                          itemBuilder: (context, index) {
+                                            // final entry = itemsList[index];
+                                            // final value = itemsList[key];
+                                            // return Text('${itemsList[index].key}: ${itemsList[index].value['faculty']}');
+                                            return showPeriod(
+                                                  context,
+                                                  itemsList[index]);
+                                          },
+                                              
+                                          itemCount:
+                                              itemsList.length,
+                                          scrollDirection: Axis.horizontal,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ]),
+                            ),
+                    ]),
+                  ),
+              ],
+            )
           ))),
+    );
+  }
+  Widget showPeriod(BuildContext context, document) {
+    // DateTime showStartTime =
+    //     DateTime.parse(document.value['startTime'].toDate().toString());
+    // DateTime showEndTime =
+    //     DateTime.parse(document.value['endTime'].toDate().toString());
+
+    String showStartTime =
+        document.value['startTime'].toString();
+    String showEndTime =
+        document.value['endTime'].toString();
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.grey,
+        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+      ),
+      padding: const EdgeInsets.only(left: 5, top: 5, bottom: 5, right: 5),
+      width: 220,
+      alignment: Alignment.centerLeft,
+      margin: const EdgeInsets.fromLTRB(10.0, 5.0, 0.0, 5.0), //MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              // myText(
+              //    Colors.white,
+              //   DateFormat.jm().format(showStartTime)
+              // ),
+              // myText(
+              //    Colors.white,
+              //   DateFormat.jm().format(showEndTime)
+              // ),
+              myText(
+                 Colors.black,
+                showStartTime
+              ),
+              myText(
+                 Colors.black,
+                showEndTime
+              ),
+            ],
+          ),
+          myText(
+            Colors.black,
+            document.value['sem'],
+          ),
+          myText(
+            Colors.black,
+            document.value['faculty'],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget myText(tColor,textValue){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        textValue,
+        style: TextStyle(
+            color: tColor),
+      ),
     );
   }
 }
