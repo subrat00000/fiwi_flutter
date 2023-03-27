@@ -11,7 +11,7 @@ class InternetCubit extends Cubit<InternetState> {
 
   InternetCubit(): super(InternetState.initial){
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
-      if(result==ConnectivityResult.mobile || result==ConnectivityResult.wifi || result == ConnectivityResult.bluetooth) {
+      if(result==ConnectivityResult.mobile || result==ConnectivityResult.wifi || result == ConnectivityResult.bluetooth || result == ConnectivityResult.ethernet) {
         emit(InternetState.gained);
       } else {
         emit(InternetState.lost);

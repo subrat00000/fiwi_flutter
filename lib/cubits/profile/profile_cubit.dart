@@ -11,20 +11,26 @@ import 'package:hive/hive.dart';
 class ProfileCubit extends Cubit<ProfileState>{
   
   
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
   var box = Hive.box('user');
-  ProfileCubit(): super(ProfileInitialState()){
-    emit(ProfileLoadingState());
-    log(box.toMap().toString());
+  ProfileCubit(): super(ProfileInitialState());
+  void loadData() {
+    if (box.isNotEmpty) {
+      emit(ProfileGetDataSuccessState(box));
+    } else {
+      emit(ProfileErrorState('Data not found'));
+    }
   }
-  Future<void> loadProfile() async {
-    try {
-      emit(ProfileLoadingState());
-      
-    } catch (e) {
+
+  Future<void> saveData(Map<String, Object> data) async {
+    try{
+      ref.child(_auth.currentUser!.uid).update(data);
+      box.putAll(data);
+      emit(ProfileUpdateDataSuccessState(data));
+    } catch(e){
       emit(ProfileErrorState(e.toString()));
     }
+    
   }
 }

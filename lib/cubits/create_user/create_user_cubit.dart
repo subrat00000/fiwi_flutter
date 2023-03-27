@@ -11,16 +11,19 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
   var box = Hive.box('user');
 
   Future<void> createUser(String name, String email, 
-      String address, String dob) async {
+      String address, String birthday,String sem) async {
         emit(CreateUserProfileLoadingState());
     try {
       final user = {
         'name': name,
         'email': email,
         'uid': _auth.currentUser!.uid,
-        'dob': dob,
+        'birthday': birthday,
         'address': address,
-        'bio': "Your bio infomation"
+        'bio': 'Your bio infomation',
+        'phone': _auth.currentUser!.phoneNumber,
+        'role':'student',
+        'semester':sem
       };
       await ref.child(_auth.currentUser!.uid).set(user);
       DataSnapshot de = await ref.child(_auth.currentUser!.uid).get();

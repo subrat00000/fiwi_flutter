@@ -21,8 +21,8 @@ class CreateUserState extends State<CreateUser> {
   TextEditingController email = TextEditingController();
   TextEditingController address = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  // String? semesterValue;
-  // List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
+  String? semesterValue;
+  List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -119,41 +119,41 @@ class CreateUserState extends State<CreateUser> {
                           text: "Date of Birth(Optional)",
                           icontext: false,
                           onPressed: () => _selectDate(context)),
-                      // SizedBox(height: height * 0.03),
-                      // DropdownButtonFormField<String>(
-                      //   validator: (value) {
-                      //     if (value == null && validation) {
-                      //       return 'Please Select your Semester';
-                      //     }
-                      //     return null;
-                      //   },
-                      //   hint: const Text("Semester"),
-                      //   decoration: InputDecoration(
-                      //     enabledBorder: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //       borderSide: const BorderSide(color: Colors.black12),
-                      //     ),
-                      //     border: const OutlineInputBorder(
-                      //       borderRadius: BorderRadius.all(
-                      //         Radius.circular(10.0),
-                      //       ),
-                      //     ),
-                      //     hintStyle: const TextStyle(color: Colors.black12),
-                      //   ),
-                      //   items:
-                      //       items.map<DropdownMenuItem<String>>((String value) {
-                      //     return DropdownMenuItem<String>(
-                      //       value: value,
-                      //       child: Text(value),
-                      //     );
-                      //   }).toList(),
-                      //   value: semesterValue,
-                      //   onChanged: (String? value) {
-                      //     setState(() {
-                      //       semesterValue = value;
-                      //     });
-                      //   },
-                      // ),
+                      SizedBox(height: height * 0.03),
+                      DropdownButtonFormField<String>(
+                        validator: (value) {
+                          if (value == null && validation) {
+                            return 'Please Select your Semester';
+                          }
+                          return null;
+                        },
+                        hint: const Text("Semester"),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: Colors.black12),
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
+                          ),
+                          hintStyle: const TextStyle(color: Colors.black12),
+                        ),
+                        items:
+                            items.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        value: semesterValue,
+                        onChanged: (String? value) {
+                          setState(() {
+                            semesterValue = value;
+                          });
+                        },
+                      ),
                       SizedBox(height: height * 0.03),
                       TextFormField(
                         controller: address,
@@ -202,7 +202,8 @@ class CreateUserState extends State<CreateUser> {
                                             name.text,
                                             email.text,
                                             address.text,
-                                            selectedDate.toString());
+                                            selectedDate.toString(),
+                                            semesterValue!);
                                   }
                                 });
                           },

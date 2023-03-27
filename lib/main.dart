@@ -9,6 +9,7 @@ import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
+import 'package:fiwi/cubits/profile/profile_cubit.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
@@ -71,6 +72,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => BottomNavCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ProfileCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(

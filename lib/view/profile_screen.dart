@@ -17,42 +17,12 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class ChartData {
-  ChartData(this.month, this.totalClass, this.attendedClass);
-
-  final String month;
-  final double totalClass;
-  final double attendedClass;
-}
-
 class _ProfileScreenState extends State<ProfileScreen> {
-  late TrackballBehavior _trackballBehavior;
-  String chartValue = 'Day';
   List<String> items = ['Semester', 'Month', 'Week', 'Day'];
-  final List<ChartData> data = <ChartData>[
-    ChartData('Jan', 15, 10),
-    ChartData('Feb', 20, 13),
-    ChartData('Mar', 25, 25),
-    ChartData('May', 13, 10),
-    ChartData('Apr', 21, 21),
-    ChartData('Jun', 18, 18),
-    ChartData('Jul', 24, 24),
-    ChartData('Aug', 23, 23),
-    ChartData('Sep', 19, 19),
-    ChartData('Oct', 31, 31),
-    ChartData('Nov', 39, 39),
-    ChartData('Dec', 50, 30),
-  ];
+  
   var internet = true;
 
-  @override
-  void initState() {
-    _trackballBehavior = TrackballBehavior(
-      enable: true,
-      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-    );
-    super.initState();
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               borderRadius: BorderRadius.circular(30)),
                           child: TextButton(
-                              onPressed: () {},
-                              child: const Text("Edit Profile",
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/editprofile');
+                              },
+                              child: const Text('Edit Profile',
                                   style: TextStyle(color: Colors.black))),
                         ),
                       ),
@@ -110,20 +82,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.centerLeft,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text("Subrat Meher",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontSize: 23, fontWeight: FontWeight.w500)),
+                          children:  [
+                            Row(
+                              children: [
+                                Text('Subrat Meher',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        fontSize: 23, fontWeight: FontWeight.w500)),
+                                SizedBox(width: 8),
+                                Container(width: 5, height: 5, color:Colors.grey),
+                                SizedBox(width: 8),
+                                Text('Semester 1',style:TextStyle(color:Colors.grey[600]))
+                              ],
+                            ),
                             SizedBox(height: 8),
                             Text(
-                                "Software engineer with 2+ years of experience in developing and integrating software solutions. Possesses strong analytical, problem-solving and time-management skills. Adept at developing software solutions for various platforms with a focus on efficiency, user-friendliness and performance. Experienced in coding, testing, debugging and designing programs according to requirements. Developed multiple successful projects under tight deadlines",
+                                'Software engineer with 2+ years of experience in developing and integrating software solutions. Possesses strong analytical, problem-solving and time-management skills. Adept at developing software solutions for various platforms with a focus on efficiency, user-friendliness and performance. Experienced in coding, testing, debugging and designing programs according to requirements. Developed multiple successful projects under tight deadlines',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontSize: 14,
                                 )),
                             SizedBox(height: 8),
-                            Text("Titilagarh, Odisha, India",
+                            Text('Titilagarh, Odisha, India',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   color: Colors.black45,
@@ -151,64 +131,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: const Color.fromARGB(255, 226, 226, 226),
                       ),
                       borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: width * 0.3,
-                          height: height * 0.05,
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              hint: const Text("Semester"),
-                              items: items.map<DropdownMenuItem<String>>(
-                                  (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              value: chartValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  chartValue = value!;
-                                });
-                              },
-                            ),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      left: width * 0.05,
+                    ),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: height * 0.015),
+                              Row(
+                                
+                                children: [
+                                  Text("PHONE",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500)),
+                                  SizedBox(width: 8),
+                                  Container(width: 5, height: 5, color:Colors.grey),
+                                  SizedBox(width: 8),
+                                  Text('VERIFIED',style:TextStyle(color:Colors.green)),
+                                  
+                                ],
+                              ),
+                              SizedBox(height: height*0.015,),
+                              Text('+918144028366',
+                                  style: TextStyle(color: Colors.black87)),
+                              SizedBox(height: height * 0.025),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("BIRTHDAY",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500)),
+                                  
+                                ],
+                              ),
+                              
+                              Text('08 Apr,1999',
+                                  style: TextStyle(color: Colors.black87)),
+                              SizedBox(height: height * 0.025),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("EMAIL",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500)),
+                                  
+                                ],
+                              ),
+                              
+                              Text('subratmeher00000@gmail.com',
+                                  style: TextStyle(color: Colors.black87)),
+                              SizedBox(height: height * 0.015),
+                            ],
                           ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: height * 0.02,
-                      ),
-                      Container(
-                        height: height * 0.2,
-                        child: SfCartesianChart(
-                            enableAxisAnimation: true,
-                            primaryXAxis: CategoryAxis(),
-                            trackballBehavior: _trackballBehavior,
-                            series: <LineSeries<ChartData, String>>[
-                              LineSeries<ChartData, String>(
-                                dataSource: data,
-                                markerSettings: MarkerSettings(isVisible: true),
-                                name: 'Total No. of class',
-                                xValueMapper: (ChartData sales, _) =>
-                                    sales.month,
-                                yValueMapper: (ChartData sales, _) =>
-                                    sales.totalClass,
-                              ),
-                              LineSeries<ChartData, String>(
-                                dataSource: data,
-                                markerSettings: MarkerSettings(isVisible: true),
-                                name: 'Attended Class',
-                                xValueMapper: (ChartData sales, _) =>
-                                    sales.month,
-                                yValueMapper: (ChartData sales, _) =>
-                                    sales.attendedClass,
-                              ),
-                            ]),
-                      ),
-                    ],
+                        )
+                      ],
+                    ),
                   ))
             ],
           ),
@@ -293,7 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(50),
                       child: CachedNetworkImage(
                         imageUrl:
-                            "https://images.news18.com/ibnlive/uploads/2017/11/Shah-Rukh-Khan-at-the-Millennium-Dome-London.jpg?impolicy=website&width=0&height=0",
+                            'https://images.news18.com/ibnlive/uploads/2017/11/Shah-Rukh-Khan-at-the-Millennium-Dome-London.jpg?impolicy=website&width=0&height=0',
                         // fit: BoxFit.scaleDown,
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
