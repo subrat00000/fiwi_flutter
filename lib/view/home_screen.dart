@@ -40,10 +40,32 @@ class HomeScreenState extends State<HomeScreen> {
   Box box = Hive.box('user');
   int todayAsDay = 6;
   var internet = true;
+  String? photo;
+  String? vname;
+  String? vbio;
+  String? vsemester;
+  String? vaddress;
+  String? vemail;
+  String? vphone;
+  String? vbirthday;
+
+  _loadData() {
+    setState(() {
+      photo = box.get('photo') ?? '';
+      vname = box.get('name') ?? '';
+      vbio = box.get('bio') ?? '';
+      vsemester = box.get('semester') ?? '';
+      vaddress = box.get('address') ?? '';
+      vemail = box.get('email') ?? '';
+      vphone = box.get('phone') ?? '';
+      vbirthday = box.get('birthday') ?? '';
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _loadData();
     requestPermission();
     getToken();
     initInfo();
@@ -211,7 +233,7 @@ class HomeScreenState extends State<HomeScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(50),
                             child: CachedNetworkImage(
-                              imageUrl: "http://via.placeholder.com/350x150",
+                              imageUrl: photo!,
                               fit: BoxFit.cover,
                               progressIndicatorBuilder:
                                   (context, url, downloadProgress) =>

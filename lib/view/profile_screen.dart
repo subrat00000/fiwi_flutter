@@ -8,6 +8,8 @@ import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,10 +21,35 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   List<String> items = ['Semester', 'Month', 'Week', 'Day'];
-  
+  Box box = Hive.box('user');
   var internet = true;
+  String? photo;
+  String? vname;
+  String? vbio;
+  String? vsemester;
+  String? vaddress;
+  String? vemail;
+  String? vphone;
+  String? vbirthday;
 
-  
+  _loadData() {
+    setState(() {
+      photo = box.get('photo') ?? '';
+      vname = box.get('name') ?? '';
+      vbio = box.get('bio') ?? '';
+      vsemester = box.get('semester') ?? '';
+      vaddress = box.get('address') ?? '';
+      vemail = box.get('email') ?? '';
+      vphone = box.get('phone') ?? '';
+      vbirthday = box.get('birthday') ?? '';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,28 +109,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.centerLeft,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children:  [
+                          children: [
                             Row(
                               children: [
-                                Text('Subrat Meher',
+                                Text(vname!,
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
-                                        fontSize: 23, fontWeight: FontWeight.w500)),
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.w500)),
                                 SizedBox(width: 8),
-                                Container(width: 5, height: 5, color:Colors.grey),
+                                Container(
+                                    width: 5, height: 5, color: Colors.grey),
                                 SizedBox(width: 8),
-                                Text('Semester 1',style:TextStyle(color:Colors.grey[600]))
+                                Text(vsemester!,
+                                    style: TextStyle(color: Colors.grey[600]))
                               ],
                             ),
                             SizedBox(height: 8),
-                            Text(
-                                'Software engineer with 2+ years of experience in developing and integrating software solutions. Possesses strong analytical, problem-solving and time-management skills. Adept at developing software solutions for various platforms with a focus on efficiency, user-friendliness and performance. Experienced in coding, testing, debugging and designing programs according to requirements. Developed multiple successful projects under tight deadlines',
+                            Text(vbio!,
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontSize: 14,
                                 )),
                             SizedBox(height: 8),
-                            Text('Titilagarh, Odisha, India',
+                            Text(vaddress!,
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   color: Colors.black45,
@@ -144,7 +173,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               SizedBox(height: height * 0.015),
                               Row(
-                                
                                 children: [
                                   Text("PHONE",
                                       textAlign: TextAlign.left,
@@ -153,14 +181,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
                                   SizedBox(width: 8),
-                                  Container(width: 5, height: 5, color:Colors.grey),
+                                  Container(
+                                      width: 5, height: 5, color: Colors.grey),
                                   SizedBox(width: 8),
-                                  Text('VERIFIED',style:TextStyle(color:Colors.green)),
-                                  
+                                  Text('VERIFIED',
+                                      style: TextStyle(color: Colors.green)),
                                 ],
                               ),
-                              SizedBox(height: height*0.015,),
-                              Text('+918144028366',
+                              SizedBox(
+                                height: height * 0.015,
+                              ),
+                              Text(vphone!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
@@ -173,11 +204,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
-                                  
                                 ],
                               ),
-                              
-                              Text('08 Apr,1999',
+                              Text(DateFormat.yMMMMd()
+                                      .format(DateTime.parse(vbirthday!)),
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
@@ -190,11 +220,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
-                                  
                                 ],
                               ),
-                              
-                              Text('subratmeher00000@gmail.com',
+                              Text(vemail!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                             ],
@@ -286,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(50),
                       child: CachedNetworkImage(
                         imageUrl:
-                            'https://images.news18.com/ibnlive/uploads/2017/11/Shah-Rukh-Khan-at-the-Millennium-Dome-London.jpg?impolicy=website&width=0&height=0',
+                            photo!,
                         // fit: BoxFit.scaleDown,
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>

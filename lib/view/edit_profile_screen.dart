@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiwi/cubits/profile/profile_cubit.dart';
@@ -6,6 +8,8 @@ import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -17,6 +21,8 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool validation = false;
   final _formKey = GlobalKey<FormState>();
+  DateTime selectedDate = DateTime.now();
+  DateTime? dateChecker;
   Box box = Hive.box('user');
   final _auth = FirebaseAuth.instance.currentUser;
   bool isSignedInWithGoogle = false;
@@ -33,8 +39,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String phone = 'phone';
   String birthday = 'birthday';
 
-  _bottomModalTextField(String label, bool isTextArea) {
+  String? photo;
+  String? vname;
+  String? vbio;
+  String? vsemester;
+  String? vaddress;
+  String? vemail;
+  String? vphone;
+  String? vbirthday;
+
+  _bottomModalTextField(String label, bool isTextArea,String value) {
     modalController.clear();
+    modalController.text = value;
     String elabel = edit + label.toUpperCase();
     showModalBottomSheet(
         backgroundColor: const Color(0x00ffffff),
@@ -112,7 +128,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
   }
 
-  _bottomModalDropdown(String label) {
+  _bottomModalDropdown(String label,String value) {
     String elabel = edit + label;
     showModalBottomSheet(
         backgroundColor: const Color(0x00ffffff),
@@ -129,79 +145,190 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: SingleChildScrollView(
               child: Container(
                 margin: const EdgeInsets.all(20),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      Text(elabel,
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87)),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please Select your Semester';
-                          }
-                          return null;
-                        },
-                        hint: const Text("Semester"),
-                        decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.black12),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10.0),
-                            ),
-                          ),
-                          hintStyle: const TextStyle(color: Colors.black12),
+                child: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  key: _formKey,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 40,
                         ),
-                        items:
-                            items.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        value: semesterValue,
-                        onChanged: (String? value) {
-                          setState(() {
-                            semesterValue = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      CustomButton(
-                          text: "Submit",
-                          icontext: false,
-                          onPressed: () {
-                            // validation = true;
-                            // if (_formKey.currentState!.validate()) {
-                            //   BlocProvider.of<CreateUserCubit>(context)
-                            //       .createUser(
-                            //           name.text,
-                            //           email.text,
-                            //           address.text,
-                            //           selectedDate.toString());
-                            // }
-                          })
-                    ]),
+                        Text(elabel,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87)),
+                        const SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please Select your Semester';
+                            }
+                            return null;
+                          },
+                          hint: const Text("Semester"),
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: Colors.black12),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                            ),
+                            hintStyle: const TextStyle(color: Colors.black12),
+                          ),
+                          items: items
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          value: semesterValue ?? vsemester,
+                          onChanged: (String? value) {
+                            setState(() {
+                              semesterValue = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        CustomButton(
+                            text: "Submit",
+                            icontext: false,
+                            onPressed: () {
+                              // validation = true;
+                              if (_formKey.currentState!.validate()) {
+                                print('hello');
+                                BlocProvider.of<ProfileCubit>(context)
+                                    .saveData({label: semesterValue!});
+                                _loadData();
+                                Navigator.pop(context);
+                              }
+                            })
+                      ]),
+                ),
               ),
             ),
           );
         });
   }
 
+  _bottomModalDOB(String label) {
+    dateChecker = null;
+    DateTime dob = DateTime.parse(vbirthday!);
+    String elabel = edit + label.toUpperCase();
+    showModalBottomSheet(
+        backgroundColor: const Color(0x00ffffff),
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  )),
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.all(20),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Text(elabel,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87)),
+                        const SizedBox(height: 20),
+                        Form(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          key: _formKey,
+                          child: CustomButton(
+                              istextleft: true,
+                              color: Colors.black54,
+                              bordercolor: Colors.black12,
+                              text: dateChecker != selectedDate
+                                  ? vbirthday != ''
+                                      ? DateFormat.yMMMMd().format(dob)
+                                      : "Date of Birth"
+                                  : DateFormat.yMMMMd().format(selectedDate),
+                              icontext: false,
+                              onPressed: () async {
+                                final DateTime? picked = await showDatePicker(
+                                    fieldLabelText: "Date of Birth",
+                                    context: context,
+                                    initialDate: selectedDate,
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2100));
+                                if (picked != null && picked != selectedDate) {
+                                  setState(() {
+                                    selectedDate = picked;
+                                    dateChecker = picked;
+                                  });
+                                }
+                              }),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        CustomButton(
+                            text: "Submit",
+                            icontext: false,
+                            onPressed: () {
+                              validation = true;
+                              if (_formKey.currentState!.validate()) {
+                                BlocProvider.of<ProfileCubit>(context)
+                                    .saveData({label: selectedDate.toString()});
+                                Navigator.pop(context);
+                              }
+                            })
+                      ]),
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  Future getImage() async {
+    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery,imageQuality: 25);
+
+    if (context.mounted && image != null) {
+      BlocProvider.of<ProfileCubit>(context).uploadImage(image);
+    }
+    
+  }
+
+  _loadData() {
+    setState(() {
+      photo = box.get('photo') ?? '';
+      vname = box.get('name') ?? '';
+      vbio = box.get('bio') ?? '';
+      vsemester = box.get('semester') ?? '';
+      vaddress = box.get('address') ?? '';
+      vemail = box.get('email') ?? '';
+      vphone = box.get('phone') ?? '';
+      vbirthday = box.get('birthday') ?? '';
+    });
+  }
+
   @override
   void initState() {
+    _loadData();
     super.initState();
     if (_auth != null) {
       final googleProvider = _auth!.providerData
@@ -223,6 +350,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return BlocListener<ProfileCubit, ProfileState>(
       listener: (context, state) {
         if (state is ProfileUpdateDataSuccessState) {
+          _loadData();
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Updated Successfully"),
             backgroundColor: Colors.green,
@@ -297,7 +425,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   SizedBox(width: 8),
                                   IconButton(
                                       alignment: Alignment.centerRight,
-                                      onPressed: () {},
+                                      onPressed: () =>getImage(),
                                       icon: const Icon(
                                         Icons.edit_outlined,
                                         color: Colors.grey,
@@ -317,17 +445,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: Material(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(50),
-                                  child: CachedNetworkImage(
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                        'https://firebasestorage.googleapis.com/v0/b/fiwi-7c575.appspot.com/o/subrat3.png?alt=media&token=965ff841-d453-427d-8baf-03f14319351c',
-                                    progressIndicatorBuilder: (context, url,
-                                            downloadProgress) =>
-                                        CircularProgressIndicator(
-                                            value: downloadProgress.progress),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
+                                  child: photo != null &&
+                                          photo != ''
+                                      ? CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: photo!,
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                              CircularProgressIndicator(
+                                                  value: downloadProgress
+                                                      .progress),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        )
+                                      : Image.asset('assets/no_image.png'),
                                 ),
                               ),
                               Row(
@@ -342,7 +473,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           fontWeight: FontWeight.w500)),
                                   IconButton(
                                       onPressed: () {
-                                        _bottomModalTextField(name, false);
+                                        _bottomModalTextField(name, false,vname!);
                                       },
                                       icon: const Icon(
                                         Icons.edit_outlined,
@@ -350,7 +481,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ))
                                 ],
                               ),
-                              Text(box.get('name'),
+                              Text(vname!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
@@ -365,7 +496,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           fontWeight: FontWeight.w500)),
                                   IconButton(
                                       onPressed: () {
-                                        _bottomModalTextField(bio, true);
+                                        _bottomModalTextField(bio, true,vbio!);
                                       },
                                       icon: const Icon(
                                         Icons.edit_outlined,
@@ -373,10 +504,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ))
                                 ],
                               ),
-                              Text(
-                                  box.get('bio') != null
-                                      ? box.get('bio')
-                                      : 'Your bio',
+                              Text(vbio!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
@@ -396,7 +524,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   IconButton(
                                       onPressed: () {
-                                        _bottomModalDropdown(sem);
+                                        _bottomModalDropdown(sem,vsemester!);
                                       },
                                       icon: const Icon(
                                         Icons.edit_outlined,
@@ -404,10 +532,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ))
                                 ],
                               ),
-                              Text(
-                                  box.get('sem') != null
-                                      ? box.get('sem')
-                                      : 'Choose your Semester',
+                              Text(vsemester!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                               Row(
@@ -427,7 +552,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   IconButton(
                                       onPressed: () {
-                                        _bottomModalTextField(address, false);
+                                        _bottomModalTextField(address, false,vaddress!);
                                       },
                                       icon: const Icon(
                                         Icons.edit_outlined,
@@ -435,10 +560,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ))
                                 ],
                               ),
-                              Text(
-                                  box.get('address') != null
-                                      ? box.get('address')
-                                      : 'Your Address',
+                              Text(vaddress!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                             ],
@@ -471,7 +593,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // SizedBox(height: height * 0.015),
+                              SizedBox(height: height * 0.015),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -502,22 +624,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           : Container(),
                                     ],
                                   ),
-                                  IconButton(
-                                      alignment: Alignment.centerRight,
-                                      onPressed: () {
-                                        _bottomModalTextField(phone, false);
-                                      },
-                                      icon: const Icon(
-                                        Icons.edit_outlined,
-                                        color: Colors.grey,
-                                      ))
+                                  !isSignedInWithPhone
+                                      ? IconButton(
+                                          alignment: Alignment.centerRight,
+                                          onPressed: () {
+                                            _bottomModalTextField(phone, false,vphone!);
+                                          },
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.grey,
+                                          ))
+                                      : Container()
                                 ],
                               ),
-
-                              Text(
-                                  box.get('phone') != null
-                                      ? box.get('phone')
-                                      : 'Your Phone number',
+                              SizedBox(
+                                height: height * 0.02,
+                              ),
+                              Text(vphone!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
@@ -532,7 +655,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           fontWeight: FontWeight.w500)),
                                   IconButton(
                                       onPressed: () {
-                                        _bottomModalTextField(birthday, false);
+                                        _bottomModalDOB(birthday);
                                       },
                                       icon: const Icon(
                                         Icons.edit_outlined,
@@ -541,9 +664,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               Text(
-                                  box.get('birthday') != null
-                                      ? box.get('birthday')
-                                      : 'Your Birthday',
+                                  DateFormat.yMMMMd()
+                                      .format(DateTime.parse(vbirthday!)),
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
@@ -575,23 +697,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           : Container(),
                                     ],
                                   ),
-                                  IconButton(
-                                      onPressed: () {
-                                        _bottomModalTextField(
-                                            email.substring(
-                                                0, email.indexOf(' ')),
-                                            false);
-                                      },
-                                      icon: const Icon(
-                                        Icons.edit_outlined,
-                                        color: Colors.grey,
-                                      ))
+                                  !isSignedInWithGoogle
+                                      ? IconButton(
+                                          onPressed: () {
+                                            _bottomModalTextField(
+                                                email.substring(
+                                                    0, email.indexOf(' ')),
+                                                false,vemail!);
+                                          },
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.grey,
+                                          ))
+                                      : Container()
                                 ],
                               ),
-                              Text(
-                                  box.get('email') != null
-                                      ? box.get('email')
-                                      : 'Your Email',
+                              Text(vemail!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                             ],
