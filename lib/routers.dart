@@ -7,6 +7,7 @@ import 'package:fiwi/view/signin/google_signin.dart';
 import 'package:fiwi/view/signin/otp.dart';
 import 'package:fiwi/view/signin/phone_signin.dart';
 import 'package:fiwi/view/splash_screen.dart';
+import 'package:fiwi/view/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -35,6 +36,9 @@ class Routers {
       case '/editprofile':
         return MaterialPageRoute(
             builder: (context) => const EditProfileScreen());
+      case '/timetable':
+        return MaterialPageRoute(
+            builder: (context) => const TimeTable());
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(

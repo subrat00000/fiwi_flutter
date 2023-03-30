@@ -70,19 +70,87 @@ class HomeScreenState extends State<HomeScreen> {
     getToken();
     initInfo();
 
-    // final databaseReference = FirebaseDatabase.instance.ref('timetable/sem1/sun');
+    // final databaseReference = FirebaseDatabase.instance.ref('timetable/sem1');
 
-    // final newChildData = [{
+    // final data = [[{
+    //   'faculty': 'Nihar R. Nayak',
+    //   'subject': 'DSA',
+    //   'startTime': '07:00 am',
+    //   'endTime': '08:00 am'
+    // },{
+    //   'faculty': 'Sabita Behera',
+    //   'subject': 'OODUU',
+    //   'startTime': '08:00 am',
+    //   'endTime': '09:00 am'
+    // },{'faculty': 'P. K. Tripathy', 'startTime':'09:00 am','subject':'CSA', 'endTime':'10:00 am'}],[{
+    //   'faculty': 'Subhalaxmi Das',
+    //   'subject': 'DSI',
+    //   'startTime': '07:00 am',
+    //   'endTime': '08:00 am'
+    // },{
+    //   'faculty': 'Om Prakash Jena',
+    //   'subject': 'DMS',
+    //   'startTime': '08:00 am',
+    //   'endTime': '09:00 am'
+    // },{
     //   'faculty': 'Nihar R. Nayak',
     //   'subject': 'DSA',
     //   'startTime': '09:00 am',
     //   'endTime': '10:00 am'
-    // },{'faculty': 'P. K. Tripathy', 'startTime':'08:00 am','subject':'CSA', 'endTime':'09:00 am'}];
-    // for(int i =0;i< newChildData.length;i++){
-    //   final newChildRef = databaseReference.child(newChildData[i]['subject']!.toLowerCase()); // Get a reference to the new child
-    //   newChildRef.set(newChildData[i]);
+    // }],[{
+    //   'faculty': 'Nihar R. Nayak',
+    //   'subject': 'DSA',
+    //   'startTime': '07:00 am',
+    //   'endTime': '08:00 am'
+    // },{
+    //   'faculty': 'Sabita Behera',
+    //   'subject': 'OODUU',
+    //   'startTime': '08:00 am',
+    //   'endTime': '09:00 am'
+    // },{'faculty': 'P. K. Tripathy', 'startTime':'09:00 am','subject':'CSA', 'endTime':'10:00 am'}],[{
+    //   'faculty': 'Subhalaxmi Das',
+    //   'subject': 'DSI',
+    //   'startTime': '07:00 am',
+    //   'endTime': '08:00 am'
+    // },{
+    //   'faculty': 'Om Prakash Jena',
+    //   'subject': 'DMS',
+    //   'startTime': '08:00 am',
+    //   'endTime': '09:00 am'
+    // },{'faculty': 'P. K. Tripathy', 'startTime':'09:00 am','subject':'CSA', 'endTime':'10:00 am'}],[{
+    //   'faculty': 'Nihar R. Nayak',
+    //   'subject': 'DSA',
+    //   'startTime': '07:00 am',
+    //   'endTime': '08:00 am'
+    // },{
+    //   'faculty': 'Sabita Behera',
+    //   'subject': 'OODUU',
+    //   'startTime': '08:00 am',
+    //   'endTime': '09:00 am'
+    // },{'faculty': 'P. K. Tripathy', 'startTime':'09:00 am','subject':'CSA', 'endTime':'10:00 am'}],[{
+    //   'faculty': 'Subhalaxmi Das',
+    //   'subject': 'DSI',
+    //   'startTime': '07:00 am',
+    //   'endTime': '08:00 am'
+    // },{
+    //   'faculty': 'Om Prakash Jena',
+    //   'subject': 'DMS',
+    //   'startTime': '08:00 am',
+    //   'endTime': '09:00 am'
+    // },{
+    //   'faculty': 'Sabita Behera',
+    //   'subject': 'OODUU',
+    //   'startTime': '09:00 am',
+    //   'endTime': '10:00 am'
+    // }]];
+ 
+    // for(int j=0;j<data.length;j++){
+    // for(int i =0;i< data[j].length;i++){
+    //   final newChildRef = databaseReference.child((j+1).toString()).child(data[j][i]['subject']!.toLowerCase()); // Get a reference to the new child
+    //   newChildRef.set(data[j][i]);
     // }
-    // // Set the new child data
+    // }
+    // Set the new child data
   }
 
   initInfo() async {

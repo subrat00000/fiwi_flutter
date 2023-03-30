@@ -66,11 +66,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
               child: Column(children: <Widget>[
                 InkWell(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (BuildContext context) =>
-                    //             TimeTable()));
+                    Navigator.pushNamed(context, '/timetable');
                   },
                   child: const Align(
                       alignment: Alignment.topLeft,
@@ -113,7 +109,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
                                 150, //MediaQuery.of(context).size.height * 0.3,
                             child: StreamBuilder(
                               stream: FirebaseDatabase.instance
-                                  .ref('timetable/sem1/sun')
+                                  .ref('timetable/sem1/1')
                                   .onValue,
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData ||
