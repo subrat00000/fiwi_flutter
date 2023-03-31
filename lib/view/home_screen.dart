@@ -15,6 +15,7 @@ import 'package:fiwi/repositories/exit.dart';
 import 'package:fiwi/view/attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
 import 'package:fiwi/view/library_screen.dart';
+import 'package:fiwi/view/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +39,7 @@ class HomeScreenState extends State<HomeScreen> {
   DatabaseReference ref = FirebaseDatabase.instance.ref('users');
   String? mtoken;
   Box box = Hive.box('user');
-  int todayAsDay = 6;
+  Map<int,String> appBarTitle = {0:'Home',1:'Timetable', 2:'Attendance', 3:'Library'};
   var internet = true;
   String? photo;
   String? vname;
@@ -224,24 +225,31 @@ class HomeScreenState extends State<HomeScreen> {
 
   final _pageNavigation = [
     HomeScreenHelper(),
+    TimeTable(),
     AttendanceScreen(),
     LibraryScreen(),
   ];
 
   Widget _buildBottomNav() {
     return SizedBox(
+      height: 50,
       child: BottomNavigationBar(
-        
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+
+        selectedLabelStyle: TextStyle(fontSize: 13),
         currentIndex: context.read<BottomNavCubit>().state,
         type: BottomNavigationBarType.fixed,
         onTap: _getChangeBottomNav,
         items: [
           BottomNavigationBarItem(
-              icon: Image.asset('assets/home.png',cacheHeight: 25),label: 'Home'),
+              icon: Image.asset('assets/home.png',cacheHeight: 17),label: 'Home',activeIcon: Image.asset('assets/home.png',cacheHeight: 22)),
           BottomNavigationBarItem(
-              icon: Image.asset('assets/attendances.png',cacheHeight: 25),label: 'Attendance'),
+              icon: Image.asset('assets/timetables.png',cacheHeight: 17),label: 'Timetable',activeIcon: Image.asset('assets/timetables.png',cacheHeight: 22)),
           BottomNavigationBarItem(
-              icon: Image.asset('assets/librarys.png',cacheHeight: 25), label: 'Library'),
+              icon: Image.asset('assets/attendances.png',cacheHeight: 17),label: 'Attendance',activeIcon: Image.asset('assets/attendances.png',cacheHeight: 22)),
+          BottomNavigationBarItem(
+              icon: Image.asset('assets/librarys.png',cacheHeight: 17), label: 'Library',activeIcon: Image.asset('assets/librarys.png',cacheHeight: 22)),
         ],
       ),
     );
@@ -319,13 +327,7 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                title: Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: width * 0.23,
-                    ),
-                  ],
-                ),
+                title: Center(child: Text(appBarTitle[context.read<BottomNavCubit>().state]!,style: TextStyle(color: Colors.black87),)),
               ),
               key: _scaffoldKey,
               body: SafeArea(

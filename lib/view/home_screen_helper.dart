@@ -22,6 +22,7 @@ class ChartData {
 
 class HomeScreenHelperState extends State<HomeScreenHelper> {
   late TrackballBehavior _trackballBehavior;
+  int? todayAsDay;
   String chartValue = 'Day';
   List<String> items = ['Semester', 'Month', 'Week', 'Day'];
   final List<ChartData> data = <ChartData>[
@@ -38,7 +39,6 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
     ChartData('Nov', 39, 39),
     ChartData('Dec', 50, 30),
   ];
-  int todayAsDay = 6;
 
   @override
   void initState() {
@@ -46,6 +46,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
       enable: true,
       tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
     );
+    todayAsDay = DateTime.now().weekday;
     super.initState();
   }
 
@@ -53,167 +54,158 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return WillPopScope(
-      onWillPop: () async {
-        return Exit().showExitDialog(context);
-      },
-      child: BlocBuilder<BottomNavCubit, int>(
-        builder: (context, state) {
-          return Column(children: [
-            Card(
-              color: Colors.grey[200],
-              elevation: 6,
-              child: Column(children: <Widget>[
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/timetable');
-                  },
-                  child: const Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: InkWell(
-                          child: Text(
-                            'Today\'s Time Table',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16),
-                          ),
+    
+        return Column(children: [
+          Card(
+            color: Colors.grey[200],
+            elevation: 6,
+            child: Column(children: <Widget>[
+              const InkWell(
+                
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: InkWell(
+                        child: Text(
+                          'Today\'s Time Table',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16),
                         ),
-                      )),
-                ),
-                (todayAsDay == 7)
-                    ? Card(
-                        color: Colors.white,
-                        elevation: 0,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                    )),
+              ),
+              (todayAsDay == 7)
+                  ? Card(
+                      color: Colors.white,
+                      elevation: 0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height:
+                            150, //MediaQuery.of(context).size.height * 0.3,
+                        child: const Center(
+                          child: Text('Sunday is fun day',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500)),
+                        ),
+                      ),
+                    )
+                  : Card(
+                      color: Colors.white,
+                      elevation: 6,
+                      child: Column(children: <Widget>[
+                        Container(
                           height:
                               150, //MediaQuery.of(context).size.height * 0.3,
-                          child: const Center(
-                            child: Text('Sunday is fun day',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500)),
-                          ),
-                        ),
-                      )
-                    : Card(
-                        color: Colors.white,
-                        elevation: 6,
-                        child: Column(children: <Widget>[
-                          Container(
-                            height:
-                                150, //MediaQuery.of(context).size.height * 0.3,
-                            child: StreamBuilder(
-                              stream: FirebaseDatabase.instance
-                                  .ref('timetable/sem1/1')
-                                  .onValue,
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData ||
-                                    snapshot.data == null ||
-                                    snapshot.data!.snapshot.value == null) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                } else {
-                                  final itemsMap = snapshot.data!.snapshot.value
-                                      as Map<dynamic, dynamic>;
-                                  final itemsList = itemsMap.entries.toList();
-                                  return ListView.builder(
-                                    padding: const EdgeInsets.all(10.0),
-                                    itemBuilder: (context, index) {
-                                      return showPeriod(
-                                          context, itemsList[index]);
-                                    },
-                                    itemCount: itemsList.length,
-                                    scrollDirection: Axis.horizontal,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ]),
-                      ),
-              ]),
-            ),
-            SizedBox(height: height*0.02,),
-            Container(
-                margin:
-                    EdgeInsets.only(left: width * 0.02, right: width * 0.02),
-                // height: height * 0.2,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: const Color.fromARGB(255, 226, 226, 226),
-                    ),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  children: [
-                    SizedBox(height: height*0.02,),
-                    const Align(alignment: Alignment.topCenter,child: Text('Attendance Report'),),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        width: width * 0.3,
-                        height: height * 0.05,
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: const Text("Semester"),
-                            items: items
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            value: chartValue,
-                            onChanged: (value) {
-                              setState(() {
-                                chartValue = value!;
-                              });
+                          child: StreamBuilder(
+                            stream: FirebaseDatabase.instance
+                                .ref('timetable/sem1/${todayAsDay}')
+                                .onValue,
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData ||
+                                  snapshot.data == null ||
+                                  snapshot.data!.snapshot.value == null) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                final itemsMap = snapshot.data!.snapshot.value
+                                    as Map<dynamic, dynamic>;
+                                final itemsList = itemsMap.entries.toList();
+                                return ListView.builder(
+                                  padding: const EdgeInsets.all(10.0),
+                                  itemBuilder: (context, index) {
+                                    return showPeriod(
+                                        context, itemsList[index]);
+                                  },
+                                  itemCount: itemsList.length,
+                                  scrollDirection: Axis.horizontal,
+                                );
+                              }
                             },
                           ),
                         ),
+                      ]),
+                    ),
+            ]),
+          ),
+          SizedBox(height: height*0.02,),
+          Container(
+              margin:
+                  EdgeInsets.only(left: width * 0.02, right: width * 0.02),
+              // height: height * 0.2,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 226, 226, 226),
+                  ),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                children: [
+                  SizedBox(height: height*0.02,),
+                  const Align(alignment: Alignment.topCenter,child: Text('Attendance Report'),),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: width * 0.3,
+                      height: height * 0.05,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          hint: const Text("Semester"),
+                          items: items
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          value: chartValue,
+                          onChanged: (value) {
+                            setState(() {
+                              chartValue = value!;
+                            });
+                          },
+                        ),
                       ),
                     ),
-                    SizedBox(
-                      height: height * 0.02,
-                    ),
-                    Container(
-                      height: height * 0.2,
-                      child: SfCartesianChart(
-                          enableAxisAnimation: true,
-                          primaryXAxis: CategoryAxis(),
-                          trackballBehavior: _trackballBehavior,
-                          series: <LineSeries<ChartData, String>>[
-                            LineSeries<ChartData, String>(
-                              dataSource: data,
-                              markerSettings: MarkerSettings(isVisible: true),
-                              name: 'Total No. of class',
-                              xValueMapper: (ChartData sales, _) => sales.month,
-                              yValueMapper: (ChartData sales, _) =>
-                                  sales.totalClass,
-                            ),
-                            LineSeries<ChartData, String>(
-                              dataSource: data,
-                              markerSettings: MarkerSettings(isVisible: true),
-                              name: 'Attended Class',
-                              xValueMapper: (ChartData sales, _) => sales.month,
-                              yValueMapper: (ChartData sales, _) =>
-                                  sales.attendedClass,
-                            ),
-                          ]),
-                    ),
-                  ],
-                ))
-          ]);
-        },
-      ),
-    );
+                  ),
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+                  Container(
+                    height: height * 0.2,
+                    child: SfCartesianChart(
+                        enableAxisAnimation: true,
+                        primaryXAxis: CategoryAxis(),
+                        trackballBehavior: _trackballBehavior,
+                        series: <LineSeries<ChartData, String>>[
+                          LineSeries<ChartData, String>(
+                            dataSource: data,
+                            markerSettings: MarkerSettings(isVisible: true),
+                            name: 'Total No. of class',
+                            xValueMapper: (ChartData sales, _) => sales.month,
+                            yValueMapper: (ChartData sales, _) =>
+                                sales.totalClass,
+                          ),
+                          LineSeries<ChartData, String>(
+                            dataSource: data,
+                            markerSettings: MarkerSettings(isVisible: true),
+                            name: 'Attended Class',
+                            xValueMapper: (ChartData sales, _) => sales.month,
+                            yValueMapper: (ChartData sales, _) =>
+                                sales.attendedClass,
+                          ),
+                        ]),
+                  ),
+                ],
+              ))
+        ]);
+      
   }
 
   Widget showPeriod(BuildContext context, document) {
