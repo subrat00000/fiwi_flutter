@@ -23,7 +23,8 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
         'bio': 'Your bio infomation',
         'phone': _auth.currentUser!.phoneNumber,
         'role':'student',
-        'semester':sem
+        'semester':sem,
+        'active': false
       };
       await ref.child(_auth.currentUser!.uid).set(user);
       DataSnapshot de = await ref.child(_auth.currentUser!.uid).get();

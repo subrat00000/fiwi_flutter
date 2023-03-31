@@ -14,6 +14,8 @@ class AuthLoggedInState extends AuthState {
 
 class AuthLoggedOutState extends AuthState {}
 
+class AuthInactiveState extends AuthState {}
+
 class AuthErrorState extends AuthState {
   final String error;
   AuthErrorState(this.error);

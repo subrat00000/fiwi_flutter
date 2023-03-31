@@ -13,6 +13,7 @@ import 'package:fiwi/cubits/profile/profile_cubit.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
+import 'package:fiwi/view/information.dart';
 import 'package:fiwi/view/signin/create_user.dart';
 import 'package:fiwi/view/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -97,9 +98,11 @@ class MyApp extends StatelessWidget {
               onGenerateRoute: Routers.generateRoute,
               home: state is AuthLoggedInState
                   ? const HomeScreen()
-                  : state is AuthUserCreateState
-                      ? const CreateUser()
-                      : const SplashScreen());
+                  : state is AuthInactiveState
+                      ? Information()
+                      : state is AuthUserCreateState
+                          ? const CreateUser()
+                          : const SplashScreen());
         },
       ),
     );

@@ -10,6 +10,7 @@ import 'package:hive/hive.dart';
 class AuthCubit extends Cubit<AuthState> {
   var box = Hive.box('user');
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference ref = FirebaseDatabase.instance.ref('users');
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   AuthCubit() : super(AuthInitialState()) {
     emit(AuthLoadingState());
@@ -19,17 +20,39 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void checkRegistration(uid) async {
-    if(box.get('uid')!=null){
+    if (box.get('uid') != null) {
       log(box.get('name'));
-      emit(AuthLoggedInState());
+      if (box.get('active') == false) {
+        emit(AuthInactiveState());
+        DataSnapshot a = await ref.child(_auth.currentUser!.uid).get();
+        var b = a.value as Map;
+        if (b['active'] == false) {
+          emit(AuthInactiveState());
+        } else {
+          log('*************up');
+          box.put('active', true);
+          emit(AuthLoggedInState());
+        }
+      } else {
+        emit(AuthLoggedInState());
+        DataSnapshot a = await ref.child(_auth.currentUser!.uid).get();
+        var b = a.value as Map;
+        if (b['active'] == false) {
+          box.put('active',false);
+          emit(AuthInactiveState());
+        } else {
+          log('*************down');
+
+          emit(AuthLoggedInState());
+        }
+      }
     } else {
       emit(AuthUserCreateState());
     }
-    
   }
 
   void logOut() async {
-    try{
+    try {
       await _auth.signOut();
       await _googleSignIn.signOut();
       box.clear();
@@ -37,6 +60,5 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthErrorState(e.toString()));
     }
-    
   }
 }
