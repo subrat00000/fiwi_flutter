@@ -1,3 +1,3 @@
 @echo off
-flutter run -d emulator-5554 -d RZ8RA0ZTTSH
-
+adb connect 127.0.0.1:5555
+adb connect 127.0.0.1:5595

@@ -15,7 +15,7 @@ import 'package:fiwi/repositories/exit.dart';
 import 'package:fiwi/view/attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
 import 'package:fiwi/view/library_screen.dart';
-import 'package:fiwi/view/timetable_screen.dart';
+import 'package:fiwi/view/timetable/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +39,12 @@ class HomeScreenState extends State<HomeScreen> {
   DatabaseReference ref = FirebaseDatabase.instance.ref('users');
   String? mtoken;
   Box box = Hive.box('user');
-  Map<int,String> appBarTitle = {0:'Home',1:'Timetable', 2:'Attendance', 3:'Library'};
+  Map<int, String> appBarTitle = {
+    0: 'Home',
+    1: 'Timetable',
+    2: 'Attendance',
+    3: 'Library'
+  };
   var internet = true;
   String? photo;
   String? vname;
@@ -71,7 +76,7 @@ class HomeScreenState extends State<HomeScreen> {
     getToken();
     initInfo();
 
-    // final databaseReference = FirebaseDatabase.instance.ref('timetable/sem1');
+    // final databaseReference = FirebaseDatabase.instance.ref('timetable/semester1');
 
     // final data = [[{
     //   'faculty': 'Nihar R. Nayak',
@@ -144,7 +149,7 @@ class HomeScreenState extends State<HomeScreen> {
     //   'startTime': '09:00 am',
     //   'endTime': '10:00 am'
     // }]];
- 
+
     // for(int j=0;j<data.length;j++){
     // for(int i =0;i< data[j].length;i++){
     //   final newChildRef = databaseReference.child((j+1).toString()).child(data[j][i]['subject']!.toLowerCase()); // Get a reference to the new child
@@ -236,20 +241,29 @@ class HomeScreenState extends State<HomeScreen> {
       child: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
-
         selectedLabelStyle: TextStyle(fontSize: 13),
         currentIndex: context.read<BottomNavCubit>().state,
         type: BottomNavigationBarType.fixed,
         onTap: _getChangeBottomNav,
         items: [
           BottomNavigationBarItem(
-              icon: Image.asset('assets/home.png',cacheHeight: 17),label: 'Home',activeIcon: Image.asset('assets/home.png',cacheHeight: 22)),
+              icon: Image.asset('assets/home.png', cacheHeight: 17),
+              label: 'Home',
+              activeIcon: Image.asset('assets/home.png', cacheHeight: 22)),
           BottomNavigationBarItem(
-              icon: Image.asset('assets/timetables.png',cacheHeight: 17),label: 'Timetable',activeIcon: Image.asset('assets/timetables.png',cacheHeight: 22)),
+              icon: Image.asset('assets/timetables.png', cacheHeight: 17),
+              label: 'Timetable',
+              activeIcon:
+                  Image.asset('assets/timetables.png', cacheHeight: 22)),
           BottomNavigationBarItem(
-              icon: Image.asset('assets/attendances.png',cacheHeight: 17),label: 'Attendance',activeIcon: Image.asset('assets/attendances.png',cacheHeight: 22)),
+              icon: Image.asset('assets/attendances.png', cacheHeight: 17),
+              label: 'Attendance',
+              activeIcon:
+                  Image.asset('assets/attendances.png', cacheHeight: 22)),
           BottomNavigationBarItem(
-              icon: Image.asset('assets/librarys.png',cacheHeight: 17), label: 'Library',activeIcon: Image.asset('assets/librarys.png',cacheHeight: 22)),
+              icon: Image.asset('assets/librarys.png', cacheHeight: 17),
+              label: 'Library',
+              activeIcon: Image.asset('assets/librarys.png', cacheHeight: 22)),
         ],
       ),
     );
@@ -274,7 +288,9 @@ class HomeScreenState extends State<HomeScreen> {
               appBar: AppBar(
                 actions: [
                   IconButton(
-                      onPressed: () {Navigator.pushNamed(context, '/notification');},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/notification');
+                      },
                       icon: Icon(
                         Icons.notifications_outlined,
                         color: Colors.black54,
@@ -308,16 +324,18 @@ class HomeScreenState extends State<HomeScreen> {
                           child: Material(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(50),
-                            child: CachedNetworkImage(
-                              imageUrl: photo!,
-                              fit: BoxFit.cover,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) =>
-                                      CircularProgressIndicator(
-                                          value: downloadProgress.progress),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            ),
+                            child: photo != null && photo != ''
+                                ? CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: photo!,
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  )
+                                : Image.asset('assets/no_image.png'),
                           ),
                         ),
                         onTap: () {
@@ -327,7 +345,11 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                title: Center(child: Text(appBarTitle[context.read<BottomNavCubit>().state]!,style: TextStyle(color: Colors.black87),)),
+                title: Center(
+                    child: Text(
+                  appBarTitle[context.read<BottomNavCubit>().state]!,
+                  style: TextStyle(color: Colors.black87),
+                )),
               ),
               key: _scaffoldKey,
               body: SafeArea(

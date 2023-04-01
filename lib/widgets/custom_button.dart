@@ -12,6 +12,8 @@ class CustomButton extends StatelessWidget {
   final bool icontext;
   final bool istextleft;
   final double elevation;
+  final double borderRadius;
+  
 
   const CustomButton(
       {super.key,
@@ -25,7 +27,8 @@ class CustomButton extends StatelessWidget {
       this.bordercolor = Colors.purple,
       this.istextleft = false,
       this.elevation = 0,
-      this.icontext = true});
+      this.icontext = true,
+      this.borderRadius = 10});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,7 @@ class CustomButton extends StatelessWidget {
           backgroundColor: MaterialStateProperty.all<Color>(bgcolor),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(borderRadius),
                 side: BorderSide(color: bordercolor)),
           ),
         ),

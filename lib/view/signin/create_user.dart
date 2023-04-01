@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
 import 'package:fiwi/cubits/create_user/create_user_state.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
@@ -15,6 +16,7 @@ class CreateUser extends StatefulWidget {
 }
 
 class CreateUserState extends State<CreateUser> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool validation = false;
   final _formKey = GlobalKey<FormState>();
   TextEditingController name = TextEditingController();
@@ -36,6 +38,19 @@ class CreateUserState extends State<CreateUser> {
         selectedDate = picked;
       });
     }
+  }
+
+  @override
+  void initState() {
+    if (_auth.currentUser != null) {
+      final googleProvider = _auth.currentUser!.providerData
+          .any((provider) => provider.providerId == 'google.com');
+      if(googleProvider){
+        email.text = _auth.currentUser!.email!;
+      }
+    }
+    
+    super.initState();
   }
 
   @override
@@ -176,7 +191,7 @@ class CreateUserState extends State<CreateUser> {
                             CreateUserProfileState>(
                           listener: (context, state) {
                             if (state is CreateUserProfileSuccessState) {
-                              Navigator.pushNamed(context, '/home');
+                              Navigator.pushNamed(context, '/inactive');
                             } else if (state is CreateUserProfileErrorState) {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(

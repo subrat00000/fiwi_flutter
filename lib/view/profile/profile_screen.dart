@@ -206,7 +206,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           fontWeight: FontWeight.w500)),
                                 ],
                               ),
-                              Text(DateFormat.yMMMMd()
+                              Text(
+                                  DateFormat.yMMMMd()
                                       .format(DateTime.parse(vbirthday!)),
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
@@ -312,17 +313,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Material(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(50),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            photo!,
-                        // fit: BoxFit.scaleDown,
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) =>
-                                CircularProgressIndicator(
-                                    value: downloadProgress.progress),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+                      child: photo != null && photo != ''
+                          ? CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: photo!,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      CircularProgressIndicator(
+                                          value: downloadProgress.progress),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            )
+                          : Image.asset('assets/no_image.png'),
                     ),
                   ),
                   onTap: () {

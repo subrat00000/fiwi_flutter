@@ -103,7 +103,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
                               150, //MediaQuery.of(context).size.height * 0.3,
                           child: StreamBuilder(
                             stream: FirebaseDatabase.instance
-                                .ref('timetable/sem1/${todayAsDay}')
+                                .ref('timetable/semester1/${todayAsDay}')
                                 .onValue,
                             builder: (context, snapshot) {
                               if (!snapshot.hasData ||

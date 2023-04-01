@@ -1,15 +1,16 @@
-import 'package:fiwi/view/edit_profile_screen.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/notification_screen.dart';
-import 'package:fiwi/view/profile_screen.dart';
+import 'package:fiwi/view/profile/edit_profile_screen.dart';
+import 'package:fiwi/view/profile/profile_screen.dart';
 import 'package:fiwi/view/signin/create_user.dart';
 import 'package:fiwi/view/signin/google_signin.dart';
 import 'package:fiwi/view/signin/otp.dart';
 import 'package:fiwi/view/signin/phone_signin.dart';
 import 'package:fiwi/view/splash_screen.dart';
-import 'package:fiwi/view/timetable_screen.dart';
+import 'package:fiwi/view/timetable/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import "package:fiwi/view/information.dart";
 
 class Routers {
   static Route generateRoute(RouteSettings setting) {
@@ -39,6 +40,9 @@ class Routers {
       case '/timetable':
         return MaterialPageRoute(
             builder: (context) => const TimeTable());
+      case '/inactive':
+        return MaterialPageRoute(
+            builder: (context) => Information());
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(
