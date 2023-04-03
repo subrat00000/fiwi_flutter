@@ -3,6 +3,7 @@ import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/repositories/exit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HomeScreenHelper extends StatefulWidget {
@@ -58,7 +59,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
         return Column(children: [
           Card(
             color: Colors.grey[200],
-            elevation: 6,
+            elevation: 0,
             child: Column(children: <Widget>[
               const InkWell(
                 
@@ -88,7 +89,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
                         child: const Center(
                           child: Text('Sunday is fun day',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                         ),
@@ -96,14 +97,14 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
                     )
                   : Card(
                       color: Colors.white,
-                      elevation: 6,
+                      elevation: 0,
                       child: Column(children: <Widget>[
                         Container(
                           height:
                               150, //MediaQuery.of(context).size.height * 0.3,
                           child: StreamBuilder(
                             stream: FirebaseDatabase.instance
-                                .ref('timetable/semester1/${todayAsDay}')
+                                .ref('timetable/semester1/$todayAsDay')
                                 .onValue,
                             builder: (context, snapshot) {
                               if (!snapshot.hasData ||
@@ -209,13 +210,8 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
   }
 
   Widget showPeriod(BuildContext context, document) {
-    // DateTime showStartTime =
-    //     DateTime.parse(document.value['startTime'].toDate().toString());
-    // DateTime showEndTime =
-    //     DateTime.parse(document.value['endTime'].toDate().toString());
-
-    String showStartTime = document.value['startTime'].toString();
-    String showEndTime = document.value['endTime'].toString();
+    DateTime showStartTime = DateTime.parse(document.value['startTime']);
+    DateTime showEndTime = DateTime.parse(document.value['endTime']);
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[300],
@@ -232,16 +228,14 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              // myText(
-              //    Colors.white,
-              //   DateFormat.jm().format(showStartTime)
-              // ),
-              // myText(
-              //    Colors.white,
-              //   DateFormat.jm().format(showEndTime)
-              // ),
-              myText(Colors.black, showStartTime),
-              myText(Colors.black, showEndTime),
+              myText(
+                 Colors.black,
+                DateFormat.jm().format(showStartTime)
+              ),
+              myText(
+                 Colors.black,
+                DateFormat.jm().format(showEndTime)
+              ),
             ],
           ),
           myText(

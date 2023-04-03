@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
@@ -20,7 +21,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  List<String> items = ['Semester', 'Month', 'Week', 'Day'];
+  List<String> items = ['Log Out'];
   Box box = Hive.box('user');
   var internet = true;
   String? photo;
@@ -247,19 +248,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ], shape: BoxShape.circle),
                 height: height * 0.12,
-                child: PopupMenuButton<String>(
+                child: PopupMenuButton(
                   icon: const Icon(
                     Icons.more_vert_rounded,
                     color: Colors.white,
                   ),
-                  onSelected: (value) {},
+                  onSelected: (value) {
+                    if (value == 0) {
+                      BlocProvider.of<AuthCubit>(context).logOut();
+                      Navigator.pop(context);
+                    }
+                  },
                   itemBuilder: (BuildContext context) {
-                    return items.map((String choice) {
-                      return PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(choice),
-                      );
-                    }).toList();
+                    return [
+                      PopupMenuItem<int>(
+                        value: 0,
+                        child: Text("Log Out"),
+                      ),
+                    ];
                   },
                 ),
               )),
@@ -300,36 +306,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Material(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    margin: const EdgeInsets.all(4),
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    decoration: const BoxDecoration(boxShadow: [
-                      BoxShadow(
-                        color: Colors.white,
-                      ),
-                    ], shape: BoxShape.circle),
-                    child: Material(
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  decoration: const BoxDecoration(boxShadow: [
+                    BoxShadow(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(50),
-                      child: photo != null && photo != ''
-                          ? CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              imageUrl: photo!,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) =>
-                                      CircularProgressIndicator(
-                                          value: downloadProgress.progress),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            )
-                          : Image.asset('assets/no_image.png'),
                     ),
+                  ], shape: BoxShape.circle),
+                  child: Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50),
+                    child: photo != null && photo != ''
+                        ? CachedNetworkImage(
+                            fit: BoxFit.contain,
+                            imageUrl: photo!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          )
+                        : Image.asset('assets/no_image.png'),
                   ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
                 ),
               ),
             ),

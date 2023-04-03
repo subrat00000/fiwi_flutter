@@ -1,11 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
+import 'package:fiwi/cubits/timetable/timetable_state.dart';
 import 'package:fiwi/view/timetable/streambuilder_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
 import 'package:intl/intl.dart';
-
-
 
 class TimeTable extends StatefulWidget {
   const TimeTable({super.key});
@@ -16,17 +17,17 @@ class TimeTable extends StatefulWidget {
 
 class _TimeTableState extends State<TimeTable> {
   Box box = Hive.box('user');
-  
+
   String? role;
-  bool isEdit =false;
+  bool isEdit = false;
 
   _loadData() {
-      role = box.get('role') ?? '';
-      if(role=='admin' || role=='faculty') {
-        isEdit=true;
-      }
-    
+    role = box.get('role') ?? '';
+    if (role == 'admin' || role == 'faculty') {
+      isEdit = true;
+    }
   }
+
   @override
   void initState() {
     _loadData();
@@ -35,19 +36,51 @@ class _TimeTableState extends State<TimeTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(left:5, right:5),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<TimetableCubit, TimetableState>(
+            listener: (context, state) {
+          if (state is TimetableAddPeriodSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Class Created Successfully."),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (state is TimetableEditPeriodSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Class Updated Successfully."),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (state is TimetableDeletePeriodSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Class Deleted Successfully."),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (state is TimetableErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.error.toString()),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          }
+        }),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5, right: 5),
         child: ListView(
           children: <Widget>[
-            StreamBuilderWidget(day: 'Monday', dayInNum: '1',isEdit: isEdit),
-            StreamBuilderWidget(day: 'Tuesday', dayInNum: '2',isEdit: isEdit),
-            StreamBuilderWidget(day: 'WednesDay', dayInNum: '3',isEdit: isEdit),
-            StreamBuilderWidget(day: 'Thursday', dayInNum: '4',isEdit: isEdit),
-            StreamBuilderWidget(day: 'Friday', dayInNum: '5',isEdit: isEdit),
-            StreamBuilderWidget(day: 'Satarday', dayInNum: '6',isEdit: isEdit),
+            StreamBuilderWidget(day: 'Monday', dayInNum: '1', isEdit: isEdit),
+            StreamBuilderWidget(day: 'Tuesday', dayInNum: '2', isEdit: isEdit),
+            StreamBuilderWidget(
+                day: 'WednesDay', dayInNum: '3', isEdit: isEdit),
+            StreamBuilderWidget(day: 'Thursday', dayInNum: '4', isEdit: isEdit),
+            StreamBuilderWidget(day: 'Friday', dayInNum: '5', isEdit: isEdit),
+            StreamBuilderWidget(day: 'Satarday', dayInNum: '6', isEdit: isEdit),
           ],
         ),
-      );
-    
+      ),
+    );
   }
 }

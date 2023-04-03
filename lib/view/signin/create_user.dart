@@ -7,6 +7,7 @@ import 'package:fiwi/repositories/exit.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class CreateUser extends StatefulWidget {
   const CreateUser({super.key});
@@ -23,6 +24,7 @@ class CreateUserState extends State<CreateUser> {
   TextEditingController email = TextEditingController();
   TextEditingController address = TextEditingController();
   DateTime selectedDate = DateTime.now();
+  DateTime? dateChecker;
   String? semesterValue;
   List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
 
@@ -36,6 +38,7 @@ class CreateUserState extends State<CreateUser> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        dateChecker = picked;
       });
     }
   }
@@ -131,7 +134,9 @@ class CreateUserState extends State<CreateUser> {
                           istextleft: true,
                           color: Colors.black54,
                           bordercolor: Colors.black12,
-                          text: "Date of Birth(Optional)",
+                          text: dateChecker != selectedDate
+                                  ? "Date of Birth(Optional)"
+                                  : DateFormat.yMMMMd().format(selectedDate),
                           icontext: false,
                           onPressed: () => _selectDate(context)),
                       SizedBox(height: height * 0.03),

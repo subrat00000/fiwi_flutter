@@ -4,11 +4,11 @@ class TimetableInitialState extends TimetableState {}
 
 class TimetableLoadingState extends TimetableState {}
 
-class TimetableAddPeriodState extends TimetableState {}
+class TimetableAddPeriodSuccessState extends TimetableState {}
 
-class TimetableEditPeriodState extends TimetableState {}
+class TimetableEditPeriodSuccessState extends TimetableState {}
 
-class TimetableDeletePeriodState extends TimetableState {}
+class TimetableDeletePeriodSuccessState extends TimetableState {}
 
 class TimetableErrorState extends TimetableState {
   String error;

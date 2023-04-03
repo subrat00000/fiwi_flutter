@@ -7,9 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 
-class GoogleAuthCubit extends Cubit<GoogleAuthState>{
-  GoogleAuthCubit(): super(GoogleAuthInitialState());
-  
+class GoogleAuthCubit extends Cubit<GoogleAuthState> {
+  GoogleAuthCubit() : super(GoogleAuthInitialState());
+
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
@@ -18,26 +18,32 @@ class GoogleAuthCubit extends Cubit<GoogleAuthState>{
   Future<void> signInWithGoogle() async {
     try {
       emit(GoogleAuthStateLoading());
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-      final UserCredential userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
-      final User? user = userCredential.user;
-      if (user != null) {
-        DataSnapshot de = await ref.child(userCredential.user!.uid).get();
-        if (de.exists) {
-          log("User Exists");
-          box.putAll(de.value as Map<dynamic, dynamic>);
-          emit(GoogleAuthLoggedInState());
+      final GoogleSignInAccount? googleUser =
+          await _googleSignIn.signIn().catchError((onError) {
+        emit(GoogleAuthStateError(onError.toString()));
+      });
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+        final UserCredential userCredential =
+            await _firebaseAuth.signInWithCredential(credential);
+        final User? user = userCredential.user;
+        if (user != null) {
+          DataSnapshot de = await ref.child(userCredential.user!.uid).get();
+          if (de.exists) {
+            log("User Exists");
+            box.putAll(de.value as Map<dynamic, dynamic>);
+            emit(GoogleAuthLoggedInState());
+          } else {
+            emit(GoogleAuthUserCreateState(user));
+          }
         } else {
-          emit(GoogleAuthUserCreateState(user));
+          emit(GoogleAuthStateError("Authentication Error"));
         }
-        
       } else {
-        emit(GoogleAuthStateError("Authentication Error"));
+        emit(GoogleAuthStateError("Something Went Wrong !!!"));
       }
     } catch (e) {
       emit(GoogleAuthStateError(e.toString()));

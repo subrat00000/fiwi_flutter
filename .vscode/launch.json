@@ -16,16 +16,16 @@
             "deviceId": "127.0.0.1:5555"
         },
         {
-            "name": "Emulator 2",
+            "name": "Phone",
             "request": "launch",
             "type": "dart",
-            "deviceId": "127.0.0.1:5595"
+            "deviceId": "RZ8RA0ZTTSH"
         }
     ],
     "compounds": [
         {
             "name": "All Devices",
-            "configurations": ["Emulator 1","Emulator 2"]
+            "configurations": ["Emulator 1","Phone"]
         }
     ]
 }

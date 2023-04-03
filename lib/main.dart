@@ -11,6 +11,8 @@ import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:fiwi/cubits/profile/profile_cubit.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
+import 'package:fiwi/cubits/timetable/selectable_grid_cubit.dart';
+import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/information.dart';
@@ -77,6 +79,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => ProfileCubit(),
         ),
+        BlocProvider(create: (context) => TimetableCubit()),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
