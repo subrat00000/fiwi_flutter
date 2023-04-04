@@ -32,6 +32,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? vemail;
   String? vphone;
   String? vbirthday;
+  String? role;
+  String? vdesignation;
+  String? vqualification;
+  String? vrollno;
 
   _loadData() {
     setState(() {
@@ -43,6 +47,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       vemail = box.get('email') ?? '';
       vphone = box.get('phone') ?? '';
       vbirthday = box.get('birthday') ?? '';
+      role = box.get('role') ?? '';
+      vdesignation = box.get('designation') ?? '';
+      vqualification = box.get('qualification') ?? '';
+      vrollno = box.get('rollno') ?? '';
     });
   }
 
@@ -100,7 +108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               borderRadius: BorderRadius.circular(30)),
                           child: TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/editprofile');
+                                Navigator.pushNamed(context, '/editprofile')
+                                    .then((_) => _loadData());
                               },
                               child: const Text('Edit Profile',
                                   style: TextStyle(color: Colors.black))),
@@ -119,11 +128,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fontSize: 23,
                                         fontWeight: FontWeight.w500)),
                                 SizedBox(width: 8),
-                                Container(
-                                    width: 5, height: 5, color: Colors.grey),
+                                role == 'student'
+                                    ? Container(
+                                        width: 5, height: 5, color: Colors.grey)
+                                    : Container(),
                                 SizedBox(width: 8),
-                                Text(vsemester!,
-                                    style: TextStyle(color: Colors.grey[600]))
+                                role == 'student'
+                                    ? Text(vsemester!,
+                                        style:
+                                            TextStyle(color: Colors.grey[600]))
+                                    : Container(),
+                                SizedBox(width: 8),
+                                role == 'student' && vrollno != ''
+                                    ? Container(
+                                        width: 5, height: 5, color: Colors.grey)
+                                    : Container(),
+                                SizedBox(width: 8),
+                                role == 'student' && vrollno != ''
+                                    ? Text(vrollno!,
+                                        style:
+                                            TextStyle(color: Colors.grey[600]))
+                                    : Container()
                               ],
                             ),
                             SizedBox(height: 8),
@@ -188,9 +213,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Text('VERIFIED',
                                       style: TextStyle(color: Colors.green)),
                                 ],
-                              ),
-                              SizedBox(
-                                height: height * 0.015,
                               ),
                               Text(vphone!,
                                   style: TextStyle(color: Colors.black87)),

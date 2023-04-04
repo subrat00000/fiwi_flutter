@@ -155,14 +155,14 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${startTime.hour}:${startTime.minute}',
+                                    DateFormat.jm().format(_convertToDateTime(startTime)),
                                     style: TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    '${endTime.hour}:${endTime.minute}',
+                                    DateFormat.jm().format(_convertToDateTime(endTime)),
                                     style: TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,

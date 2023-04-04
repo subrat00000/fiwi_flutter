@@ -38,6 +38,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String email = 'email address';
   String phone = 'phone';
   String birthday = 'birthday';
+  String designation = 'designation';
+  String qualification = 'qualification';
+  String rollno = 'rollno';
 
   String? photo;
   String? vname;
@@ -47,6 +50,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? vemail;
   String? vphone;
   String? vbirthday;
+  String? role;
+  String? vdesignation;
+  String? vqualification;
+  String? vrollno;
 
   _bottomModalTextField(String label, bool isTextArea,String value) {
     modalController.clear();
@@ -55,73 +62,78 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     showModalBottomSheet(
         backgroundColor: const Color(0x00ffffff),
         context: context,
+        isScrollControlled: true,
         builder: (context) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                )),
-            child: SingleChildScrollView(
-              child: Container(
-                margin: const EdgeInsets.all(20),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      Text(elabel,
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87)),
-                      const SizedBox(height: 20),
-                      Form(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        key: _formKey,
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value!.isEmpty && validation) {
-                              return 'Please enter a valid name';
-                            }
-                            return null;
-                          },
-                          maxLines: isTextArea ? null : 1,
-                          minLines: isTextArea ? 4 : 1,
-                          controller: modalController,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: Colors.black12),
+          return Padding(
+            padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  )),
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.all(20),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Text(elabel,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87)),
+                        const SizedBox(height: 20),
+                        Form(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          key: _formKey,
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty && validation) {
+                                return 'Please enter a valid name';
+                              }
+                              return null;
+                            },
+                            maxLines: isTextArea ? null : 1,
+                            minLines: isTextArea ? 4 : 1,
+                            controller: modalController,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: Colors.black12),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              labelText: 'Your ${label.toLowerCase()}',
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            labelText: 'Your ${label.toLowerCase()}',
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      CustomButton(
-                          text: "Submit",
-                          icontext: false,
-                          onPressed: () {
-                            validation = true;
-                            if (_formKey.currentState!.validate()) {
-                              print('hello');
-                              BlocProvider.of<ProfileCubit>(context)
-                                  .saveData({label: modalController.text});
-                              Navigator.pop(context);
-                            }
-                          })
-                    ]),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        CustomButton(
+                            text: "Submit",
+                            icontext: false,
+                            onPressed: () {
+                              validation = true;
+                              if (_formKey.currentState!.validate()) {
+                                print('hello');
+                                BlocProvider.of<ProfileCubit>(context)
+                                    .saveData({label: modalController.text});
+                                Navigator.pop(context);
+                              }
+                            })
+                      ]),
+                ),
               ),
             ),
           );
@@ -323,6 +335,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       vemail = box.get('email') ?? '';
       vphone = box.get('phone') ?? '';
       vbirthday = box.get('birthday') ?? '';
+      role = box.get('role') ?? '';
+      vdesignation = box.get('designation') ?? '';
+      vqualification = box.get('qualification') ?? '';
+      vrollno = box.get('rollno') ?? '';
     });
   }
 
@@ -507,7 +523,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Text(vbio!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
-                              Row(
+                              role=='student'?Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -531,10 +547,92 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         color: Colors.grey,
                                       ))
                                 ],
-                              ),
-                              Text(vsemester!,
-                                  style: TextStyle(color: Colors.black87)),
+                              ):Container(),
+                              role=='student'?Text(vsemester!,
+                                  style: TextStyle(color: Colors.black87)):Container(),
+                              role=='student'?SizedBox(height:height*0.015):Container(),
+                              role=='student'?Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(rollno.toUpperCase(),
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500)),
+                                      SizedBox(width: 8),
+                                    ],
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        _bottomModalTextField(rollno,false,vrollno!);
+                                      },
+                                      icon: const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.grey,
+                                      ))
+                                ],
+                              ):Container(),
+                              role=='student'?Text(vrollno!,
+                                  style: TextStyle(color: Colors.black87)):Container(),
+                              role=='student'?SizedBox(height:height*0.015):Container(),
+                              role=='admin'?Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(designation.toUpperCase(),
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500)),
+                                      SizedBox(width: 8),
+                                    ],
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        _bottomModalTextField(designation,false,vdesignation!);
+                                      },
+                                      icon: const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.grey,
+                                      ))
+                                ],
+                              ):Container(),
+                              role=='admin'?Text(vdesignation!,style:TextStyle(color:Colors.black87)):Container(),
                               SizedBox(height: height * 0.015),
+                              role=='admin'?Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(qualification.toUpperCase(),
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500)),
+                                      SizedBox(width: 8),
+                                    ],
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        _bottomModalTextField(qualification,false,vqualification!);
+                                      },
+                                      icon: const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.grey,
+                                      ))
+                                ],
+                              ):Container(),
+                              role=='admin'?Text(vqualification!,style:TextStyle(color:Colors.black87)):Container(),
+                              role=='admin'?SizedBox(height: height * 0.015):Container(),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -637,9 +735,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       : Container()
                                 ],
                               ),
-                              SizedBox(
-                                height: height * 0.02,
-                              ),
+                              
                               Text(vphone!,
                                   style: TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
