@@ -10,6 +10,8 @@ class TimetableEditPeriodSuccessState extends TimetableState {}
 
 class TimetableDeletePeriodSuccessState extends TimetableState {}
 
+class TimetableAlreadyExistState extends TimetableState {}
+
 class TimetableErrorState extends TimetableState {
   String error;
   TimetableErrorState(this.error);

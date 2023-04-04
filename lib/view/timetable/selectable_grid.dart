@@ -7,10 +7,13 @@ class SelectableGrid extends StatefulWidget {
   final int itemCount;
   final item;
   final Widget Function(BuildContext, int, bool) itemBuilder;
+  
+  final String semester;
 
   const SelectableGrid({super.key, 
     required this.itemCount,
     required this.item,
+    required this.semester,
     required this.itemBuilder,
   });
   @override
@@ -31,6 +34,8 @@ class _SelectableGridState extends State<SelectableGrid> {
           itemCount: widget.itemCount,
           
           itemBuilder: (context, index) {
+            print(index);
+            if(widget.semester == widget.item[index]['semester']){
             return GestureDetector(
               onTap: () {
                 context.read<SelectableGridCubit>().toggleItem(index,widget.item);
@@ -52,7 +57,9 @@ class _SelectableGridState extends State<SelectableGrid> {
                   );
                 },
               ),
-            );
+            );} else {
+              return Container();
+            }
           },
         ),
       ),

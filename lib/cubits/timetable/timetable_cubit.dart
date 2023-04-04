@@ -28,7 +28,7 @@ class TimetableCubit extends Cubit<TimetableState> {
   ) {
     try {
       ref
-          .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
+          // .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
           .child(day.toString())
           .child(course.toLowerCase())
           .set({
@@ -48,44 +48,44 @@ class TimetableCubit extends Cubit<TimetableState> {
   }
 
   //admin or faculty who created the period can update or delete it
-  Future<void> updatePeroid(String day, DateTime startTime, DateTime endTime,
-      String semester, String subject, String faculty) async {
-    try {
-      var isAdminOrFaculty = await ref
-          .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
-          .child(day.toString())
-          .child(subject)
-          .get();
-      var a = isAdminOrFaculty.value as Map;
-      if (a['adminOrFacultyId'] == _auth.currentUser!.uid ||
-          box.get('role') == 'admin') {
-        ref
-            .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
-            .child(day.toString())
-            .child(subject)
-            .update({
-          'day': day,
-          'startTime': startTime,
-          'endTime': endTime,
-          'semester': semester,
-          'faculty': faculty,
-          'subject': subject.toUpperCase(),
-          'lastUpdated': DateTime.now().toString()
-        });
-        emit(TimetableEditPeriodSuccessState());
-      } else {
-        emit(TimetableErrorState("You have no access to edit"));
-      }
-    } catch (e) {
-      emit(TimetableErrorState(e.toString()));
-    }
-  }
+  // Future<void> updatePeroid(String day, DateTime startTime, DateTime endTime,
+  //     String semester, String subject, String faculty) async {
+  //   try {
+  //     var isAdminOrFaculty = await ref
+  //         // .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
+  //         .child(day.toString())
+  //         .child(subject)
+  //         .get();
+  //     var a = isAdminOrFaculty.value as Map;
+  //     if (a['adminOrFacultyId'] == _auth.currentUser!.uid ||
+  //         box.get('role') == 'admin') {
+  //       ref
+  //           // .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
+  //           .child(day.toString())
+  //           .child(subject)
+  //           .update({
+  //         'day': day,
+  //         'startTime': startTime,
+  //         'endTime': endTime,
+  //         'semester': semester,
+  //         'faculty': faculty,
+  //         'subject': subject.toUpperCase(),
+  //         'lastUpdated': DateTime.now().toString()
+  //       });
+  //       emit(TimetableEditPeriodSuccessState());
+  //     } else {
+  //       emit(TimetableErrorState("You have no access to edit"));
+  //     }
+  //   } catch (e) {
+  //     emit(TimetableErrorState(e.toString()));
+  //   }
+  // }
 
   Future<void> deletePeriod(String day, String semester, String subject) async {
     
     try {
       var isAdminOrFaculty = await ref
-          .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
+          // .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
           .child(day.toString())
           .child(subject.toLowerCase())
           .get();
@@ -94,7 +94,7 @@ class TimetableCubit extends Cubit<TimetableState> {
           box.get('role') == 'admin') {
             log("hello");
         ref
-            .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
+            // .child(semester.replaceAll(RegExp(r'\s+'), '').toLowerCase())
             .child(day.toString())
             .child(subject.toLowerCase())
             .remove();

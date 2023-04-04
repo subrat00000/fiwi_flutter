@@ -34,6 +34,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
   String? semesterValue;
   String? vsemester;
   String? courseValue;
+  bool loading = true;
 
   _loadData() {
     setState(() {
@@ -269,6 +270,9 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                         Expanded(
                                                           child: SelectableGrid(
                                                             item: val,
+                                                            semester:
+                                                                semesterValue ??
+                                                                    "Semester 1",
                                                             itemCount:
                                                                 val.length,
                                                             itemBuilder:
@@ -368,23 +372,29 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                     child: ListView.builder(
                                         itemCount: courseList.length,
                                         itemBuilder: (context, index) {
-                                          return RadioListTile(
-                                            tileColor: Colors.purple,
-                                            title:
-                                                Text(courseList[index]['name']),
-                                            value: courseList[index]['code'],
-                                            groupValue: courseValue,
-                                            onChanged: (value) {
-                                              log(value);
-                                              setState(() {
-                                                courseValue = value;
-                                              });
-                                            },
-                                          );
+                                          if (semesterValue ==
+                                              courseList[index]['semester']) {
+                                            return RadioListTile(
+                                              tileColor: Colors.purple,
+                                              title: Text(
+                                                  courseList[index]['name']),
+                                              value: courseList[index]['code'],
+                                              groupValue: courseValue,
+                                              onChanged: (value) {
+                                                log(value);
+                                                setState(() {
+                                                  courseValue = value;
+                                                });
+                                              },
+                                            );
+                                          } else {
+                                            return Container();
+                                          }
                                         }),
                                   )
                                 : Container(),
                             CustomButton(
+                                borderRadius: 50,
                                 text: "Submit",
                                 icontext: false,
                                 onPressed: () {
@@ -453,7 +463,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
             height: 150, // MediaQuery.of(context).size.height * 0.3,
             child: StreamBuilder(
               stream: FirebaseDatabase.instance
-                  .ref('timetable/semester1')
+                  .ref('timetable')
                   .child(widget.dayInNum)
                   .onValue,
               builder: (context, snapshot) {
@@ -475,86 +485,102 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                             DateTime.parse(itemsList[index].value['startTime']);
                         DateTime showEndTime =
                             DateTime.parse(itemsList[index].value['endTime']);
-                        return InkWell(
-                          onLongPress: () {
-                            startTime = TimeOfDay.fromDateTime(DateTime.parse(
-                                itemsList[index].value['startTime']));
-                            endTime = TimeOfDay.fromDateTime(DateTime.parse(
-                                itemsList[index].value['endTime']));
-                            semesterValue = itemsList[index].value['semester'];
-                            courseValue = itemsList[index].value['subject'];
-                            _bottomDialogBox();
-                          },
-                          onDoubleTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: const Text(
-                                          'Do you want to delete class?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                          child: const Text('No'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            BlocProvider.of<TimetableCubit>(
-                                                    context)
-                                                .deletePeriod(
-                                                    widget.dayInNum,
-                                                    itemsList[index]
-                                                        .value['semester'],
-                                                    itemsList[index]
-                                                        .value['subject']);
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Yes'),
-                                        ),
-                                      ],
-                                    ));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0)),
+                        if (box.get('role') == 'admin' ||
+                            box.get('semester') ==
+                                itemsList[index].value['semester']) {
+                                  loading = false;
+                          return InkWell(
+                            onDoubleTap: () {
+                              if (box.get('role') != 'student') {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: const Text(
+                                              'Do you want to delete class?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text('No'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                BlocProvider.of<TimetableCubit>(
+                                                        context)
+                                                    .deletePeriod(
+                                                        widget.dayInNum,
+                                                        itemsList[index]
+                                                            .value['semester'],
+                                                        itemsList[index]
+                                                            .value['subject']);
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Yes'),
+                                            ),
+                                          ],
+                                        ));
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20.0)),
+                              ),
+                              padding: EdgeInsets.only(
+                                  left: 5, top: 5, bottom: 5, right: 5),
+                              width: 220,
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.fromLTRB(10.0, 5.0, 0.0,
+                                  5.0), //MediaQuery.of(context).size.width,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      myText(
+                                        Colors.black,
+                                        DateFormat.jm().format(showStartTime),
+                                      ),
+                                      myText(
+                                        Colors.black,
+                                        DateFormat.jm().format(showEndTime),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      myText(
+                                        Colors.black,
+                                        itemsList[index].value['subject'],
+                                      ),
+                                      myText(
+                                        Colors.black,
+                                        itemsList[index].value['semester'],
+                                      ),
+                                    ],
+                                  ),
+                                  myText(
+                                    Colors.black,
+                                    itemsList[index].value['faculty'],
+                                  ),
+                                ],
+                              ),
                             ),
+                          );
+                        } else {
+                          return loading?Padding(
                             padding: EdgeInsets.only(
-                                left: 5, top: 5, bottom: 5, right: 5),
-                            width: 220,
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.fromLTRB(10.0, 5.0, 0.0,
-                                5.0), //MediaQuery.of(context).size.width,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    myText(
-                                      Colors.black,
-                                      DateFormat.jm().format(showStartTime),
-                                    ),
-                                    myText(
-                                      Colors.black,
-                                      DateFormat.jm().format(showEndTime),
-                                    ),
-                                  ],
-                                ),
-                                myText(
-                                  Colors.black,
-                                  itemsList[index].value['subject'],
-                                ),
-                                myText(
-                                  Colors.black,
-                                  itemsList[index].value['faculty'],
-                                ),
-                              ],
+                                left: MediaQuery.of(context).size.width * 0.42),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
                             ),
-                          ),
-                        );
+                          ):Container();
+                        }
                       },
                       itemCount: itemsList.length,
                       scrollDirection: Axis.horizontal,
