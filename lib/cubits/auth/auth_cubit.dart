@@ -21,7 +21,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void checkRegistration(uid) async {
     if (box.get('uid') != null) {
-      log(box.get('name'));
+      log(box.get('uid'));
       if (box.get('active') == false) {
         emit(AuthInactiveState());
         DataSnapshot a = await ref.child(_auth.currentUser!.uid).get();

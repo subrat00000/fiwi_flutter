@@ -1,3 +1,4 @@
+import 'package:fiwi/view/admin/manage_role.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile/edit_profile_screen.dart';
@@ -43,6 +44,9 @@ class Routers {
       case '/inactive':
         return MaterialPageRoute(
             builder: (context) => Information());
+      case '/managerole':
+        return MaterialPageRoute(
+            builder: (context) => const ManageRoleScreen());
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(

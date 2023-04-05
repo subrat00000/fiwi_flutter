@@ -12,6 +12,7 @@ import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/home/home_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/repositories/exit.dart';
+import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
 import 'package:fiwi/view/library_screen.dart';
@@ -43,7 +44,8 @@ class HomeScreenState extends State<HomeScreen> {
     0: 'Home',
     1: 'Timetable',
     2: 'Attendance',
-    3: 'Library'
+    3: 'Library',
+    4: 'Admin Panel'
   };
   var internet = true;
   String? photo;
@@ -54,6 +56,7 @@ class HomeScreenState extends State<HomeScreen> {
   String? vemail;
   String? vphone;
   String? vbirthday;
+  String? role;
 
   _loadData() {
     setState(() {
@@ -65,6 +68,7 @@ class HomeScreenState extends State<HomeScreen> {
       vemail = box.get('email') ?? '';
       vphone = box.get('phone') ?? '';
       vbirthday = box.get('birthday') ?? '';
+      role = box.get('role') ?? '';
     });
   }
 
@@ -228,10 +232,26 @@ class HomeScreenState extends State<HomeScreen> {
         sound: true);
   }
 
-  final _pageNavigation = [
+  final _pageNavigationAdmin = [
     HomeScreenHelper(),
     TimeTable(),
     AttendanceScreen(),
+    LibraryScreen(),
+    AdminScreen()
+  ];
+  final _pageNavigationStudent = [
+    HomeScreenHelper(),
+    TimeTable(),
+    AttendanceScreen(),
+    LibraryScreen(),
+  ];
+  final _pageNavigationFaculty = [
+    HomeScreenHelper(),
+    TimeTable(),
+    AttendanceScreen(),
+  ];
+  final _pageNavigationLibrarian = [
+    HomeScreenHelper(),
     LibraryScreen(),
   ];
 
@@ -250,11 +270,13 @@ class HomeScreenState extends State<HomeScreen> {
               icon: Image.asset('assets/home.png', cacheHeight: 17),
               label: 'Home',
               activeIcon: Image.asset('assets/home.png', cacheHeight: 22)),
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/timetables.png', cacheHeight: 17),
-              label: 'Timetable',
-              activeIcon:
-                  Image.asset('assets/timetables.png', cacheHeight: 22)),
+          if (role != 'librarian')
+            BottomNavigationBarItem(
+                icon: Image.asset('assets/timetables.png', cacheHeight: 17),
+                label: 'Timetable',
+                activeIcon:
+                    Image.asset('assets/timetables.png', cacheHeight: 22)),
+          if (role != 'librarian')
           BottomNavigationBarItem(
               icon: Image.asset('assets/attendances.png', cacheHeight: 17),
               label: 'Attendance',
@@ -264,6 +286,11 @@ class HomeScreenState extends State<HomeScreen> {
               icon: Image.asset('assets/librarys.png', cacheHeight: 17),
               label: 'Library',
               activeIcon: Image.asset('assets/librarys.png', cacheHeight: 22)),
+          if (role == 'admin')
+            BottomNavigationBarItem(
+                icon: Image.asset('assets/admin.png', cacheHeight: 17),
+                label: 'Admin Panel',
+                activeIcon: Image.asset('assets/admin.png', cacheHeight: 22)),
         ],
       ),
     );
@@ -397,7 +424,13 @@ class HomeScreenState extends State<HomeScreen> {
                       //         child: const Text("Logout"));
                       //   },
                       // ),
-                      child: _pageNavigation.elementAt(state))));
+                      child: role == 'admin'
+                          ? _pageNavigationAdmin.elementAt(state)
+                          : role == 'faculty'
+                              ? _pageNavigationFaculty.elementAt(state)
+                              : role == 'librarian'
+                                  ? _pageNavigationLibrarian.elementAt(state)
+                                  : _pageNavigationStudent.elementAt(state))));
         },
       ),
     );

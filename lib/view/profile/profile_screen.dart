@@ -229,10 +229,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           fontWeight: FontWeight.w500)),
                                 ],
                               ),
-                              Text(
+                              vbirthday!=''?Text(
                                   DateFormat.yMMMMd()
                                       .format(DateTime.parse(vbirthday!)),
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: TextStyle(color: Colors.black87)):Container(),
                               SizedBox(height: height * 0.025),
                               Row(
                                 mainAxisAlignment:
