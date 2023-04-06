@@ -7,6 +7,8 @@ import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
+import 'package:fiwi/cubits/manage_course/manage_course_cubit.dart';
+import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:fiwi/cubits/profile/profile_cubit.dart';
@@ -80,6 +82,12 @@ class MyApp extends StatelessWidget {
           create: (context) => ProfileCubit(),
         ),
         BlocProvider(create: (context) => TimetableCubit()),
+        BlocProvider(
+          create: (context) => ManageRoleCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ManageCourseCubit(),
+        ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {

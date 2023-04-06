@@ -16,7 +16,7 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   List admin_list = [
     {'icon': 'assets/role.png', 'title': 'Manage Role', 'route': '/managerole'},
-    {'title': 'Manage Courses', 'icon': 'assets/courses.png', 'route': '/managecourses'},
+    {'title': 'Manage Courses', 'icon': 'assets/courses.png', 'route': '/managecourse'},
     {'title': 'Activate Student', 'icon': 'assets/activate.png', 'route': '/activatestudent'},
     {'title': 'Delete Someone Account', 'icon': 'assets/minus.png', 'route': '/deleteaccount'}
   ];

@@ -11,7 +11,7 @@ import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/home/home_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
-import 'package:fiwi/repositories/exit.dart';
+import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
@@ -306,7 +306,7 @@ class HomeScreenState extends State<HomeScreen> {
     double width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
-        return Exit().showExitDialog(context);
+        return Repositories().showExitDialog(context);
       },
       child: BlocBuilder<BottomNavCubit, int>(
         builder: (context, state) {

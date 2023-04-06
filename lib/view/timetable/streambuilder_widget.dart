@@ -155,14 +155,16 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    DateFormat.jm().format(_convertToDateTime(startTime)),
+                                    DateFormat.jm()
+                                        .format(_convertToDateTime(startTime)),
                                     style: TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    DateFormat.jm().format(_convertToDateTime(endTime)),
+                                    DateFormat.jm()
+                                        .format(_convertToDateTime(endTime)),
                                     style: TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
@@ -234,6 +236,10 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                 context)
                                             .getCourseList();
                                         a.then((val) {
+                                          var output = val
+                                              .values
+                                              .map((e) => Map<String, String>.from(e)).toList();
+                                          log(output.toString());
                                           showGeneralDialog(
                                             context: context,
                                             barrierLabel: "Barrier",
@@ -267,14 +273,15 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                             },
                                                           ),
                                                         ),
+                                                        Text(semesterValue ?? "Semester 1",style: TextStyle(fontSize: 18,color:Colors.black87),),
                                                         Expanded(
                                                           child: SelectableGrid(
-                                                            item: val,
+                                                            item: output,
                                                             semester:
                                                                 semesterValue ??
                                                                     "Semester 1",
                                                             itemCount:
-                                                                val.length,
+                                                                output.length,
                                                             itemBuilder:
                                                                 (context, index,
                                                                     selected) {
@@ -291,7 +298,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                                     Expanded(
                                                                       child:
                                                                           Text(
-                                                                        val[index]
+                                                                        output[index]
                                                                             [
                                                                             'name'],
                                                                         style:
@@ -488,7 +495,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                         if (box.get('role') == 'admin' ||
                             box.get('semester') ==
                                 itemsList[index].value['semester']) {
-                                  loading = false;
+                          loading = false;
                           return InkWell(
                             onDoubleTap: () {
                               if (box.get('role') != 'student') {
@@ -573,13 +580,16 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                             ),
                           );
                         } else {
-                          return loading?Padding(
-                            padding: EdgeInsets.only(
-                                left: MediaQuery.of(context).size.width * 0.42),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ):Container();
+                          return loading
+                              ? Padding(
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.of(context).size.width *
+                                          0.42),
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                              : Container();
                         }
                       },
                       itemCount: itemsList.length,

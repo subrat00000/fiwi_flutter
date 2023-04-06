@@ -6,4 +6,7 @@ class ManageRoleAddSpecialUserSuccessState extends ManageRoleState {}
 
 class ManageRoleDisplaySpecialUserState extends ManageRoleState {}
 
-class ManageRoleErrorState extends ManageRoleState {}
+class ManageRoleErrorState extends ManageRoleState {
+  String error;
+  ManageRoleErrorState(this.error);
+}

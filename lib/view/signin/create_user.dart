@@ -4,7 +4,7 @@ import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
 import 'package:fiwi/cubits/create_user/create_user_state.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
-import 'package:fiwi/repositories/exit.dart';
+import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,7 +62,7 @@ class CreateUserState extends State<CreateUser> {
     double height = MediaQuery.of(context).size.height;
     return WillPopScope(
       onWillPop: () {
-        return Exit().showExitDialog(context);
+        return Repositories().showExitDialog(context);
       },
       child: Scaffold(
           body: SafeArea(

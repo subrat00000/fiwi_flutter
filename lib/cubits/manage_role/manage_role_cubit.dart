@@ -9,10 +9,26 @@ class ManageRoleCubit extends Cubit<ManageRoleState> {
   final DatabaseReference mrref = FirebaseDatabase.instance.ref('manageRole');
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var box = Hive.box('user');
-  ManageRoleCubit():super(ManageRoleInitialState());
+  ManageRoleCubit() : super(ManageRoleInitialState());
 
-  // void showSpecialUser(){
-  //   mrref.child(path)
-  // }
-  
+  void createSpecialUserWithEmail(String email, String name, String role) {
+    try {
+      String username = email.replaceAll('@gmail.com', '');
+      mrref.child(username).set({'name': name, 'email': email, 'role': role.toLowerCase()});
+      emit(ManageRoleAddSpecialUserSuccessState());
+    } catch (e) {
+      emit(ManageRoleErrorState(e.toString()));
+    }
+  }
+
+  void createSpecialUserWithPhone(String phone, String name, String role) {
+    try {
+      mrref
+          .child(phone.toString())
+          .set({'name': name, 'phone': phone, 'role': role.toLowerCase()});
+      emit(ManageRoleAddSpecialUserSuccessState());
+    } catch (e) {
+      emit(ManageRoleErrorState(e.toString()));
+    }
+  }
 }
