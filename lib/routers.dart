@@ -1,3 +1,4 @@
+import 'package:fiwi/view/admin/activate_student.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
 import 'package:fiwi/view/home_screen.dart';
@@ -51,6 +52,9 @@ class Routers {
       case '/managecourse':
         return MaterialPageRoute(
             builder: (context) => const ManageCourseScreen());
+      case '/activatestudent':
+        return MaterialPageRoute(
+            builder: (context) => const ActivateStudentScreen());
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(

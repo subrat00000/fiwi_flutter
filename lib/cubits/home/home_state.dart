@@ -1,24 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-abstract class HomeState extends Equatable{ }
+abstract class HomeState { }
 
-class InitialState extends HomeState {
-  @override
-  List<Object> get props => [];
-}
-class LoadingState extends HomeState {
-  @override
-  List<Object> get props => [];
-}
-class LoadedState extends HomeState {
-  LoadedState(this.movies);
-  
-  final List<HomeState> movies;
-  
-  @override
-  List<Object> get props => [movies];
-}
+class InitialState extends HomeState {}
+class LoadingState extends HomeState {}
+class UserInactiveState extends HomeState {}
 class ErrorState extends HomeState {
-  @override
-  List<Object> get props => [];
-}
+  String error;
+  ErrorState(this.error);
+ }

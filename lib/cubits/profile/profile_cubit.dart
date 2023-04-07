@@ -16,6 +16,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   var box = Hive.box('user');
 
   ProfileCubit() : super(ProfileInitialState());
+  
   void loadData() {
     if (box.isNotEmpty) {
       emit(ProfileGetDataSuccessState(box));

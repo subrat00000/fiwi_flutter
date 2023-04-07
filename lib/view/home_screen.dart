@@ -277,11 +277,11 @@ class HomeScreenState extends State<HomeScreen> {
                 activeIcon:
                     Image.asset('assets/timetables.png', cacheHeight: 22)),
           if (role != 'librarian')
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/attendances.png', cacheHeight: 17),
-              label: 'Attendance',
-              activeIcon:
-                  Image.asset('assets/attendances.png', cacheHeight: 22)),
+            BottomNavigationBarItem(
+                icon: Image.asset('assets/attendances.png', cacheHeight: 17),
+                label: 'Attendance',
+                activeIcon:
+                    Image.asset('assets/attendances.png', cacheHeight: 22)),
           BottomNavigationBarItem(
               icon: Image.asset('assets/librarys.png', cacheHeight: 17),
               label: 'Library',
@@ -406,7 +406,15 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                     BlocListener<HomeCubit, HomeState>(
                       listener: (context, state) {
-                        // TODO: implement listener
+                        if (state is UserInactiveState) {
+                          BlocProvider.of<AuthCubit>(context).logOut();
+                        } else if (state is ErrorState) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(state.error.toString()),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                        }
                       },
                     ),
                   ],
