@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -57,6 +58,7 @@ class HomeScreenState extends State<HomeScreen> {
   String? vphone;
   String? vbirthday;
   String? role;
+  Timer? _timer;
 
   _loadData() {
     setState(() {
@@ -79,6 +81,11 @@ class HomeScreenState extends State<HomeScreen> {
     requestPermission();
     getToken();
     initInfo();
+
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      BlocProvider.of<HomeCubit>(context).getAuthentication();
+      // context.read<HomeCubit>().getAuthentication();
+    });
 
     // final databaseReference = FirebaseDatabase.instance.ref('timetable/semester1');
 
@@ -161,6 +168,15 @@ class HomeScreenState extends State<HomeScreen> {
     // }
     // }
     // Set the new child data
+  }
+
+  @override
+  void dispose() {
+    if (_timer != null) {
+      _timer!.cancel();
+      _timer = null;
+    } // cancel the timer when the widget is disposed
+    super.dispose();
   }
 
   initInfo() async {
@@ -417,6 +433,13 @@ class HomeScreenState extends State<HomeScreen> {
                         }
                       },
                     ),
+                    BlocListener<AuthCubit, AuthState>(
+                      listener: (context, state) {
+                        if (state is AuthLoggedOutState) {
+                          Navigator.pushReplacementNamed(context, '/splash');
+                        }
+                      },
+                    )
                   ],
                       // child: BlocConsumer<AuthCubit, AuthState>(
                       //   listener: (context, state) {

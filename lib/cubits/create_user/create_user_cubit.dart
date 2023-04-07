@@ -19,26 +19,30 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
       if (_auth.currentUser!.email != null) {
         String email = _auth.currentUser!.email!.replaceAll('@gmail.com', '');
         DataSnapshot dbemail = await mrref.child(email).get();
-        var value = dbemail.value as Map;
-        if (value['email'] == _auth.currentUser!.email) {
-          log('email exist');
-          mrref
-              .child(email)
-              .update({'uid': _auth.currentUser!.uid})
-              .then((a) => createSpecialUser(value['name'],value['role']))
-              .onError((error, stackTrace) => null);
+        if (dbemail.exists) {
+          var value = dbemail.value as Map;
+          if (value['email'] == _auth.currentUser!.email) {
+            log('email exist');
+            mrref
+                .child(email)
+                .update({'uid': _auth.currentUser!.uid})
+                .then((a) => createSpecialUser(value['name'], value['role']))
+                .onError((error, stackTrace) => null);
+          }
         }
       } else if (_auth.currentUser!.phoneNumber != null) {
         String phone = _auth.currentUser!.phoneNumber!;
         DataSnapshot dbphone = await mrref.child(phone).get();
-        var value = dbphone.value as Map;
-        if (value['phone'] == _auth.currentUser!.phoneNumber) {
-          log('phone number exist');
-          mrref
-              .child(phone)
-              .update({'uid': _auth.currentUser!.uid})
-              .then((a) => createSpecialUser(value['name'],value['role']))
-              .onError((error, stackTrace) => null);
+        if (dbphone.exists) {
+          var value = dbphone.value as Map;
+          if (value['phone'] == _auth.currentUser!.phoneNumber) {
+            log('phone number exist');
+            mrref
+                .child(phone)
+                .update({'uid': _auth.currentUser!.uid})
+                .then((a) => createSpecialUser(value['name'], value['role']))
+                .onError((error, stackTrace) => null);
+          }
         }
       } else {
         log('student');
@@ -48,7 +52,7 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
     }
   }
 
-  Future<void> createSpecialUser(name,role) async {
+  Future<void> createSpecialUser(name, role) async {
     emit(CreateUserProfileLoadingState());
     try {
       final user = {
@@ -57,7 +61,7 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
         'uid': _auth.currentUser!.uid,
         'photo': _auth.currentUser!.photoURL,
         'bio': 'Your bio infomation',
-        'phone': _auth.currentUser!.phoneNumber.toString(),
+        'phone': _auth.currentUser!.phoneNumber,
         'role': role,
         'active': true,
         'emailVerified': _auth.currentUser!.emailVerified
@@ -85,7 +89,7 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
         'address': address,
         'photo': _auth.currentUser!.photoURL,
         'bio': 'Your bio infomation',
-        'phone': _auth.currentUser!.phoneNumber.toString(),
+        'phone': _auth.currentUser!.phoneNumber,
         'role': 'student',
         'semester': sem,
         'emailVerified': _auth.currentUser!.emailVerified,

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:fiwi/cubits/timetable/selectable_grid_cubit.dart';
+import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
@@ -35,6 +36,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
   String? vsemester;
   String? courseValue;
   bool loading = true;
+  List<Timetable> tableList=[];
 
   _loadData() {
     setState(() {
@@ -236,9 +238,10 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                 context)
                                             .getCourseList();
                                         a.then((val) {
-                                          var output = val
-                                              .values
-                                              .map((e) => Map<String, String>.from(e)).toList();
+                                          var output = val.values
+                                              .map((e) =>
+                                                  Map<String, String>.from(e))
+                                              .toList();
                                           log(output.toString());
                                           showGeneralDialog(
                                             context: context,
@@ -273,7 +276,14 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                             },
                                                           ),
                                                         ),
-                                                        Text(semesterValue ?? "Semester 1",style: TextStyle(fontSize: 18,color:Colors.black87),),
+                                                        Text(
+                                                          semesterValue ??
+                                                              "Semester 1",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: Colors
+                                                                  .black87),
+                                                        ),
                                                         Expanded(
                                                           child: SelectableGrid(
                                                             item: output,
@@ -484,17 +494,32 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                   final itemsMap =
                       snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
                   final itemsList = itemsMap.entries.toList();
+                  List<Timetable> timetable = itemsList
+                      .map((data) => Timetable(
+                          startTime: DateTime.parse(data.value['startTime']),
+                          endTime: DateTime.parse(data.value['endTime']),
+                          subject: data.value['subject'],
+                          faculty: data.value['faculty'],
+                          semester: data.value['semester']))
+                      .toList();
+                  timetable.sort((a, b) => a.startTime!.compareTo(b.startTime!));
+                  if (box.get('role') == 'student') {
+                    tableList = timetable.where((table) {
+                      return box.get('semester') == table.semester!;
+                    }).toList();
+                  } else {
+                    tableList = timetable;
+                  }
+
                   return SizedBox(
                     child: ListView.builder(
                       padding: const EdgeInsets.all(10.0),
                       itemBuilder: (context, index) {
                         DateTime showStartTime =
-                            DateTime.parse(itemsList[index].value['startTime']);
+                            tableList[index].startTime!;
                         DateTime showEndTime =
-                            DateTime.parse(itemsList[index].value['endTime']);
-                        if (box.get('role') == 'admin' ||
-                            box.get('semester') ==
-                                itemsList[index].value['semester']) {
+                            tableList[index].endTime!;
+                        
                           loading = false;
                           return InkWell(
                             onDoubleTap: () {
@@ -516,10 +541,8 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                         context)
                                                     .deletePeriod(
                                                         widget.dayInNum,
-                                                        itemsList[index]
-                                                            .value['semester'],
-                                                        itemsList[index]
-                                                            .value['subject']);
+                                                        tableList[index]
+                                                            .subject!);
                                                 Navigator.of(context).pop();
                                               },
                                               child: const Text('Yes'),
@@ -563,36 +586,25 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                     children: [
                                       myText(
                                         Colors.black,
-                                        itemsList[index].value['subject'],
+                                        tableList[index].subject!,
                                       ),
                                       myText(
                                         Colors.black,
-                                        itemsList[index].value['semester'],
+                                        tableList[index].semester!,
                                       ),
                                     ],
                                   ),
                                   myText(
                                     Colors.black,
-                                    itemsList[index].value['faculty'],
+                                    tableList[index].faculty!,
                                   ),
                                 ],
                               ),
                             ),
                           );
-                        } else {
-                          return loading
-                              ? Padding(
-                                  padding: EdgeInsets.only(
-                                      left: MediaQuery.of(context).size.width *
-                                          0.42),
-                                  child: const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              : Container();
-                        }
+                        
                       },
-                      itemCount: itemsList.length,
+                      itemCount: tableList.length,
                       scrollDirection: Axis.horizontal,
                     ),
                   );

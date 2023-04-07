@@ -179,8 +179,8 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                                 value: filteredUser[index]['active'],
                               ),
                               subtitle: filteredUser[index]['email'] != null
-                                  ? Text(filteredUser[index]['phone'])
-                                  : filteredUser[index]['email'],
+                                  ? Text(filteredUser[index]['email'])
+                                  : Text(filteredUser[index]['phone']),
                               leading: Container(
                                 width: 55,
                                 height: 55,

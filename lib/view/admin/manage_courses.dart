@@ -219,7 +219,19 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+        ),
+        title: const Text(
+          'Manage Course',
+          style: TextStyle(color: Colors.black87, fontSize: 20),
+          textAlign: TextAlign.start,
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _bottomModal();
