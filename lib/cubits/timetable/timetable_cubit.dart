@@ -25,43 +25,43 @@ class TimetableCubit extends Cubit<TimetableState> {
     DateTime endTime,
     String semester,
     String course,
-  ) {
+  ) async {
     try {
-      ref
-          .child(day.toString())
-          .child(course.toLowerCase())
-          .set({
-        'day': day,
-        'startTime': startTime.toString(),
-        'endTime': endTime.toString(),
-        'semester': semester,
-        'faculty': box.get('name'),
-        'subject': course.toUpperCase(),
-        'lastUpdated': DateTime.now().toString(),
-        'adminOrFacultyId': box.get('uid')
-      });
-      emit(TimetableAddPeriodSuccessState());
+      var isAdminOrFaculty =
+          await ref.child(day.toString()).child(course.toLowerCase()).get();
+      if (!isAdminOrFaculty.exists ||
+          (isAdminOrFaculty.exists &&
+              (isAdminOrFaculty.value as Map)['adminOrFacultyId'] ==
+                  _auth.currentUser!.uid)) {
+        ref.child(day.toString()).child(course.toLowerCase()).set({
+          'day': day,
+          'startTime': startTime.toString(),
+          'endTime': endTime.toString(),
+          'semester': semester,
+          'faculty': box.get('name'),
+          'subject': course.toUpperCase(),
+          'lastUpdated': DateTime.now().toString(),
+          'adminOrFacultyId': box.get('uid')
+        });
+        emit(TimetableAddPeriodSuccessState());
+      } else {
+        emit(TimetableErrorState("You can't overwrite a time table."));
+      }
     } catch (e) {
       emit(TimetableErrorState(e.toString()));
     }
   }
 
   Future<void> deletePeriod(String day, String subject) async {
-    
     try {
-      var isAdminOrFaculty = await ref
-          .child(day.toString())
-          .child(subject.toLowerCase())
-          .get();
+      var isAdminOrFaculty =
+          await ref.child(day.toString()).child(subject.toLowerCase()).get();
       var a = isAdminOrFaculty.value as Map;
       if (a['adminOrFacultyId'] == _auth.currentUser!.uid ||
           box.get('role') == 'admin') {
-            log("hello");
-        ref
-            .child(day.toString())
-            .child(subject.toLowerCase())
-            .remove();
-            emit(TimetableDeletePeriodSuccessState());
+        log("hello");
+        ref.child(day.toString()).child(subject.toLowerCase()).remove();
+        emit(TimetableDeletePeriodSuccessState());
       } else {
         emit(TimetableErrorState("You have no access to delete it"));
       }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:fiwi/cubits/timetable/selectable_grid_cubit.dart';
+import 'package:fiwi/models/timetable.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -502,7 +503,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                           faculty: data.value['faculty'],
                           semester: data.value['semester']))
                       .toList();
-                  timetable.sort((a, b) => a.startTime!.compareTo(b.startTime!));
+                  timetable.sort((a, b) => a.startTime!.hour.compareTo(b.startTime!.hour)*60+a.startTime!.minute.compareTo(b.startTime!.minute));
                   if (box.get('role') == 'student') {
                     tableList = timetable.where((table) {
                       return box.get('semester') == table.semester!;

@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
+import 'package:fiwi/models/timetable.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
   Box box = Hive.box('user');
   bool loading = true;
   String chartValue = 'Day';
+  List tableList = [];
   List<String> items = ['Semester', 'Month', 'Week', 'Day'];
   final List<ChartData> data = <ChartData>[
     ChartData('Jan', 15, 10),
@@ -50,7 +52,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
       enable: true,
       tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
     );
-    todayAsDay = DateTime.now().weekday;
+    todayAsDay = 1;
     super.initState();
   }
 
@@ -117,12 +119,31 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
                             final itemsMap = snapshot.data!.snapshot.value
                                 as Map<dynamic, dynamic>;
                             final itemsList = itemsMap.entries.toList();
+                            List<Timetable> timetable = itemsList
+                                .map((data) => Timetable(
+                                    startTime:
+                                        DateTime.parse(data.value['startTime']),
+                                    endTime:
+                                        DateTime.parse(data.value['endTime']),
+                                    subject: data.value['subject'],
+                                    faculty: data.value['faculty'],
+                                    semester: data.value['semester']))
+                                .toList();
+                            timetable.sort(
+                                (a, b) => a.startTime!.compareTo(b.startTime!));
+                            if (box.get('role') == 'student') {
+                              tableList = timetable.where((table) {
+                                return box.get('semester') == table.semester!;
+                              }).toList();
+                            } else {
+                              tableList = timetable;
+                            }
                             return ListView.builder(
                               padding: const EdgeInsets.all(10.0),
                               itemBuilder: (context, index) {
-                                return showPeriod(context, itemsList[index]);
+                                return showPeriod(context, tableList[index]);
                               },
-                              itemCount: itemsList.length,
+                              itemCount: tableList.length,
                               scrollDirection: Axis.horizontal,
                             );
                           }
@@ -213,10 +234,10 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
   }
 
   Widget showPeriod(BuildContext context, document) {
-    DateTime showStartTime = DateTime.parse(document.value['startTime']);
-    DateTime showEndTime = DateTime.parse(document.value['endTime']);
-    if (box.get('role') == 'admin' ||
-        box.get('semester') == document.value['semester']) {
+    DateTime showStartTime = document.startTime;
+    DateTime showEndTime = document.endTime;
+    if (box.get('role') != 'student' ||
+        box.get('semester') == document.semester) {
       loading = false;
       return Container(
         decoration: BoxDecoration(
@@ -243,17 +264,17 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
               children: [
                 myText(
                   Colors.black,
-                  document.value['subject'],
+                  document.subject,
                 ),
                 myText(
                   Colors.black,
-                  document.value['semester'],
+                  document.semester,
                 ),
               ],
             ),
             myText(
               Colors.black,
-              document.value['faculty'],
+              document.faculty,
             ),
           ],
         ),
