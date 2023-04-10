@@ -26,7 +26,7 @@ class ChartData {
 
 class HomeScreenHelperState extends State<HomeScreenHelper> {
   late TrackballBehavior _trackballBehavior;
-  int? todayAsDay;
+  int todayAsDay = DateTime.now().weekday;
   Box box = Hive.box('user');
   bool loading = true;
   String chartValue = 'Day';
@@ -53,7 +53,6 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
       enable: true,
       tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
     );
-    todayAsDay = 1;
     super.initState();
   }
 

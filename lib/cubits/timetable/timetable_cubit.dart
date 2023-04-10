@@ -16,6 +16,16 @@ class TimetableCubit extends Cubit<TimetableState> {
   final DatabaseReference cList = FirebaseDatabase.instance.ref("courseList");
   final FirebaseAuth _auth = FirebaseAuth.instance;
   TimetableCubit() : super(TimetableInitialState());
+  final weekdays = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+  final now = DateTime.now();
 
   getCourseList() async {
     DataSnapshot a = await cList.get();
@@ -30,6 +40,7 @@ class TimetableCubit extends Cubit<TimetableState> {
     String course,
   ) async {
     try {
+      final weekDayName = weekdays[now.weekday - 1];
       var isAdminOrFaculty =
           await ref.child(day.toString()).child(course.toLowerCase()).get();
       if (!isAdminOrFaculty.exists ||
@@ -49,8 +60,9 @@ class TimetableCubit extends Cubit<TimetableState> {
         emit(TimetableAddPeriodSuccessState());
         sendNotification(
             semester.toLowerCase().replaceAll(' ', ''),
-            box.get('name').toString().toUpperCase(),
-            "Start: ${DateFormat.jm().format(startTime)}\nEnd: ${DateFormat.jm().format(endTime)}\n${course.toUpperCase()}");
+            box.get('name').toString(),
+            "Your new class ${course.toUpperCase()} is scheduled from ${DateFormat.jm().format(startTime)} to ${DateFormat.jm().format(endTime)} on $weekDayName",
+            "Timetable");
       } else {
         emit(TimetableErrorState("You can't overwrite a time table."));
       }
@@ -61,6 +73,7 @@ class TimetableCubit extends Cubit<TimetableState> {
 
   Future<void> deletePeriod(String day, String subject) async {
     try {
+      final weekDayName = weekdays[now.weekday - 1];
       var isAdminOrFaculty =
           await ref.child(day.toString()).child(subject.toLowerCase()).get();
       var a = isAdminOrFaculty.value as Map;
@@ -69,6 +82,11 @@ class TimetableCubit extends Cubit<TimetableState> {
         log("hello");
         ref.child(day.toString()).child(subject.toLowerCase()).remove();
         emit(TimetableDeletePeriodSuccessState());
+        sendNotification(
+            a['semester'].toString().toLowerCase().replaceAll(' ', ''),
+            box.get('name').toString(),
+            "Your class ${a['subject'].toString()} is cancelled for $weekDayName.",
+            "Timetable");
       } else {
         emit(TimetableErrorState("You have no access to delete it"));
       }

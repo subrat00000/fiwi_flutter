@@ -76,8 +76,10 @@ class HomeScreenState extends State<HomeScreen> {
     DataSnapshot ds = await ref.child(box.get('uid')).get();
     var value = ds.value as Map;
     box.put('semester', value['semester']);
-    await messaging
-        .subscribeToTopic(vsemester!.toLowerCase().replaceAll(' ', ''));
+    if (role == 'student') {
+      await messaging
+          .subscribeToTopic(vsemester!.toLowerCase().replaceAll(' ', ''));
+    }
   }
 
   @override
@@ -209,6 +211,7 @@ class HomeScreenState extends State<HomeScreen> {
 
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
           message.notification!.body.toString(),
+          summaryText: message.data['summary'].toString(),
           htmlFormatBigText: true,
           contentTitle: message.notification!.title.toString(),
           htmlFormatContentTitle: true);

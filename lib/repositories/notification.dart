@@ -12,6 +12,7 @@ Future<void> sendNotification(
   String topic,
   String title,
   dynamic message,
+  String summary
 ) async {
   try {
     http
@@ -28,7 +29,7 @@ Future<void> sendNotification(
                 'body': message,
               },
               'priority': 'high',
-              'data': <String, dynamic>{},
+              'data': <String, dynamic>{'summary':summary},
               'to': '/topics/$topic',
             },
           ),
