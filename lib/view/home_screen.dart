@@ -12,6 +12,7 @@ import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/home/home_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
+import 'package:fiwi/repositories/notification.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance_screen.dart';
@@ -60,7 +61,7 @@ class HomeScreenState extends State<HomeScreen> {
   String? role;
   Timer? _timer;
 
-  _loadData() {
+  _loadData() async {
     setState(() {
       photo = box.get('photo') ?? '';
       vname = box.get('name') ?? '';
@@ -72,6 +73,11 @@ class HomeScreenState extends State<HomeScreen> {
       vbirthday = box.get('birthday') ?? '';
       role = box.get('role') ?? '';
     });
+    DataSnapshot ds = await ref.child(box.get('uid')).get();
+    var value = ds.value as Map;
+    box.put('semester', value['semester']);
+    await messaging
+        .subscribeToTopic(vsemester!.toLowerCase().replaceAll(' ', ''));
   }
 
   @override
@@ -81,7 +87,8 @@ class HomeScreenState extends State<HomeScreen> {
     requestPermission();
     getToken();
     initInfo();
-
+    // changeTopic();
+    // getDataFromDatabase();
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       BlocProvider.of<HomeCubit>(context).getAuthentication();
       // context.read<HomeCubit>().getAuthentication();
@@ -193,6 +200,9 @@ class HomeScreenState extends State<HomeScreen> {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) async {});
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+            alert: true, badge: true, sound: true);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       log("*******************************onMessage*******************************");
       log("onMessage: ${message.notification!.title}/${message.notification!.body}");

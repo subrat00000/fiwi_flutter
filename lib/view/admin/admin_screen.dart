@@ -18,7 +18,8 @@ class _AdminScreenState extends State<AdminScreen> {
     {'icon': 'assets/role.png', 'title': 'Manage Role', 'route': '/managerole'},
     {'title': 'Manage Courses', 'icon': 'assets/courses.png', 'route': '/managecourse'},
     {'title': 'Activate Student', 'icon': 'assets/activate.png', 'route': '/activatestudent'},
-    {'title': 'Delete Someone Account', 'icon': 'assets/minus.png', 'route': '/deleteaccount'}
+    {'title': 'Delete Someone Account', 'icon': 'assets/minus.png', 'route': '/deleteaccount'},
+    {'title': 'Chanage Semester', 'icon':'assets/courses.png', 'route':'/changesemester'}
   ];
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
+import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
 import 'package:fiwi/models/timetable.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
@@ -129,8 +130,11 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
                                     faculty: data.value['faculty'],
                                     semester: data.value['semester']))
                                 .toList();
-                            timetable.sort(
-                                (a, b) => a.startTime!.compareTo(b.startTime!));
+                            timetable.sort((a, b) =>
+                                a.startTime!.hour.compareTo(b.startTime!.hour) *
+                                    60 +
+                                a.startTime!.minute
+                                    .compareTo(b.startTime!.minute));
                             if (box.get('role') == 'student') {
                               tableList = timetable.where((table) {
                                 return box.get('semester') == table.semester!;

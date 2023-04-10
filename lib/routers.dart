@@ -1,4 +1,5 @@
 import 'package:fiwi/view/admin/activate_student.dart';
+import 'package:fiwi/view/admin/change_semester.dart';
 import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
@@ -59,6 +60,9 @@ class Routers {
       case '/deleteaccount':
         return MaterialPageRoute(
             builder: (context) => const DeleteAccountScreen());
+      case '/changesemester':
+        return MaterialPageRoute(
+            builder: (context) => const ChangeSemesterScreen());
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(

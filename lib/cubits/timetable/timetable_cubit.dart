@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,8 @@ import 'package:fiwi/cubits/timetable/timetable_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:fiwi/repositories/notification.dart';
+import 'package:intl/intl.dart';
 
 class TimetableCubit extends Cubit<TimetableState> {
   Box box = Hive.box('user');
@@ -44,6 +47,10 @@ class TimetableCubit extends Cubit<TimetableState> {
           'adminOrFacultyId': box.get('uid')
         });
         emit(TimetableAddPeriodSuccessState());
+        sendNotification(
+            semester.toLowerCase().replaceAll(' ', ''),
+            box.get('name').toString().toUpperCase(),
+            "Start: ${DateFormat.jm().format(startTime)}\nEnd: ${DateFormat.jm().format(endTime)}\n${course.toUpperCase()}");
       } else {
         emit(TimetableErrorState("You can't overwrite a time table."));
       }
