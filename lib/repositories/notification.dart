@@ -80,7 +80,7 @@ Future subscribeToTopic(List<String> token, String topic) async {
     return {'error': e};
   }
 }
-
+//Unsubscribe and subscribe on changing semester from profile
 Future unsubscribeToTopic(List<String> token, String topic) async {
   try {
     final url = Uri.parse('https://iid.googleapis.com/iid/v1:batchRemove');
