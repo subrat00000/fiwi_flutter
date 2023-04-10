@@ -228,7 +228,7 @@ class HomeScreenState extends State<HomeScreen> {
           message.notification?.body, platformChannelSpecifics,
           payload: message.data['body']);
       List notification = [];
-      notification = box.get('notification').toList() ??[];
+      notification = box.get('notification') ??[];
       notification.insert(0,{
         'body': message.notification!.body.toString(),
         'title': message.notification!.title.toString(),

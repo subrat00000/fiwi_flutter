@@ -17,7 +17,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   List notification = [];
 
   _loadData(){
-    notification = box.get('notification').toList() ?? [];
+    notification = box.get('notification') ?? [];
   }
 
   @override

@@ -39,7 +39,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Hive.openBox('user');
   Box box = Hive.box('user');
   List notification = [];
-  notification = box.get('notification').toList() ??[];
+  notification = box.get('notification') ??[];
   notification.insert(0,{
     'body': message.notification!.body.toString(),
     'title': message.notification!.title.toString(),
