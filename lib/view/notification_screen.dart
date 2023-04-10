@@ -1,8 +1,9 @@
-
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
+import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -12,24 +13,62 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  var internet = true;
+  Box box = Hive.box('user');
+  List notification = [];
+
+  _loadData(){
+    notification = box.get('notification').toList() ?? [];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color: Colors.green,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(
-          'Notification Screen',
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
-        ElevatedButton(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('GO TO HOME'),
-        )
-      ]),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          color: Colors.black87,
+        ),
+        title: const Text(
+          'Notification',
+          style: TextStyle(color: Colors.black87, fontSize: 20),
+          textAlign: TextAlign.start,
+        ),
+      ),
+      body: Container(
+          width: double.infinity,
+          // color: Colors.white70,
+          child: ListView.builder(
+              itemCount: notification.length,
+              itemBuilder: ((context, index) {
+                return Card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        // contentPadding: EdgeInsets.only(bottom: 5),
+                        title: Text(notification[index]['title'].toString()),
+                        subtitle: Text(notification[index]['body'].toString()),
+                      ),
+                      Container(
+                          margin: EdgeInsets.only(left: 16),
+                          child: Text(getTimeAgo(DateTime.parse(
+                              notification[index]['dateTime'].toString())))),
+                      const SizedBox(
+                        height: 5,
+                      )
+                    ],
+                  ),
+                );
+              }))),
     );
   }
 }

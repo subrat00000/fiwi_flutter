@@ -227,6 +227,14 @@ class HomeScreenState extends State<HomeScreen> {
       await flutterLocalNotificationsPlugin.show(0, message.notification?.title,
           message.notification?.body, platformChannelSpecifics,
           payload: message.data['body']);
+      List notification = [];
+      notification = box.get('notification').toList() ??[];
+      notification.insert(0,{
+        'body': message.notification!.body.toString(),
+        'title': message.notification!.title.toString(),
+        'dateTime':message.data['dateTime'].toString()
+      });
+      box.put('notification', notification);
     });
   }
 

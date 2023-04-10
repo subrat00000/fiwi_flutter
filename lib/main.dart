@@ -35,7 +35,18 @@ import 'dart:developer';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  log('handling background message');
+  await Hive.initFlutter();
+  await Hive.openBox('user');
+  Box box = Hive.box('user');
+  List notification = [];
+  notification = box.get('notification').toList() ??[];
+  notification.insert(0,{
+    'body': message.notification!.body.toString(),
+    'title': message.notification!.title.toString(),
+    'dateTime':message.data['dateTime'].toString()
+  });
+  box.put('notification',notification);
+  log("hellosdflkasf");
 }
 
 Future<void> main() async {

@@ -29,7 +29,7 @@ Future<void> sendNotification(
                 'body': message,
               },
               'priority': 'high',
-              'data': <String, dynamic>{'summary':summary},
+              'data': <String, dynamic>{'summary':summary,'dateTime':DateTime.now().toString()},
               'to': '/topics/$topic',
             },
           ),

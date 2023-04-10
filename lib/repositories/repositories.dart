@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class Repositories {
   showExitDialog(BuildContext context) {
@@ -41,5 +42,23 @@ class UpperCaseTextFormatter extends TextInputFormatter {
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,
     );
+  }
+}
+
+String getTimeAgo(DateTime date) {
+  final duration = DateTime.now().difference(date);
+  if (duration < Duration(minutes: 1)) {
+    return 'just now';
+  } else if (duration < Duration(hours: 1)) {
+    final minutes = duration.inMinutes;
+    return '$minutes minute${minutes == 1 ? '' : 's'} ago';
+  } else if (duration < Duration(days: 1)) {
+    final hours = duration.inHours;
+    return '$hours hour${hours == 1 ? '' : 's'} ago';
+  } else if (duration < Duration(days: 7)) {
+    final days = duration.inDays;
+    return '$days day${days == 1 ? '' : 's'} ago';
+  } else {
+    return DateFormat('dd MMM yyyy').format(date);
   }
 }
