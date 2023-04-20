@@ -9,6 +9,7 @@ import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pinput/pinput.dart';
 
 class CreateUser extends StatefulWidget {
   const CreateUser({super.key});
@@ -28,6 +29,8 @@ class CreateUserState extends State<CreateUser> {
   DateTime? dateChecker;
   String? semesterValue;
   List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
+  String? sessionValue;
+  List<String> batchYears = [];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -44,17 +47,25 @@ class CreateUserState extends State<CreateUser> {
     }
   }
 
+  List<String> generateBatchYears() {
+    List<String> years = [];
+    int currentYear = DateTime.now().year;
+    for (int i = 0; i < 6; i++) {
+      int startYear = currentYear + i - 4;
+      int endYear = currentYear + i - 2;
+      String batchYear =
+          '${startYear.toString()}-${endYear.toString().substring(2)}';
+      years.add(batchYear);
+    }
+    return years;
+  }
+
   @override
   void initState() {
-    if (_auth.currentUser != null) {
-      final googleProvider = _auth.currentUser!.providerData
-          .any((provider) => provider.providerId == 'google.com');
-      if(googleProvider){
-        email.text = _auth.currentUser!.email!;
-      }
-    }
-    
     super.initState();
+    name.setText(_auth.currentUser!.displayName!);
+    batchYears = generateBatchYears();
+    batchYears.sort();
   }
 
   @override
@@ -107,37 +118,37 @@ class CreateUserState extends State<CreateUser> {
                           labelText: 'Full Name',
                         ),
                       ),
-                      SizedBox(height: height * 0.03),
-                      TextFormField(
-                        validator: (value) {
-                          final emailRegex =
-                              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$');
-                          if ((value!.isEmpty || !emailRegex.hasMatch(value)) &&
-                              validation) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                        controller: email,
-                        decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.black12),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: 'Email Address',
-                        ),
-                      ),
+                      // SizedBox(height: height * 0.03),
+                      // TextFormField(
+                      //   validator: (value) {
+                      //     final emailRegex =
+                      //         RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$');
+                      //     if ((value!.isEmpty || !emailRegex.hasMatch(value)) &&
+                      //         validation) {
+                      //       return 'Please enter a valid email';
+                      //     }
+                      //     return null;
+                      //   },
+                      //   controller: email,
+                      //   decoration: InputDecoration(
+                      //     enabledBorder: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //       borderSide: const BorderSide(color: Colors.black12),
+                      //     ),
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     labelText: 'Email Address',
+                      //   ),
+                      // ),
                       SizedBox(height: height * 0.02),
                       CustomButton(
                           istextleft: true,
                           color: Colors.black54,
                           bordercolor: Colors.black12,
                           text: dateChecker != selectedDate
-                                  ? "Date of Birth(Optional)"
-                                  : DateFormat.yMMMMd().format(selectedDate),
+                              ? "Date of Birth(Optional)"
+                              : DateFormat.yMMMMd().format(selectedDate),
                           icontext: false,
                           onPressed: () => _selectDate(context)),
                       SizedBox(height: height * 0.03),
@@ -172,6 +183,41 @@ class CreateUserState extends State<CreateUser> {
                         onChanged: (String? value) {
                           setState(() {
                             semesterValue = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: height * 0.03),
+                      DropdownButtonFormField<String>(
+                        validator: (value) {
+                          if (value == null && validation) {
+                            return 'Please Select your Semester';
+                          }
+                          return null;
+                        },
+                        hint: const Text("Session"),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: Colors.black12),
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
+                          ),
+                          hintStyle: const TextStyle(color: Colors.black12),
+                        ),
+                        items: batchYears
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        value: sessionValue,
+                        onChanged: (String? value) {
+                          setState(() {
+                            sessionValue = value;
                           });
                         },
                       ),
@@ -221,16 +267,20 @@ class CreateUserState extends State<CreateUser> {
                                     BlocProvider.of<CreateUserCubit>(context)
                                         .createUser(
                                             name.text,
-                                            email.text,
                                             address.text,
                                             selectedDate.toString(),
-                                            semesterValue!);
+                                            semesterValue!,
+                                            sessionValue!);
                                   }
                                 });
                           },
                         ),
                       ),
-                      ElevatedButton(onPressed: (){BlocProvider.of<AuthCubit>(context).logOut();}, child: Text('Logout'))
+                      ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<AuthCubit>(context).logOut();
+                          },
+                          child: Text('Logout'))
                     ],
                   ),
                 ),

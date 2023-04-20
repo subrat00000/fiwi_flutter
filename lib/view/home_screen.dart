@@ -15,7 +15,8 @@ import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/repositories/notification.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/view/admin/admin_screen.dart';
-import 'package:fiwi/view/attendance_screen.dart';
+import 'package:fiwi/view/attendance/attendance_screen.dart';
+import 'package:fiwi/view/attendance/previleged_attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
 import 'package:fiwi/view/library_screen.dart';
 import 'package:fiwi/view/timetable/timetable_screen.dart';
@@ -228,11 +229,11 @@ class HomeScreenState extends State<HomeScreen> {
           message.notification?.body, platformChannelSpecifics,
           payload: message.data['body']);
       List notification = [];
-      notification = box.get('notification') ??[];
-      notification.insert(0,{
+      notification = box.get('notification') ?? [];
+      notification.insert(0, {
         'body': message.notification!.body.toString(),
         'title': message.notification!.title.toString(),
-        'dateTime':message.data['dateTime'].toString()
+        'dateTime': message.data['dateTime'].toString()
       });
       box.put('notification', notification);
     });
@@ -270,26 +271,26 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   final _pageNavigationAdmin = [
-    HomeScreenHelper(),
-    TimeTable(),
-    AttendanceScreen(),
-    LibraryScreen(),
-    AdminScreen()
+    const HomeScreenHelper(),
+    const TimeTable(),
+    const PrevilegedAttendanceScreen(),
+    const LibraryScreen(),
+    const AdminScreen()
   ];
   final _pageNavigationStudent = [
-    HomeScreenHelper(),
-    TimeTable(),
-    AttendanceScreen(),
-    LibraryScreen(),
+    const HomeScreenHelper(),
+    const TimeTable(),
+    const AttendanceScreen(),
+    const LibraryScreen(),
   ];
   final _pageNavigationFaculty = [
-    HomeScreenHelper(),
-    TimeTable(),
-    AttendanceScreen(),
+    const HomeScreenHelper(),
+    const TimeTable(),
+    const PrevilegedAttendanceScreen(),
   ];
   final _pageNavigationLibrarian = [
-    HomeScreenHelper(),
-    LibraryScreen(),
+    const HomeScreenHelper(),
+    const LibraryScreen(),
   ];
 
   Widget _buildBottomNav() {
@@ -298,7 +299,7 @@ class HomeScreenState extends State<HomeScreen> {
       child: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        selectedLabelStyle: TextStyle(fontSize: 13),
+        selectedLabelStyle: const TextStyle(fontSize: 13),
         currentIndex: context.read<BottomNavCubit>().state,
         type: BottomNavigationBarType.fixed,
         onTap: _getChangeBottomNav,
@@ -355,7 +356,7 @@ class HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         Navigator.pushNamed(context, '/notification');
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.notifications_outlined,
                         color: Colors.black54,
                       ))
@@ -412,7 +413,7 @@ class HomeScreenState extends State<HomeScreen> {
                 title: Center(
                     child: Text(
                   appBarTitle[context.read<BottomNavCubit>().state]!,
-                  style: TextStyle(color: Colors.black87),
+                  style: const TextStyle(color: Colors.black87),
                 )),
               ),
               key: _scaffoldKey,

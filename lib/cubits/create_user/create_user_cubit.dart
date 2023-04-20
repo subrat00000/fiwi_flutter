@@ -77,13 +77,13 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
     }
   }
 
-  Future<void> createUser(String name, String email, String address,
-      String birthday, String sem) async {
+  Future<void> createUser(String name, String address,
+      String birthday, String sem,String session) async {
     emit(CreateUserProfileLoadingState());
     try {
       final user = {
         'name': name,
-        'email': email,
+        'email': _auth.currentUser!.email,
         'uid': _auth.currentUser!.uid,
         'birthday': birthday,
         'address': address,
@@ -93,6 +93,7 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
         'role': 'student',
         'semester': sem,
         'emailVerified': _auth.currentUser!.emailVerified,
+        'session':session,
         'active': false
       };
       await ref.child(_auth.currentUser!.uid).set(user);

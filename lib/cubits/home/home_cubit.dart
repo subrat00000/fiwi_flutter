@@ -15,6 +15,8 @@ class HomeCubit extends Cubit<HomeState> {
     var a = user.value as Map;
     if(a['active']==false){
       emit(UserInactiveState());
+    } else {
+      emit(UserActiveState());
     }
     }catch(e){
       emit(ErrorState(e.toString()));

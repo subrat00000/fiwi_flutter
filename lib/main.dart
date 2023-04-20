@@ -133,7 +133,7 @@ class MyApp extends StatelessWidget {
               home: state is AuthLoggedInState
                   ? const HomeScreen()
                   : state is AuthInactiveState
-                      ? Information()
+                      ? const Information()
                       : state is AuthUserCreateState
                           ? const CreateUser()
                           : const SplashScreen());

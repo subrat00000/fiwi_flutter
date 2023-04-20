@@ -18,6 +18,19 @@ class AuthCubit extends Cubit<AuthState> {
       checkRegistration(_auth.currentUser?.uid);
     }
   }
+  Future<void> getAuthentication() async {
+    try {
+      DataSnapshot user = await ref.child(_auth.currentUser!.uid).get();
+      var a = user.value as Map;
+      if (a['active'] == false) {
+        emit(AuthInactiveState());
+      } else {
+        emit(AuthLoggedInState());
+      }
+    } catch (e) {
+      emit(AuthErrorState(e.toString()));
+    }
+  }
 
   void checkRegistration(uid) async {
     if (box.get('uid') != null) {
@@ -38,7 +51,7 @@ class AuthCubit extends Cubit<AuthState> {
         DataSnapshot a = await ref.child(_auth.currentUser!.uid).get();
         var b = a.value as Map;
         if (b['active'] == false) {
-          box.put('active',false);
+          box.put('active', false);
           emit(AuthInactiveState());
         } else {
           log('*************down');
