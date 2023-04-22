@@ -2,11 +2,13 @@ class Course implements Comparable<Course> {
   final String? code;
   final String? name;
   final String? semester;
+  final String? uid;
 
   Course({
     this.code,
     this.name,
     this.semester,
+    this.uid,
   });
 
   @override

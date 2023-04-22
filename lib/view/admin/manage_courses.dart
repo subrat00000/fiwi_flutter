@@ -16,8 +16,6 @@ class ManageCourseScreen extends StatefulWidget {
   State<ManageCourseScreen> createState() => _ManageCourseScreenState();
 }
 
-
-
 class _ManageCourseScreenState extends State<ManageCourseScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController codeController = TextEditingController();
@@ -26,6 +24,12 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
   String? semesterValue;
   final _formKey = GlobalKey<FormState>();
   int? courseIndex;
+  DatabaseReference ref = FirebaseDatabase.instance.ref('users');
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   _modalDelete(index, courses) {
     showDialog(
@@ -133,9 +137,7 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                               return null;
                             },
                             controller: codeController,
-                            inputFormatters: [
-                              UpperCaseTextFormatter()
-                            ],
+                            inputFormatters: [UpperCaseTextFormatter()],
                             decoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -225,7 +227,8 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87),
         ),
         title: const Text(
           'Manage Course',
@@ -253,36 +256,79 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                   .map((data) => Course(
                       name: data.value['name'],
                       code: data.value['code'],
-                      semester: data.value['semester']))
+                      semester: data.value['semester'],
+                      uid: data.value['uid']))
                   .toList();
               courses.sort();
               // return Text(courses.toString());
               return Container(
-                  width: double.infinity,
                   color: Colors.white70,
                   child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: courses.length,
                       itemBuilder: ((context, index) {
-                        return Card(
-                          child: ListTile(
-                            onTap: ()=> Navigator.pushNamed(context, '/assignfaculty'),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete_outline_rounded),
-                                color: Colors.red[300],
-                                onPressed: () => _modalDelete(index, courses),
-                              ),
-                              title: Row(
-                                children: [
-                                  Text(
-                                    '${courses[index].name!}(${courses[index].code!})',
-                                  ),
-                                ],
-                              ),
-                              subtitle: Text(
-                                courses[index].semester!,
-                              )),
-                        );
+                        return StreamBuilder(
+                            stream: FirebaseDatabase.instance
+                                .ref('users')
+                                .child(courses[index].uid.toString())
+                                .onValue,
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData || snapshot.data == null) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (snapshot.data!.snapshot.value !=
+                                  null) {
+                                final itemsMap =
+                                    snapshot.data!.snapshot.value as Map;
+                                // final itemsList = itemsMap.values;
+                                log(itemsList.toString());
+                                return Card(
+                                  child: ListTile(
+                                      onTap: () => Navigator.pushNamed(
+                                          context, '/assignfaculty',
+                                          arguments: courses[index].code!),
+                                      trailing: IconButton(
+                                        icon:
+                                            Icon(Icons.delete_outline_rounded),
+                                        color: Colors.red[300],
+                                        onPressed: () =>
+                                            _modalDelete(index, courses),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Text(
+                                            '${courses[index].name!}(${courses[index].code!})',
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Text(
+                                          '${itemsMap['name']}(${courses[index].semester!})')),
+                                );
+                              } else {
+                                return Card(
+                                  child: ListTile(
+                                      onTap: () => Navigator.pushNamed(
+                                          context, '/assignfaculty',
+                                          arguments: courses[index].code!),
+                                      trailing: IconButton(
+                                        icon:
+                                            Icon(Icons.delete_outline_rounded),
+                                        color: Colors.red[300],
+                                        onPressed: () =>
+                                            _modalDelete(index, courses),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Text(
+                                            '${courses[index].name!}(${courses[index].code!})',
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Text(courses[index].semester!)),
+                                );
+                              }
+                            });
                       })));
             }
           }),

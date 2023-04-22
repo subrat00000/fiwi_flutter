@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
+import 'package:fiwi/cubits/assign_faculty/assign_faculty_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_state.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
@@ -110,6 +111,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ChangeSemesterCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AssignFacultyCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(

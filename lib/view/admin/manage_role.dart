@@ -352,8 +352,7 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
                                     return Card(
                                       child: ListTile(
                                         title: Text(itemsList['name']),
-                                        subtitle: Text(Repositories()
-                                            .toCamelCase(itemsList['role'])),
+                                        subtitle: Text(toCamelCase(itemsList['role'])),
                                         leading: Container(
                                           width: 55,
                                           height: 55,
@@ -409,8 +408,7 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
                               return Card(
                                 child: ListTile(
                                   title: Text(itemsMap[a[index]]['name']),
-                                  subtitle: Text(Repositories()
-                                      .toCamelCase(itemsMap[a[index]]['role'])),
+                                  subtitle: Text(toCamelCase(itemsMap[a[index]]['role'])),
                                   leading: Container(
                                       clipBehavior: Clip.antiAliasWithSaveLayer,
                                       decoration: BoxDecoration(

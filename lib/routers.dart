@@ -65,8 +65,9 @@ class Routers {
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
       case '/assignfaculty':
+        final args = setting.arguments;
         return MaterialPageRoute(
-            builder: (context) => const AssignFacultyScreen());
+            builder: (context) => AssignFacultyScreen(args));
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(
