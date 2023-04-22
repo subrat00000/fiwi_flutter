@@ -70,7 +70,7 @@ class CreateUserCubit extends Cubit<CreateUserProfileState> {
       DataSnapshot de = await ref.child(_auth.currentUser!.uid).get();
       if (de.exists) {
         box.putAll(de.value as Map<dynamic, dynamic>);
-        emit(CreateUserProfileSuccessState());
+        emit(CreateSpecialUserProfileSuccessState());
       }
     } on Exception catch (e) {
       emit(CreateUserProfileErrorState(e.toString()));

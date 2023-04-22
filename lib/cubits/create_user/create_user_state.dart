@@ -5,6 +5,7 @@ class CreateUserProfileInitialState extends CreateUserProfileState{}
 class CreateUserProfileLoadingState extends CreateUserProfileState{}
 
 class CreateUserProfileSuccessState extends CreateUserProfileState{}
+class CreateSpecialUserProfileSuccessState extends CreateUserProfileState {}
 
 class CreateUserProfileErrorState extends CreateUserProfileState{
   final String e;

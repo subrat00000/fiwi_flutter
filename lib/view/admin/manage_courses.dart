@@ -266,6 +266,7 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                       itemBuilder: ((context, index) {
                         return Card(
                           child: ListTile(
+                            onTap: ()=> Navigator.pushNamed(context, '/assignfaculty'),
                               trailing: IconButton(
                                 icon: Icon(Icons.delete_outline_rounded),
                                 color: Colors.red[300],

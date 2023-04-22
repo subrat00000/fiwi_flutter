@@ -63,7 +63,14 @@ class CreateUserState extends State<CreateUser> {
   @override
   void initState() {
     super.initState();
-    name.setText(_auth.currentUser!.displayName!);
+    if (_auth.currentUser != null) {
+      final googleProvider = _auth.currentUser!.providerData
+          .any((provider) => provider.providerId == 'google.com');
+      if (googleProvider) {
+        name.setText(_auth.currentUser!.displayName!);
+      }
+    }
+
     batchYears = generateBatchYears();
     batchYears.sort();
   }
@@ -244,6 +251,8 @@ class CreateUserState extends State<CreateUser> {
                           listener: (context, state) {
                             if (state is CreateUserProfileSuccessState) {
                               Navigator.pushNamed(context, '/inactive');
+                            }else if(state is CreateSpecialUserProfileSuccessState){
+                              Navigator.pushNamed(context, '/home');
                             } else if (state is CreateUserProfileErrorState) {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(

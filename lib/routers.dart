@@ -1,4 +1,5 @@
 import 'package:fiwi/view/admin/activate_student.dart';
+import 'package:fiwi/view/admin/assign_faculty.dart';
 import 'package:fiwi/view/admin/change_semester.dart';
 import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
@@ -47,7 +48,7 @@ class Routers {
             builder: (context) => const TimeTable());
       case '/inactive':
         return MaterialPageRoute(
-            builder: (context) => Information());
+            builder: (context) => const Information());
       case '/managerole':
         return MaterialPageRoute(
             builder: (context) => const ManageRoleScreen());
@@ -63,6 +64,9 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/assignfaculty':
+        return MaterialPageRoute(
+            builder: (context) => const AssignFacultyScreen());
       default:
         return MaterialPageRoute(builder: (context) {
           return const Scaffold(
