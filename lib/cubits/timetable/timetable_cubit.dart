@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 
 class TimetableCubit extends Cubit<TimetableState> {
   Box box = Hive.box('user');
+  final DatabaseReference userRef = FirebaseDatabase.instance.ref('users');
   final DatabaseReference ref = FirebaseDatabase.instance.ref("timetable");
   final DatabaseReference cList = FirebaseDatabase.instance.ref("courseList");
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -32,12 +33,29 @@ class TimetableCubit extends Cubit<TimetableState> {
     return a.value;
   }
 
+  getAdminAndFaculty() async {
+    List<Map<dynamic, dynamic>> userList = [];
+    List role = ['admin', 'faculty'];
+    for (var element in role) {
+      DataSnapshot snapshot =
+          await userRef.orderByChild('role').equalTo(element).get();
+      if (snapshot.value != null) {
+        final map = snapshot.value as Map;
+        map.forEach((key, value) {
+          userList.add({'name':value['name'],'photo':value['photo']});
+        });
+      }
+    }
+    return userList;
+  }
+
   void addPeroid(
     String day,
     DateTime startTime,
     DateTime endTime,
     String semester,
     String course,
+    {String? teacherName}
   ) async {
     try {
       final weekDayName = weekdays[now.weekday - 1];
@@ -52,7 +70,7 @@ class TimetableCubit extends Cubit<TimetableState> {
           'startTime': startTime.toString(),
           'endTime': endTime.toString(),
           'semester': semester,
-          'faculty': box.get('name'),
+          'faculty': teacherName ?? box.get('name'),
           'subject': course.toUpperCase(),
           'lastUpdated': DateTime.now().toString(),
           'adminOrFacultyId': box.get('uid')

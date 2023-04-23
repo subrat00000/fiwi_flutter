@@ -20,11 +20,18 @@ class _TimeTableState extends State<TimeTable> {
 
   String? role;
   bool isEdit = false;
+  bool isAdmin = false;
+  bool simpleTimetable = true;
 
   _loadData() {
     role = box.get('role') ?? '';
-    if (role == 'admin' || role == 'faculty') {
+    simpleTimetable = box.get('simpleTimetable') ?? true;
+    if (role == 'admin') {
       isEdit = true;
+      isAdmin = true;
+    } else if (role == 'faculty') {
+      isEdit = true;
+      isAdmin = false;
     }
   }
 
@@ -71,13 +78,48 @@ class _TimeTableState extends State<TimeTable> {
         padding: const EdgeInsets.only(left: 5, right: 5),
         child: ListView(
           children: <Widget>[
-            StreamBuilderWidget(day: 'Monday', dayInNum: '1', isEdit: isEdit),
-            StreamBuilderWidget(day: 'Tuesday', dayInNum: '2', isEdit: isEdit),
             StreamBuilderWidget(
-                day: 'WednesDay', dayInNum: '3', isEdit: isEdit),
-            StreamBuilderWidget(day: 'Thursday', dayInNum: '4', isEdit: isEdit),
-            StreamBuilderWidget(day: 'Friday', dayInNum: '5', isEdit: isEdit),
-            StreamBuilderWidget(day: 'Satarday', dayInNum: '6', isEdit: isEdit),
+              day: 'Monday',
+              dayInNum: '1',
+              isEdit: isEdit,
+              isAdmin: isAdmin,
+              isSimpleTimetable: simpleTimetable,
+            ),
+            StreamBuilderWidget(
+              day: 'Tuesday',
+              dayInNum: '2',
+              isEdit: isEdit,
+              isAdmin: isAdmin,
+              isSimpleTimetable: simpleTimetable,
+            ),
+            StreamBuilderWidget(
+              day: 'WednesDay',
+              dayInNum: '3',
+              isEdit: isEdit,
+              isAdmin: isAdmin,
+              isSimpleTimetable: simpleTimetable,
+            ),
+            StreamBuilderWidget(
+              day: 'Thursday',
+              dayInNum: '4',
+              isEdit: isEdit,
+              isAdmin: isAdmin,
+              isSimpleTimetable: simpleTimetable,
+            ),
+            StreamBuilderWidget(
+              day: 'Friday',
+              dayInNum: '5',
+              isEdit: isEdit,
+              isAdmin: isAdmin,
+              isSimpleTimetable: simpleTimetable,
+            ),
+            StreamBuilderWidget(
+              day: 'Satarday',
+              dayInNum: '6',
+              isEdit: isEdit,
+              isAdmin: isAdmin,
+              isSimpleTimetable: simpleTimetable,
+            ),
           ],
         ),
       ),

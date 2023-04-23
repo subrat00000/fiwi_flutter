@@ -313,7 +313,7 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                                           arguments: courses[index].code!),
                                       trailing: IconButton(
                                         icon:
-                                            Icon(Icons.delete_outline_rounded),
+                                            const Icon(Icons.delete_outline_rounded),
                                         color: Colors.red[300],
                                         onPressed: () =>
                                             _modalDelete(index, courses),
