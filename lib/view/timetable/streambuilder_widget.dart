@@ -24,7 +24,8 @@ class StreamBuilderWidget extends StatefulWidget {
       required this.day,
       required this.dayInNum,
       required this.isAdmin,
-      required this.isEdit, required this.isSimpleTimetable});
+      required this.isEdit,
+      required this.isSimpleTimetable});
 
   @override
   State<StatefulWidget> createState() => _StreamBuilderWidgetState();
@@ -50,6 +51,9 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
     final a =
         await BlocProvider.of<TimetableCubit>(context).getAdminAndFaculty();
     log(a.toString());
+    if (!mounted) {
+      return;
+    }
     setState(() {
       courseList = box.get('courseList') ?? [];
       adminAndFaculty = a;
@@ -530,7 +534,8 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                 icontext: false,
                                 onPressed: () {
                                   if (semesterValue != null &&
-                                      courseValue != null && adminAndFacultyValue != null) {
+                                      courseValue != null &&
+                                      adminAndFacultyValue != null) {
                                     BlocProvider.of<TimetableCubit>(context)
                                         .addPeroid(
                                             widget.dayInNum,
@@ -538,7 +543,8 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                             _convertToDateTime(endTime),
                                             semesterValue!,
                                             courseValue!,
-                                            teacherName: adminAndFacultyValue!['name']);
+                                            teacherName:
+                                                adminAndFacultyValue!['name']);
                                     Navigator.pop(context);
                                   } else {
                                     ScaffoldMessenger.of(context)

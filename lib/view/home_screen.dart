@@ -18,7 +18,8 @@ import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance/attendance_screen.dart';
 import 'package:fiwi/view/attendance/previleged_attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
-import 'package:fiwi/view/library_screen.dart';
+import 'package:fiwi/view/library/library_screen.dart';
+import 'package:fiwi/view/library/previleged_library_screen.dart';
 import 'package:fiwi/view/timetable/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -274,7 +275,7 @@ class HomeScreenState extends State<HomeScreen> {
     const HomeScreenHelper(),
     const TimeTable(),
     const PrevilegedAttendanceScreen(),
-    const LibraryScreen(),
+    const PrevilegedLibraryScreen(),
     const AdminScreen()
   ];
   final _pageNavigationStudent = [
@@ -290,7 +291,7 @@ class HomeScreenState extends State<HomeScreen> {
   ];
   final _pageNavigationLibrarian = [
     const HomeScreenHelper(),
-    const LibraryScreen(),
+    const PrevilegedLibraryScreen(),
   ];
 
   Widget _buildBottomNav() {
