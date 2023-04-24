@@ -12,20 +12,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ActivateStudentScreen extends StatefulWidget {
-  const ActivateStudentScreen({super.key});
+class CreateBatchScreen extends StatefulWidget {
+  const CreateBatchScreen({super.key});
 
   @override
-  State<ActivateStudentScreen> createState() => _ActivateStudentScreenState();
+  State<CreateBatchScreen> createState() => _CreateBatchScreenState();
 }
 
-class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
+class _CreateBatchScreenState extends State<CreateBatchScreen> {
   final _formKey = GlobalKey<FormState>();
   final myFocusNode = FocusNode();
   bool search = false;
   List filteredUser = [];
   List users = [];
   String? query;
+  int limit = 20;
+
+  @override
+  void initState() {
+    super.initState();
+    // _setData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+ 
+
   _activate(user, value) {
     if (user['active'] == true) {
       showDialog(
@@ -70,12 +84,6 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
     }
   }
 
-  // @override
-  // void dispose() {
-  //   _searchController.dispose();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +93,7 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
             if (search == true) {
               setState(() {
                 search = false;
-                query='';
+                query = '';
               });
               myFocusNode.unfocus();
               filteredUser=users;
@@ -102,7 +110,7 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
               onPressed: () {
                 setState(() {
                   search = false;
-                  query='';
+                  query = '';
                 });
                 myFocusNode.unfocus();
                 filteredUser=users;
@@ -130,10 +138,11 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                   setState(() {
                     query = value;
                     filteredUser = users.where((user) {
-                      final nameLower = user['name'].toString().toLowerCase();
+                      final nameLower = user['name'].toLowerCase();
                       return nameLower.contains(value);
                     }).toList();
                   });
+                  log(filteredUser.toString());
                 },
                 decoration: InputDecoration(
                   hintText: 'Search',
@@ -141,7 +150,7 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                 ),
               )
             : const Text(
-                'Activate Student',
+                'Create Batch',
                 style: TextStyle(color: Colors.black87, fontSize: 20),
                 textAlign: TextAlign.start,
               ),
@@ -150,69 +159,70 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
         width: double.infinity,
         color: Colors.white,
         child: StreamBuilder(
-            stream: FirebaseDatabase.instance.ref('users').orderByChild('role').equalTo('student').onValue,
+            stream: FirebaseDatabase.instance
+                .ref('test')
+                .limitToFirst(limit)
+                .onValue,
             builder: (context, snapshot) {
               if (!snapshot.hasData || snapshot.data == null) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else {
-                final itemsMap =
-                    snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-                users = itemsMap.values.toList();
+                users =
+                    snapshot.data!.snapshot.value as List;
+                    // return Text(itemsMap.toString());
+                // users = itemsMap.values.toList();
 
-                if (query==null) {
+                if (query == null) {
                   filteredUser = users;
                 }
-                return Column(
-                  children: [
-                    ListView.builder(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(10.0),
-                        itemCount: filteredUser.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text(filteredUser[index]['name']),
-                              trailing: Checkbox(
-                                onChanged: (value) {
-                                  _activate(filteredUser[index], value);
-                                },
-                                value: filteredUser[index]['active'],
-                              ),
-                              subtitle: filteredUser[index]['email'] != null
-                                  ? Text(filteredUser[index]['email'])
-                                  : Text(filteredUser[index]['phone']),
-                              leading: Container(
-                                width: 55,
-                                height: 55,
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: filteredUser[index]['photo'] != null &&
-                                        filteredUser[index]['photo'] != ''
-                                    ? CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: filteredUser[index]['photo'],
-                                        progressIndicatorBuilder: (context, url,
-                                                downloadProgress) =>
-                                            CircularProgressIndicator(
-                                                value:
-                                                    downloadProgress.progress),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                      )
-                                    : Image.asset('assets/no_image.png'),
-                              ),
-                              onTap: () {
-                                // Navigator.pushNamed(context, itemsMap[a]['route']);
-                              },
-                            ),
-                          );
-                        }),
-                  ],
-                );
+                return ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.all(10.0),
+                    itemCount: filteredUser.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(title:Text(filteredUser[index]['name']));
+                      // return Card(
+                      //   child: ListTile(
+                      //     title: Text(filteredUser[index]['name']),
+                      //     trailing: Checkbox(
+                      //       onChanged: (value) {
+                      //         _activate(filteredUser[index], value);
+                      //       },
+                      //       value: filteredUser[index]['active'],
+                      //     ),
+                      //     subtitle: filteredUser[index]['email'] != null
+                      //         ? Text(filteredUser[index]['email'])
+                      //         : Text(filteredUser[index]['phone']),
+                      //     leading: Container(
+                      //       width: 55,
+                      //       height: 55,
+                      //       clipBehavior: Clip.antiAliasWithSaveLayer,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(50),
+                      //       ),
+                      //       child: filteredUser[index]['photo'] != null &&
+                      //               filteredUser[index]['photo'] != ''
+                      //           ? CachedNetworkImage(
+                      //               fit: BoxFit.cover,
+                      //               imageUrl: filteredUser[index]['photo'],
+                      //               progressIndicatorBuilder: (context, url,
+                      //                       downloadProgress) =>
+                      //                   CircularProgressIndicator(
+                      //                       value:
+                      //                           downloadProgress.progress),
+                      //               errorWidget: (context, url, error) =>
+                      //                   const Icon(Icons.error),
+                      //             )
+                      //           : Image.asset('assets/no_image.png'),
+                      //     ),
+                      //     onTap: () {
+                      //       // Navigator.pushNamed(context, itemsMap[a]['route']);
+                      //     },
+                      //   ),
+                      // );
+                    });
               }
             }),
       ),

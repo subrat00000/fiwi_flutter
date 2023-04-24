@@ -1,9 +1,11 @@
 import 'package:fiwi/view/admin/activate_student.dart';
 import 'package:fiwi/view/admin/assign_faculty.dart';
 import 'package:fiwi/view/admin/change_semester.dart';
+import 'package:fiwi/view/admin/create_batch.dart';
 import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
+import 'package:fiwi/view/attendance/manage_attendance_screen.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile/edit_profile_screen.dart';
@@ -64,6 +66,13 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/createbatch':
+        return MaterialPageRoute(
+            builder: (context) => const CreateBatchScreen());
+      case '/manageattendance':
+        final args = setting.arguments;
+        return MaterialPageRoute(
+            builder: (context) => ManageAttendanceScreen(args));
       case '/assignfaculty':
         final args = setting.arguments;
         return MaterialPageRoute(

@@ -54,8 +54,11 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(left:30),
-                          child: Text('My Classes',style: TextStyle(fontSize: 18),),
+                          padding: EdgeInsets.only(left: 30),
+                          child: Text(
+                            'My Classes',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                         ListView.builder(
                             itemCount: myClasses.length,
@@ -64,28 +67,32 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () {},
+                                  onTap: () =>Navigator.pushNamed(context,'/manageattendance',arguments: myClasses[index]['uid']),
                                   title: Text(
                                       '${myClasses[index]['name']}(${myClasses[index]['code']})'),
                                   subtitle: Text(myClasses[index]['semester']),
                                   trailing: ElevatedButton(
-                                    onPressed: () {},
-                                    style: const ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStatePropertyAll(
-                                                Colors.white)),
-                                    child: const Text(
-                                      'Start',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ),
+                                      onPressed: () {},
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.white)),
+                                      child: Icon(
+                                        Icons.flight_class_rounded,
+                                        color: Colors.black87,
+                                      )),
                                 ),
                               );
                             }),
-                            const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         const Padding(
-                          padding: EdgeInsets.only(left:30),
-                          child: Text('Other Classes',style: TextStyle(fontSize: 18),),
+                          padding: EdgeInsets.only(left: 30),
+                          child: Text(
+                            'Other Classes',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                         ListView.builder(
                             itemCount: otherClasses.length,
@@ -94,21 +101,21 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () {},
+                                  onTap: () => Navigator.pushNamed(context,'/manageattendance',arguments: myClasses[index]['uid']),
                                   title: Text(
                                       '${otherClasses[index]['name']}(${otherClasses[index]['code']})'),
-                                  subtitle: Text(otherClasses[index]['semester']),
+                                  subtitle:
+                                      Text(otherClasses[index]['semester']),
                                   trailing: ElevatedButton(
-                                    onPressed: () {},
-                                    style: const ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStatePropertyAll(
-                                                Colors.white)),
-                                    child: const Text(
-                                      'Start',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ),
+                                      onPressed: () {},
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.white)),
+                                      child: const Icon(
+                                        Icons.flight_class_rounded,
+                                        color: Colors.black87,
+                                      )),
                                 ),
                               );
                             }),
