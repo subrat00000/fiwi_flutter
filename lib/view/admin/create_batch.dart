@@ -5,8 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
+import 'package:fiwi/cubits/create_batch/create_batch_cubit.dart';
 import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
 import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
+import 'package:fiwi/models/student.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +27,11 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
   final myFocusNode = FocusNode();
   bool search = false;
-  List filteredUser = [];
-  List users = [];
+  List<Student> filteredUser = [];
+  List<Student> users = [];
   String? query;
   String? semesterValue;
   Stream? _stream;
-  List<bool> selectedItems = [];
-  List<bool> filteredSelectedItems = [];
   Timer? _timer;
   List<String> batchYears = [];
   String? sessionValue;
@@ -41,9 +41,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     super.initState();
     batchYears = generateBatchYears();
     batchYears.sort();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _loadSelection();
-    });
+    // _timer = Timer.periodic(const Duration(seconds: 1), (timer) {});
 
     _loadData();
   }
@@ -51,42 +49,16 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   @override
   void dispose() {
     super.dispose();
-    if (_timer != null) {
-      _timer!.cancel();
-    }
+    // if (_timer != null) {
+    //   _timer!.cancel();
+    // }
   }
 
-  _loadSelection() {
-    if (selectedItems.isNotEmpty && filteredSelectedItems.isNotEmpty) {
-      _timer!.cancel();
-      log('canceled');
-    } else if (users.isNotEmpty && filteredUser.isNotEmpty) {
-      setState(() {
-        selectedItems = List.filled(users.length, false);
-        filteredSelectedItems = List.filled(filteredUser.length, false);
-      });
-    }
-  }
-
-  _loadData() {
-    if (semesterValue == null) {
-      setState(() {
-        _stream = FirebaseDatabase.instance
-            .ref('users')
-            .orderByChild('role')
-            .equalTo('student')
-            .limitToFirst(1000)
-            .onValue;
-      });
-    } else {
-      setState(() {
-        _stream = FirebaseDatabase.instance
-            .ref('users')
-            .orderByChild('semester')
-            .equalTo(semesterValue)
-            .onValue;
-      });
-    }
+  _loadData() async {
+    users = await BlocProvider.of<CreateBatchCubit>(context).getStudents();
+    setState(() {
+      filteredUser = users;
+    });
   }
 
   List<String> generateBatchYears() {
@@ -106,7 +78,10 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          log(filteredUser.map((e)=>e.selected).toList().toString());
+          log(users.map((e)=>e.selected).toList().toString());
+        },
         child: Icon(Icons.save_rounded),
       ),
       appBar: AppBar(
@@ -160,18 +135,10 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                   setState(() {
                     query = value;
                     filteredUser = users.where((user) {
-                      final nameLower = user['name'].toLowerCase();
+                      final nameLower = user.name!.toLowerCase();
                       return nameLower.contains(value);
                     }).toList();
-                    filteredSelectedItems =
-                        List.filled(filteredUser.length, false);
                   });
-                  for (int i = 0; i < filteredUser.length; i++) {
-                    setState(() {
-                      filteredSelectedItems[i] = filteredUser[i]['selected'];
-                    });
-                  }
-                  log(filteredUser.toString());
                 },
                 decoration: InputDecoration(
                   hintText: 'Search',
@@ -179,12 +146,12 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 ),
               )
             : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                    width: 120,
+                    width: 100,
                     child: DropdownButtonFormField<String>(
-                      icon: Icon(Icons.mode_edit_outline_rounded),
+                      icon: Icon(Icons.edit_outlined),
                       hint: const Text("Session"),
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.zero,
@@ -219,10 +186,12 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   Text(
-                    'Total: ${users.length}\n Selected: ${selectedItems.where((element) => element == true).length}',
-                    style: TextStyle(color: Colors.black87,fontSize: 14),
+                    '${users.where((element) => element.selected == true).length}/${users.length}',
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
                   )
                 ],
               ),
@@ -248,7 +217,8 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                         horizontal: VisualDensity.minimumDensity,
                         vertical: VisualDensity.minimumDensity),
                     contentPadding: EdgeInsets.zero,
-                    title: Text(items[index]),
+                    title: Text(
+                        '${items[index]} (${users.where((element) => element.semester == items[index] && element.selected == true).length}/${users.where((element) => element.semester == items[index]).length})'),
                     value: items[index],
                     groupValue: semesterValue,
                     onChanged: (value) {
@@ -261,94 +231,63 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                   );
                 }),
             Expanded(
-              child: StreamBuilder(
-                  stream: _stream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.data == null) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.data!.snapshot.value == null) {
-                      return const Center(
-                        child: Text('No Records Found!'),
-                      );
-                    } else {
-                      final itemsMap = snapshot.data!.snapshot.value as Map;
-                      // return Text(itemsMap.toString());
-                      final itemsList = itemsMap.values.toList();
-                      users = itemsList
-                          .map((e) => {...e, 'selected': false})
-                          .toList();
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(10.0),
+                  itemCount: filteredUser.length,
+                  itemBuilder: (context, index) {
+                    // return ListTile(
+                    //     title: Text(filteredUser[index]['name']));
+                    return Card(
+                      child: ListTile(
+                        title: Text(
+                            '${filteredUser[index].name}(${filteredUser[index].session})'),
+                        trailing: Checkbox(
+                          onChanged: (value) {
+                            setState(() {
+                              users
+                                  .where((element) =>
+                                      element.uid == filteredUser[index].uid)
+                                  .first
+                                  .selected = value;
+                              filteredUser[index].selected = value;
+                            });
 
-                      if (query == null) {
-                        filteredUser = users;
-                      }
-                      return ListView.builder(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(10.0),
-                          itemCount: filteredUser.length,
-                          itemBuilder: (context, index) {
-                            // return ListTile(
-                            //     title: Text(filteredUser[index]['name']));
-                            return Card(
-                              child: ListTile(
-                                title: Text(filteredUser[index]['name']),
-                                trailing: Checkbox(
-                                  onChanged: (value) {
-                                    for (int i = 0; i < users.length; i++) {
-                                      if (users[i]['uid'] ==
-                                          filteredUser[index]['uid']) {
-                                        setState(() {
-                                          selectedItems[i] = value!;
-                                          users[i]['selected'] = value;
-                                          filteredSelectedItems[index] = value;
-                                          filteredUser[index]['selected'] =
-                                              value;
-                                        });
-                                      }
-                                    }
-                                    log(filteredUser[index]['selected']
-                                        .toString());
-                                  },
-                                  value: filteredSelectedItems.isNotEmpty
-                                      ? filteredSelectedItems[index]
-                                      : false,
-                                ),
-                                subtitle: filteredUser[index]['email'] != null
-                                    ? Text(filteredUser[index]['email'])
-                                    : Text(filteredUser[index]['phone']),
-                                leading: Container(
-                                  width: 55,
-                                  height: 55,
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: filteredUser[index]['photo'] != null &&
-                                          filteredUser[index]['photo'] != ''
-                                      ? CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          imageUrl: filteredUser[index]
-                                              ['photo'],
-                                          progressIndicatorBuilder: (context,
-                                                  url, downloadProgress) =>
-                                              CircularProgressIndicator(
-                                                  value: downloadProgress
-                                                      .progress),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
-                                        )
-                                      : Image.asset('assets/no_image.png'),
-                                ),
-                                onTap: () {
-                                  // Navigator.pushNamed(context, itemsMap[a]['route']);
-                                },
-                              ),
-                            );
-                          });
-                    }
+                            log(filteredUser[index].selected.toString());
+                          },
+                          value: filteredUser[index].selected,
+                        ),
+                        subtitle: filteredUser[index].email != null
+                            ? Text(filteredUser[index].email!)
+                            : Text(filteredUser[index].phone!),
+                        leading: Container(
+                          width: 55,
+                          height: 55,
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: filteredUser[index].photo != null &&
+                                  filteredUser[index].photo != ''
+                              ? CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  imageUrl: filteredUser[index].photo!,
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                )
+                              : Image.asset('assets/no_image.png'),
+                        ),
+                        onTap: () {
+                          // Navigator.pushNamed(context, itemsMap[a]['route']);
+                        },
+                      ),
+                    );
                   }),
-            ),
+            )
           ],
         ),
       ),

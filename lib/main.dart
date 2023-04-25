@@ -6,6 +6,7 @@ import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_state.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
+import 'package:fiwi/cubits/create_batch/create_batch_cubit.dart';
 import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
 import 'package:fiwi/cubits/delete_account/delete_account_cubit.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
@@ -114,6 +115,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AssignFacultyCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CreateBatchCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(
