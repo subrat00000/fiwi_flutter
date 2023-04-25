@@ -35,6 +35,8 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   Timer? _timer;
   List<String> batchYears = [];
   String? sessionValue;
+  String batchName = 'session';
+  final batchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -79,8 +81,23 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          log(filteredUser.map((e)=>e.selected).toList().toString());
-          log(users.map((e)=>e.selected).toList().toString());
+          List<String> value = users
+              .where((e) => e.selected == true)
+              .map((e) => e.uid!)
+              .toList();
+          log(value.toString());
+          if (sessionValue != null ||
+              value.isNotEmpty ||
+              semesterValue != null) {
+            BlocProvider.of<CreateBatchCubit>(context).createBatch(sessionValue!,semesterValue!,value);
+          } else {
+            ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(
+                            content: const Text("Please Fill all required fields"),
+                            backgroundColor: Colors.redAccent[400],
+                            behavior: SnackBarBehavior.floating,
+                          ));
+          }
         },
         child: Icon(Icons.save_rounded),
       ),
@@ -127,6 +144,39 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
               },
               icon: const Icon(Icons.search, color: Colors.black87),
             ),
+          if (!search)
+            PopupMenuButton(
+              icon: const Icon(
+                Icons.more_vert_rounded,
+                color: Colors.black87,
+              ),
+              onSelected: (value) {
+                batchFocusNode.unfocus();
+                if (value == 0) {
+                  sessionValue = null;
+                  setState(() {
+                    batchName = 'session';
+                  });
+                } else if (value == 1) {
+                  setState(() {
+                    batchName = 'write';
+                  });
+                  batchFocusNode.requestFocus();
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  const PopupMenuItem<int>(
+                    value: 0,
+                    child: Text("Session"),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 1,
+                    child: Text("Write..."),
+                  ),
+                ];
+              },
+            ),
         ],
         title: search
             ? TextField(
@@ -148,44 +198,63 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    width: 100,
-                    child: DropdownButtonFormField<String>(
-                      icon: Icon(Icons.edit_outlined),
-                      hint: const Text("Session"),
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.zero,
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.white70),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.white70),
-                        ),
-                        border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white70),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
+                  batchName == 'session'
+                      ? SizedBox(
+                          width: 100,
+                          child: DropdownButton<String>(
+                            icon: Icon(Icons.edit_outlined),
+                            hint: const Text("Session"),
+                            elevation: 0,
+                            underline: Container(),
+                            style: TextStyle(color: Colors.black87),
+                            // style: ,
+                            // decoration: InputDecoration(
+                            //   contentPadding: EdgeInsets.zero,
+                            //   focusedBorder: OutlineInputBorder(
+                            //     borderRadius: BorderRadius.circular(10),
+                            //     borderSide:
+                            //         const BorderSide(color: Colors.white70),
+                            //   ),
+                            //   enabledBorder: OutlineInputBorder(
+                            //     borderRadius: BorderRadius.circular(10),
+                            //     borderSide:
+                            //         const BorderSide(color: Colors.white70),
+                            //   ),
+                            //   border: const OutlineInputBorder(
+                            //     borderSide: BorderSide(color: Colors.white70),
+                            //     borderRadius: BorderRadius.all(
+                            //       Radius.circular(10.0),
+                            //     ),
+                            //   ),
+                            //   hintStyle: const TextStyle(color: Colors.black12),
+                            // ),
+                            items: batchYears
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            value: sessionValue,
+                            onChanged: (String? value) {
+                              setState(() {
+                                sessionValue = value;
+                              });
+                            },
+                          ),
+                        )
+                      : Expanded(
+                          child: TextField(
+                            onChanged: (value) => setState(() {
+                              sessionValue = value;
+                            }),
+                            focusNode: batchFocusNode,
+                            decoration: const InputDecoration(
+                              hintText: 'Batch Name',
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
-                        hintStyle: const TextStyle(color: Colors.black12),
-                      ),
-                      items: batchYears
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      value: sessionValue,
-                      onChanged: (String? value) {
-                        setState(() {
-                          sessionValue = value;
-                        });
-                      },
-                    ),
-                  ),
                   const SizedBox(
                     width: 10,
                   ),
@@ -226,7 +295,6 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       setState(() {
                         semesterValue = value;
                       });
-                      _loadData();
                     },
                   );
                 }),
