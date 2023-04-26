@@ -39,12 +39,12 @@ class _AdminScreenState extends State<AdminScreen> {
       'route': '/changesemester'
     },
     {
-      'title': 'Create Batch',
+      'title': 'Manage Batches',
       'icon': 'assets/courses.png',
-      'route': '/createbatch'
+      'route': '/showbatch'
     },
     {
-      'title': 'Timetable Simplification',
+      'title': 'Simplify Timetable',
       'icon': 'assets/role.png',
       'route': 'simplify_timetable'
     }

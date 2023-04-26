@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:fiwi/view/admin/activate_student.dart';
 import 'package:fiwi/view/admin/assign_faculty.dart';
+import 'package:fiwi/view/admin/batch/show_batches.dart';
+import 'package:fiwi/view/admin/batch/view_batch.dart';
 import 'package:fiwi/view/admin/change_semester.dart';
-import 'package:fiwi/view/admin/create_batch.dart';
+import 'package:fiwi/view/admin/batch/create_batch.dart';
 import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
@@ -46,11 +50,9 @@ class Routers {
         return MaterialPageRoute(
             builder: (context) => const EditProfileScreen());
       case '/timetable':
-        return MaterialPageRoute(
-            builder: (context) => const TimeTable());
+        return MaterialPageRoute(builder: (context) => const TimeTable());
       case '/inactive':
-        return MaterialPageRoute(
-            builder: (context) => const Information());
+        return MaterialPageRoute(builder: (context) => const Information());
       case '/managerole':
         return MaterialPageRoute(
             builder: (context) => const ManageRoleScreen());
@@ -69,6 +71,15 @@ class Routers {
       case '/createbatch':
         return MaterialPageRoute(
             builder: (context) => const CreateBatchScreen());
+      case '/showbatch':
+        return MaterialPageRoute(builder: (context) => const ShowBatchScreen());
+      case '/viewbatch':
+        final itemsMap = setting.arguments as Map;
+        String session = itemsMap['session'];
+        List<String> uids = itemsMap['uids'];
+        return MaterialPageRoute(
+            builder: (context) =>
+                ViewBatchScreen(session: session, uids: uids));
       case '/manageattendance':
         final args = setting.arguments;
         return MaterialPageRoute(

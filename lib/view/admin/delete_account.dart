@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
@@ -22,6 +24,7 @@ class DeleteAccountScreen extends StatefulWidget {
 
 class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   final _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   // final TextEditingController _searchController = TextEditingController();
   bool search = false;
   List filteredUser = [];
@@ -124,9 +127,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   setState(() {
                     query = value;
                     filteredUser = users.where((user) {
-                      final nameLower = user['name'].toLowerCase();
-                      final role = user['role'];
-                      return nameLower.contains(value) && role == 'student';
+                      final nameLower = user['name'].toString().toLowerCase();
+                      return nameLower.contains(value);
                     }).toList();
                   });
                   log(filteredUser.toString());
@@ -159,8 +161,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
                 if (query == null) {
                   filteredUser = users.where((user) {
-                    final role = user['role'];
-                    return role == 'student';
+                    final role = user['uid'];
+                    return role != _auth.currentUser!.uid;
                   }).toList();
                 }
                 return Column(
@@ -172,14 +174,16 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                         itemBuilder: (context, index) {
                           return Card(
                             child: ListTile(
-                              title: Text(filteredUser[index]['name']),
+                              title: Text('${filteredUser[index]['name']}(${toCamelCase(filteredUser[index]['role'])})'),
                               trailing: IconButton(
                                 icon: Icon(
                                   Icons.delete_outline_rounded,
                                   color: Colors.red[300],
                                 ),
                                 onPressed: () {
-                                  BlocProvider.of<DeleteAccountCubit>(context).deleteAccount(filteredUser[index]['uid']);
+                                  BlocProvider.of<DeleteAccountCubit>(context)
+                                      .deleteAccount(
+                                          filteredUser[index]['uid']);
                                 },
                               ),
                               subtitle: filteredUser[index]['email'] != null

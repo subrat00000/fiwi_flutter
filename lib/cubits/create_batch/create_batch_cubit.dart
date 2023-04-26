@@ -35,11 +35,18 @@ class CreateBatchCubit extends Cubit<CreateBatchState> {
   Future createBatch(
       String sessionValue, String semesterValue, List<String> value) async {
     try {
-      var data;
-      for (int i = 0; i < value.length; i++) {
-        data = bref.child(sessionValue).child('uid').child(value[i]).set('');
+      DataSnapshot batch = await bref.child(sessionValue).get();
+      if (batch.exists) {
+        bref.child(sessionValue).set({'session': sessionValue});
+        for (int i = 0; i < value.length; i++) {
+          bref.child(sessionValue).child('uid').update({value[i]: ''});
+        }
+        emit(CreateBatchSuccessState());
+      } else {
+        emit(CreateBatchErrorState('A batch with same value already exist'));
       }
-      log(data+'********************');
-    } catch (e) {}
+    } catch (e) {
+      emit(CreateBatchErrorState(e.toString()));
+    }
   }
 }
