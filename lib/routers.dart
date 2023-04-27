@@ -10,6 +10,7 @@ import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
 import 'package:fiwi/view/attendance/manage_attendance_screen.dart';
+import 'package:fiwi/view/attendance/qr_screen.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile/edit_profile_screen.dart';
@@ -68,6 +69,12 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/qrscreen':
+        final args = setting.arguments;
+        return MaterialPageRoute(
+            builder: (context) => QrScreen(
+                  qrdata: args.toString(),
+                ));
       case '/createbatch':
         String session = '';
         List<String> uids = [];

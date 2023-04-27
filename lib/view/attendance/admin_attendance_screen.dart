@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
+import 'package:fiwi/cubits/qr/qr_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +14,7 @@ class AdminAttendanceScreen extends StatefulWidget {
 
 class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  var internet = true;
+  String dt = DateTime.now().microsecondsSinceEpoch.toString();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,12 +68,26 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () =>Navigator.pushNamed(context,'/manageattendance',arguments: myClasses[index]['uid']),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/manageattendance',
+                                      arguments: myClasses[index]['uid']),
                                   title: Text(
                                       '${myClasses[index]['name']}(${myClasses[index]['code']})'),
                                   subtitle: Text(myClasses[index]['semester']),
                                   trailing: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        // BlocProvider.of<QrCubit>(context).initializeAttendance('2021-23', myClasses[index]['semester'],dt);
+                                        Navigator.pushNamed(
+                                            context, '/qrscreen',
+                                            arguments: {
+                                              'session': '2021-23',
+                                              'semester': myClasses[index]
+                                                  ['semester'],
+                                              'subject': myClasses[index]
+                                                  ['code'],
+                                              'datetime': dt
+                                            });
+                                      },
                                       style: const ButtonStyle(
                                           backgroundColor:
                                               MaterialStatePropertyAll(
@@ -101,7 +116,9 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () => Navigator.pushNamed(context,'/manageattendance',arguments: myClasses[index]['uid']),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/manageattendance',
+                                      arguments: myClasses[index]['uid']),
                                   title: Text(
                                       '${otherClasses[index]['name']}(${otherClasses[index]['code']})'),
                                   subtitle:
