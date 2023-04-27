@@ -17,7 +17,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateBatchScreen extends StatefulWidget {
-  const CreateBatchScreen({super.key});
+  final String session;
+  final List<String> uids;
+  const CreateBatchScreen({super.key, this.session = '', this.uids = const []});
 
   @override
   State<CreateBatchScreen> createState() => _CreateBatchScreenState();
@@ -38,6 +40,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   String? sessionValue;
   String batchName = 'session';
   final batchFocusNode = FocusNode();
+  bool update = false;
 
   @override
   void initState() {
@@ -58,8 +61,23 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   }
 
   _loadData() async {
-    users = await BlocProvider.of<CreateBatchCubit>(context).getStudents();
+    List<Student> ur =
+        await BlocProvider.of<CreateBatchCubit>(context).getStudents();
+    sessionValue = widget.session;
+    if (widget.uids.isNotEmpty) {
+      setState(() {
+        update = true;
+      });
+    }
+    for (int i = 0; i < ur.length; i++) {
+      if (widget.uids.contains(ur[i].uid)) {
+        setState(() {
+          ur[i].selected = true;
+        });
+      }
+    }
     setState(() {
+      users = ur;
       filteredUser = users;
     });
   }
@@ -91,7 +109,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 value.isNotEmpty ||
                 semesterValue != null) {
               BlocProvider.of<CreateBatchCubit>(context)
-                  .createBatch(sessionValue!, semesterValue!, value);
+                  .createBatch(sessionValue!, update, value);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: const Text("Please Fill all required fields"),
@@ -215,7 +233,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                                   child: Text(value),
                                 );
                               }).toList(),
-                              value: sessionValue,
+                              value: sessionValue == '' ? null : sessionValue,
                               onChanged: (String? value) {
                                 setState(() {
                                   sessionValue = value;
@@ -250,6 +268,13 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
             if (state is CreateBatchSuccessState) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("Batch Created Successfully"),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ));
+              Navigator.pop(context);
+            } else if (state is UpdateBatchSuccessState) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Batch Updated Successfully"),
                 backgroundColor: Colors.green,
                 behavior: SnackBarBehavior.floating,
               ));

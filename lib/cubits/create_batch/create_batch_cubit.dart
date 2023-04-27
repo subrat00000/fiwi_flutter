@@ -13,6 +13,17 @@ class CreateBatchCubit extends Cubit<CreateBatchState> {
   final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
   final DatabaseReference bref = FirebaseDatabase.instance.ref('batch');
 
+  getSelectedStudent(List<String> uids) async {
+    final futures =
+        uids.map((e) => FirebaseDatabase.instance.ref('users').child(e).get());
+    final results = await Future.wait(futures);
+
+    return results.map((users) {
+      final itemsMap = users.value as Map;
+      return itemsMap;
+    }).toList();
+  }
+
   Future getStudents() async {
     DataSnapshot users =
         await ref.orderByChild('role').equalTo('student').get();
@@ -33,18 +44,36 @@ class CreateBatchCubit extends Cubit<CreateBatchState> {
   }
 
   Future createBatch(
-      String sessionValue, String semesterValue, List<String> value) async {
+      String sessionValue, bool update, List<String> value) async {
     try {
       DataSnapshot batch = await bref.child(sessionValue).get();
-      if (batch.exists) {
+      if (!batch.exists) {
+        //create
         bref.child(sessionValue).set({'session': sessionValue});
         for (int i = 0; i < value.length; i++) {
           bref.child(sessionValue).child('uid').update({value[i]: ''});
         }
         emit(CreateBatchSuccessState());
       } else {
-        emit(CreateBatchErrorState('A batch with same value already exist'));
+        if (update) {
+          //update
+          for (int i = 0; i < value.length; i++) {
+            bref.child(sessionValue).child('uid').update({value[i]: ''});
+          }
+          emit(UpdateBatchSuccessState());
+        } else {
+          emit(CreateBatchErrorState('A batch with same value already exist'));
+        }
       }
+    } catch (e) {
+      emit(CreateBatchErrorState(e.toString()));
+    }
+  }
+
+  deleteBatch(sessionValue) {
+    try {
+      bref.child(sessionValue).remove();
+      emit(DeleteBatchSuccessState());
     } catch (e) {
       emit(CreateBatchErrorState(e.toString()));
     }

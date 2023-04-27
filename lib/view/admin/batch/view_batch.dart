@@ -30,29 +30,30 @@ class ViewBatchScreen extends StatefulWidget {
 }
 
 class _ViewBatchScreenState extends State<ViewBatchScreen> {
-  List<Map<dynamic,dynamic>> student=[];
-  getUsersData(List<String> uids) async {
-    final futures =
-        uids.map((e) => FirebaseDatabase.instance.ref('users').child(e).get());
-    final results = await Future.wait(futures);
+  List<Map<dynamic, dynamic>> student = [];
+
+  selectedStudent(uids) async {
+    final st = await BlocProvider.of<CreateBatchCubit>(context)
+        .getSelectedStudent(uids);
     setState(() {
-      student = results.map((users) {
-        final itemsMap = users.value as Map;
-        return itemsMap;
-      }).toList();
+      student = st;
     });
   }
 
   @override
   void initState() {
     super.initState();
-
-    getUsersData(widget.uids!);
+    selectedStudent(widget.uids!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Navigator.pushNamed(context, '/createbatch',
+              arguments: {'session': widget.session, 'uids': widget.uids}),
+          child: Icon(Icons.edit_rounded),
+        ),
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
@@ -69,21 +70,47 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
         body: Container(
           width: double.infinity,
           color: Colors.white,
-          child: student.isNotEmpty? ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(10.0),
-              itemCount: student.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    student[index]['name'].toString(),
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  // onTap: () {
-                  //   // Navigator.pushNamed(context, itemsMap[a]['route']);
-                  // },
-                );
-              }):Container(),
+          child: student.isNotEmpty
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(10.0),
+                  itemCount: student.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        '${student[index]['name']}(${student[index]['semester']})',
+                        style: const TextStyle(color: Colors.black87),
+                      ),
+                      leading: Container(
+                        width: 55,
+                        height: 55,
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: student[index]['photo'] != null &&
+                                student[index]['photo'] != ''
+                            ? CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                imageUrl: student[index]['photo'],
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              )
+                            : Image.asset('assets/no_image.png'),
+                      ),
+                      subtitle: student[index]['email'] != null
+                          ? Text(student[index]['email'])
+                          : Text(student[index]['phone']),
+                      // onTap: () {
+                      //   // Navigator.pushNamed(context, itemsMap[a]['route']);
+                      // },
+                    );
+                  })
+              : Container(),
         ));
   }
 }

@@ -69,8 +69,17 @@ class Routers {
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
       case '/createbatch':
+        String session = '';
+        List<String> uids = [];
+        if (setting.arguments != null) {
+          final itemsMap = setting.arguments as Map;
+          session = itemsMap['session'];
+          uids = itemsMap['uids'];
+        }
+
         return MaterialPageRoute(
-            builder: (context) => const CreateBatchScreen());
+            builder: (context) =>
+                CreateBatchScreen(session: session, uids: uids));
       case '/showbatch':
         return MaterialPageRoute(builder: (context) => const ShowBatchScreen());
       case '/viewbatch':
