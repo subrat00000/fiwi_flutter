@@ -15,6 +15,69 @@ class AdminAttendanceScreen extends StatefulWidget {
 class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String dt = DateTime.now().microsecondsSinceEpoch.toString();
+  List<String> batch = [];
+
+  openDialog(myClasses) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          // title: Text('Choose Batch'),
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  children: [
+                    const SizedBox(height: 25,),
+                    Text('Choose Batch',style: TextStyle(fontSize: 20),),
+                    const SizedBox(height: 15,),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: batch.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                title: Text(batch[index]),
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/qrscreen', arguments: {
+                                    'session': batch[index],
+                                    'semester': myClasses[index]['semester'],
+                                    'subject_code': myClasses[index]['code'],
+                                    'subject_name': myClasses[index]['name'],
+                                    'datetime': dt
+                                  });
+                                },
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  getBatch() async {
+    List<String> bt = await BlocProvider.of<QrCubit>(context).getBatchDetails();
+    setState(() {
+      batch = bt;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getBatch();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,17 +139,7 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                                   subtitle: Text(myClasses[index]['semester']),
                                   trailing: ElevatedButton(
                                       onPressed: () {
-                                        // BlocProvider.of<QrCubit>(context).initializeAttendance('2021-23', myClasses[index]['semester'],dt);
-                                        Navigator.pushNamed(
-                                            context, '/qrscreen',
-                                            arguments: {
-                                              'session': '2021-23',
-                                              'semester': myClasses[index]
-                                                  ['semester'],
-                                              'subject': myClasses[index]
-                                                  ['code'],
-                                              'datetime': dt
-                                            });
+                                        openDialog(myClasses);
                                       },
                                       style: const ButtonStyle(
                                           backgroundColor:

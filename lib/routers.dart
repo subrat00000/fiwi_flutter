@@ -9,8 +9,9 @@ import 'package:fiwi/view/admin/batch/create_batch.dart';
 import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
-import 'package:fiwi/view/attendance/manage_attendance_screen.dart';
-import 'package:fiwi/view/attendance/qr_screen.dart';
+import 'package:fiwi/view/attendance/previleged/manage_attendance_screen.dart';
+import 'package:fiwi/view/attendance/previleged/qr_screen.dart';
+import 'package:fiwi/view/attendance/previleged/student_attendance.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile/edit_profile_screen.dart';
@@ -69,11 +70,25 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/studentattendance':
+        final itemsMap = setting.arguments as Map;
+        String session = itemsMap['session'];
+        String semester = itemsMap['semester'];
+        String subjectCode = itemsMap['subject_code'];
+        String subjectName = itemsMap['subject_name'];
+        String dt = itemsMap['datetime'];
+        return MaterialPageRoute(
+            builder: (context) => StudentAttendanceScreen(session:session,semester:semester,subjectCode:subjectCode,subjectName: subjectName,datetime:dt));
       case '/qrscreen':
-        final args = setting.arguments;
+        final itemsMap = setting.arguments as Map;
+        String session = itemsMap['session'];
+        String semester = itemsMap['semester'];
+        String subjectCode = itemsMap['subject_code'];
+        String subjectName = itemsMap['subject_name'];
+        String dt = itemsMap['datetime'];
         return MaterialPageRoute(
             builder: (context) => QrScreen(
-                  qrdata: args.toString(),
+                  session:session,semester:semester,subjectCode:subjectCode,subjectName: subjectName,datetime:dt
                 ));
       case '/createbatch':
         String session = '';

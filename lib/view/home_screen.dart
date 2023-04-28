@@ -15,9 +15,9 @@ import 'package:fiwi/cubits/internet_cubit.dart';
 import 'package:fiwi/repositories/notification.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/view/admin/admin_screen.dart';
-import 'package:fiwi/view/attendance/attendance_screen.dart';
-import 'package:fiwi/view/attendance/admin_attendance_screen.dart';
-import 'package:fiwi/view/attendance/faculty_attendance_screen.dart';
+import 'package:fiwi/view/attendance/previleged/admin_attendance_screen.dart';
+import 'package:fiwi/view/attendance/previleged/attendance_screen.dart';
+import 'package:fiwi/view/attendance/previleged/faculty_attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
 import 'package:fiwi/view/library/library_screen.dart';
 import 'package:fiwi/view/library/previleged_library_screen.dart';
@@ -98,7 +98,7 @@ class HomeScreenState extends State<HomeScreen> {
       BlocProvider.of<HomeCubit>(context).getAuthentication();
       // context.read<HomeCubit>().getAuthentication();
     });
-
+    BlocProvider.of<HomeCubit>(context).getKey();
     // final databaseReference = FirebaseDatabase.instance.ref('timetable/semester1');
 
     // final data = [[{

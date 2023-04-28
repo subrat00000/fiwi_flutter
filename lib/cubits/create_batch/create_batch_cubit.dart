@@ -13,17 +13,6 @@ class CreateBatchCubit extends Cubit<CreateBatchState> {
   final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
   final DatabaseReference bref = FirebaseDatabase.instance.ref('batch');
 
-  getSelectedStudent(List<String> uids) async {
-    final futures =
-        uids.map((e) => FirebaseDatabase.instance.ref('users').child(e).get());
-    final results = await Future.wait(futures);
-
-    return results.map((users) {
-      final itemsMap = users.value as Map;
-      return itemsMap;
-    }).toList();
-  }
-
   Future getStudents() async {
     DataSnapshot users =
         await ref.orderByChild('role').equalTo('student').get();

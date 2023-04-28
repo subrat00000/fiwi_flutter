@@ -17,8 +17,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ViewBatchScreen extends StatefulWidget {
-  final String? session;
-  final List<String>? uids;
+  final String session;
+  final List<String> uids;
   const ViewBatchScreen({
     super.key,
     required this.session,
@@ -30,20 +30,27 @@ class ViewBatchScreen extends StatefulWidget {
 }
 
 class _ViewBatchScreenState extends State<ViewBatchScreen> {
-  List<Map<dynamic, dynamic>> student = [];
+  List<Student> student = [];
 
   selectedStudent(uids) async {
-    final st = await BlocProvider.of<CreateBatchCubit>(context)
-        .getSelectedStudent(uids);
+    List<Student> ur =
+        await BlocProvider.of<CreateBatchCubit>(context).getStudents();
+    for (int i = 0; i < ur.length; i++) {
+      if (uids.contains(ur[i].uid)) {
+        setState(() {
+          ur[i].selected = true;
+        });
+      }
+    }
     setState(() {
-      student = st;
+      student = ur;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    selectedStudent(widget.uids!);
+    selectedStudent(widget.uids);
   }
 
   @override
@@ -78,7 +85,7 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        '${student[index]['name']}(${student[index]['semester']})',
+                        '${student[index].name}(${student[index].semester})',
                         style: const TextStyle(color: Colors.black87),
                       ),
                       leading: Container(
@@ -88,11 +95,11 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: student[index]['photo'] != null &&
-                                student[index]['photo'] != ''
+                        child: student[index].photo != null &&
+                                student[index].photo != ''
                             ? CachedNetworkImage(
                                 fit: BoxFit.cover,
-                                imageUrl: student[index]['photo'],
+                                imageUrl: student[index].photo!,
                                 progressIndicatorBuilder:
                                     (context, url, downloadProgress) =>
                                         CircularProgressIndicator(
@@ -102,9 +109,9 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
                               )
                             : Image.asset('assets/no_image.png'),
                       ),
-                      subtitle: student[index]['email'] != null
-                          ? Text(student[index]['email'])
-                          : Text(student[index]['phone']),
+                      subtitle: student[index].email != null
+                          ? Text(student[index].email!)
+                          : Text(student[index].phone!),
                       // onTap: () {
                       //   // Navigator.pushNamed(context, itemsMap[a]['route']);
                       // },
