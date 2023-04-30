@@ -20,8 +20,8 @@ class QrCubit extends Cubit<QrState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   QrCubit() : super(QrInitialState());
 
-  initializeAttendance(
-      String session, String semester, String subjectCode,String subjectName, String dt) async {
+  initializeAttendance(String session, String semester, String subjectCode,
+      String subjectName, String dt) async {
     try {
       emit(QrInitialState());
       DataSnapshot students = await bref.child(session).child('uid').get();
@@ -52,31 +52,36 @@ class QrCubit extends Cubit<QrState> {
       if (value.exists) {
         emit(AttendanceAlreadyInitialized(encrypted.base64));
       } else {
-        attref
-            .child(session)
-            .child(semester)
-            .child(subjectCode.toLowerCase())
-            .child(dt)
-            .set({
+        DatabaseReference sessionRef = attref.child(session);
+        DatabaseReference semesterRef = sessionRef.child(semester);
+        DatabaseReference subjectRef =
+            semesterRef.child(subjectCode.toLowerCase());
+        DatabaseReference dtRef = subjectRef.child(dt);
+        // DatabaseReference uidsRef = dtRef.child('uids');
+        await dtRef.set({
           'createdAt': dt,
           'semester': oldSemesterValue,
           'session': session,
           'subject_code': subjectCode,
-          'subject_name':subjectName,
-          'encrypted_qr':encrypted.base64,
+          'subject_name': subjectName,
+          'encrypted_qr': encrypted.base64,
           'qractive': true,
           'adminOrFacultyUid': _auth.currentUser!.uid
         });
-        for (int i = 0; i < itemsValue.length; i++) {
-          attref
-              .child(session)
-              .child(semester)
-              .child(subjectCode.toLowerCase())
-              .child(dt)
-              .child('uids')
-              .child(itemsValue[i])
-              .update({'uid':itemsValue[i],'status': false});
-        }
+        TransactionResult result = await dtRef.runTransaction((post) {
+          if (post == null) {
+            return Transaction.abort();
+          }
+          Map<String, dynamic> data = Map<String, dynamic>.from(post as Map);
+
+          for (int i = 0; i < itemsValue.length; i++) {
+            data['uids'] = {
+              itemsValue[i]: {'uid': itemsValue[i], 'status': false}
+            };
+          }
+          return Transaction.success(data);
+        });
+        log(result.committed.toString());
         emit(PreSetupForAttendanceSuccessState(encrypted.base64));
       }
     } catch (e) {
@@ -90,6 +95,7 @@ class QrCubit extends Cubit<QrState> {
     final itemsList = itemsMap.keys.map((e) => e.toString()).toList();
     return itemsList;
   }
+
   Future getStudents() async {
     DataSnapshot users =
         await ref.orderByChild('role').equalTo('student').get();
@@ -107,5 +113,22 @@ class QrCubit extends Cubit<QrState> {
             semester: e['semester']))
         .toList();
     return value;
+  }
+
+  takeAttendance(String session, String semester, String subject,
+      String datetime, String uid, bool value) {
+    try {
+      attref
+          .child(session)
+          .child(semester.toLowerCase().replaceAll(' ', ''))
+          .child(subject.toLowerCase())
+          .child(datetime)
+          .child('uids')
+          .child(uid)
+          .update({'status': value});
+      emit(TakeAttendanceSuccessState());
+    } catch (e) {
+      emit(TakeAttendanceErrorState(e.toString()));
+    }
   }
 }

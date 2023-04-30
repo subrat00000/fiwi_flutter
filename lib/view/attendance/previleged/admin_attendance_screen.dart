@@ -67,6 +67,9 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
 
   getBatch() async {
     List<String> bt = await BlocProvider.of<QrCubit>(context).getBatchDetails();
+    if (!mounted) {
+      return;
+    }
     setState(() {
       batch = bt;
     });
@@ -133,7 +136,10 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                                 child: ListTile(
                                   onTap: () => Navigator.pushNamed(
                                       context, '/manageattendance',
-                                      arguments: myClasses[index]['uid']),
+                                      arguments: {'semester':myClasses[index]['semester'],
+                                      'subject_code':myClasses[index]['code'],
+                                      'subject_name':myClasses[index]['name'],
+                                      'datetime':dt}),
                                   title: Text(
                                       '${myClasses[index]['name']}(${myClasses[index]['code']})'),
                                   subtitle: Text(myClasses[index]['semester']),

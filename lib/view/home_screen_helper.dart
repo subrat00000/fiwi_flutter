@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
+import 'package:fiwi/models/chartdata.dart';
 import 'package:fiwi/models/timetable.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,7 @@ class HomeScreenHelper extends StatefulWidget {
   State<HomeScreenHelper> createState() => HomeScreenHelperState();
 }
 
-class ChartData {
-  ChartData(this.month, this.totalClass, this.attendedClass);
 
-  final String month;
-  final double totalClass;
-  final double attendedClass;
-}
 
 class HomeScreenHelperState extends State<HomeScreenHelper> {
   late TrackballBehavior _trackballBehavior;

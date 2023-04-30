@@ -112,9 +112,13 @@ class Routers {
             builder: (context) =>
                 ViewBatchScreen(session: session, uids: uids));
       case '/manageattendance':
-        final args = setting.arguments;
+        final itemsMap = setting.arguments as Map;
+        String semester = itemsMap['semester'];
+        String subjectCode = itemsMap['subject_code'];
+        String subjectName = itemsMap['subject_name'];
+        String dt = itemsMap['datetime'];
         return MaterialPageRoute(
-            builder: (context) => ManageAttendanceScreen(args));
+            builder: (context) => ManageAttendanceScreen(semester:semester,subjectCode:subjectCode,subjectName:subjectName,datetime:dt));
       case '/assignfaculty':
         final args = setting.arguments;
         return MaterialPageRoute(

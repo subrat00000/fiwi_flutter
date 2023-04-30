@@ -11,6 +11,12 @@ class AttendanceAlreadyInitialized extends QrState{
   String encryptedOldMessage;
   AttendanceAlreadyInitialized(this.encryptedOldMessage);
 }
+class TakeAttendanceSuccessState extends QrState{}
+
+class TakeAttendanceErrorState extends QrState {
+  String error;
+  TakeAttendanceErrorState(this.error);
+}
 
 class QrErrorState extends QrState {
   String error;

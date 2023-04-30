@@ -39,8 +39,8 @@ class _QrScreenState extends State<QrScreen> {
     super.initState();
     dt = DateTime.now().microsecondsSinceEpoch.toString();
     updatedt = widget.datetime;
-    BlocProvider.of<QrCubit>(context).initializeAttendance(
-        widget.session, widget.semester, widget.subjectCode,widget.subjectName, updatedt!);
+    BlocProvider.of<QrCubit>(context).initializeAttendance(widget.session,
+        widget.semester, widget.subjectCode, widget.subjectName, updatedt!);
   }
 
   @override
@@ -132,14 +132,24 @@ class _QrScreenState extends State<QrScreen> {
                         borderRadius: 50,
                         icontext: false,
                         onPressed: () {
-                          Navigator.pushNamed(context, '/studentattendance',
-                              arguments: {
-                                'session': widget.session,
-                                'semester': widget.semester,
-                                'subject_code': widget.subjectCode,
-                                'subject_name':widget.subjectName,
-                                'datetime': updatedt
-                              });
+                          if (state is PreSetupForAttendanceSuccessState || state is AttendanceAlreadyInitialized) {
+                            Navigator.pushNamed(context, '/studentattendance',
+                                arguments: {
+                                  'session': widget.session,
+                                  'semester': widget.semester,
+                                  'subject_code': widget.subjectCode,
+                                  'subject_name': widget.subjectName,
+                                  'datetime': updatedt
+                                });
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                              content:const Text(
+                                  "Initialization is in progress. Please wait a second."),
+                              backgroundColor: Colors.redAccent[400],
+                              behavior: SnackBarBehavior.floating,
+                            ));
+                          }
                         }),
                   ),
                 ],
