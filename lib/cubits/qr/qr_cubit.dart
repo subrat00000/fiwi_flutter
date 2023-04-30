@@ -52,7 +52,11 @@ class QrCubit extends Cubit<QrState> {
       if (value.exists) {
         emit(AttendanceAlreadyInitialized(encrypted.base64));
       } else {
-        DatabaseReference dtRef = attref.child(session).child(semester).child(subjectCode.toLowerCase()).child(dt);
+        DatabaseReference dtRef = attref
+            .child(session)
+            .child(semester)
+            .child(subjectCode.toLowerCase())
+            .child(dt);
         // DatabaseReference uidsRef = dtRef.child('uids');
         await dtRef.set({
           'createdAt': dt,
@@ -70,11 +74,13 @@ class QrCubit extends Cubit<QrState> {
           }
           Map<String, dynamic> data = Map<String, dynamic>.from(post as Map);
           log(itemsValue.toString());
+          Map<String, dynamic> uidList = {};
+          final map = {};
           for (int i = 0; i < itemsValue.length; i++) {
-            data['uids'] = {
-              itemsValue[i]: {'uid': itemsValue[i], 'status': false}
-            };
+            
+                uidList[itemsValue[i]] ={'uid': itemsValue[i], 'status': false};
           }
+          data['uids'] = uidList;
           return Transaction.success(data);
         });
         if (result.committed) {

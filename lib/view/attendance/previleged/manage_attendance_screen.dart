@@ -83,8 +83,6 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                   .length))
           .toList();
     });
-    // final attendanceDate = itemsList.map((e)=> DateTime.fromMicrosecondsSinceEpoch(int.parse(e['createdAt'])).day).toList();
-    // log(uids.toString());
   }
 
   _modalDelete(index, courses) {

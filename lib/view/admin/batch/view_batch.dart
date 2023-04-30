@@ -33,7 +33,12 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
   List<Student> student = [];
   List<String> uidsvalue=[];
 
-  selectedStudent(uids) async {
+  selectedStudent(List<String> uids) async {
+    if(uids.isEmpty){
+      setState(() {
+        uids = widget.uids;
+      });
+    }
     List<Student> a =
         await BlocProvider.of<CreateBatchCubit>(context).getStudents();
 
@@ -42,6 +47,9 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
       student = ur;
       uidsvalue = uids;
     });
+    log(uidsvalue.toString());
+    log(widget.uids.toString());
+    
   }
 
   @override
@@ -57,7 +65,7 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
           onPressed: () => Navigator.pushNamed(context, '/createbatch',
                   arguments: {'session': widget.session, 'uids': uidsvalue})
               .then((result) =>
-                  selectedStudent(List<String>.from(result as List))),
+                  selectedStudent(List<String>.from(result as List<String>))),
           child: Icon(Icons.edit_rounded),
         ),
         appBar: AppBar(
