@@ -52,11 +52,7 @@ class QrCubit extends Cubit<QrState> {
       if (value.exists) {
         emit(AttendanceAlreadyInitialized(encrypted.base64));
       } else {
-        DatabaseReference sessionRef = attref.child(session);
-        DatabaseReference semesterRef = sessionRef.child(semester);
-        DatabaseReference subjectRef =
-            semesterRef.child(subjectCode.toLowerCase());
-        DatabaseReference dtRef = subjectRef.child(dt);
+        DatabaseReference dtRef = attref.child(session).child(semester).child(subjectCode.toLowerCase()).child(dt);
         // DatabaseReference uidsRef = dtRef.child('uids');
         await dtRef.set({
           'createdAt': dt,
@@ -73,7 +69,7 @@ class QrCubit extends Cubit<QrState> {
             return Transaction.abort();
           }
           Map<String, dynamic> data = Map<String, dynamic>.from(post as Map);
-
+          log(itemsValue.toString());
           for (int i = 0; i < itemsValue.length; i++) {
             data['uids'] = {
               itemsValue[i]: {'uid': itemsValue[i], 'status': false}
@@ -81,8 +77,13 @@ class QrCubit extends Cubit<QrState> {
           }
           return Transaction.success(data);
         });
+        if (result.committed) {
+          emit(PreSetupForAttendanceSuccessState(encrypted.base64));
+        } else {
+          await dtRef.remove();
+          emit(QrErrorState("Transaction failed. Please try again"));
+        }
         log(result.committed.toString());
-        emit(PreSetupForAttendanceSuccessState(encrypted.base64));
       }
     } catch (e) {
       emit(QrErrorState(e.toString()));

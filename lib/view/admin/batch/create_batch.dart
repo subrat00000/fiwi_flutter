@@ -41,6 +41,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   String batchName = 'session';
   final batchFocusNode = FocusNode();
   bool update = false;
+  List<String> uidsvalue=[];
 
   @override
   void initState() {
@@ -63,10 +64,12 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   _loadData() async {
     List<Student> ur =
         await BlocProvider.of<CreateBatchCubit>(context).getStudents();
-    sessionValue = widget.session;
+
     if (widget.uids.isNotEmpty) {
       setState(() {
         update = true;
+        sessionValue = widget.session;
+        uidsvalue = widget.uids;
       });
     }
     for (int i = 0; i < ur.length; i++) {
@@ -104,10 +107,11 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 .where((e) => e.selected == true)
                 .map((e) => e.uid!)
                 .toList();
+            setState(() {
+              uidsvalue = value;
+            });
             log(value.toString());
-            if (sessionValue != null ||
-                value.isNotEmpty ||
-                semesterValue != null) {
+            if (sessionValue != null && value.isNotEmpty) {
               BlocProvider.of<CreateBatchCubit>(context)
                   .createBatch(sessionValue!, update, value);
             } else {
@@ -131,7 +135,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 myFocusNode.unfocus();
                 filteredUser = users;
               } else {
-                Navigator.pop(context);
+                Navigator.pop(context,uidsvalue);
               }
             },
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
@@ -209,7 +213,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       }).toList();
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Search',
                     border: InputBorder.none,
                   ),
@@ -218,29 +222,37 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     batchName == 'session'
-                        ? SizedBox(
-                            width: 100,
-                            child: DropdownButton<String>(
-                              icon: Icon(Icons.edit_outlined),
-                              hint: const Text("Session"),
-                              elevation: 0,
-                              underline: Container(),
-                              style: TextStyle(color: Colors.black87),
-                              items: batchYears.map<DropdownMenuItem<String>>(
-                                  (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              value: sessionValue == '' ? null : sessionValue,
-                              onChanged: (String? value) {
-                                setState(() {
-                                  sessionValue = value;
-                                });
-                              },
-                            ),
-                          )
+                        ? widget.session == ''
+                            ? SizedBox(
+                                width: 100,
+                                child: DropdownButton<String>(
+                                  icon: const Icon(Icons.edit_outlined),
+                                  hint: const Text("Session"),
+                                  elevation: 0,
+                                  underline: Container(),
+                                  style: const TextStyle(color: Colors.black87),
+                                  items: batchYears
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  value:
+                                      sessionValue == '' ? null : sessionValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      sessionValue = value;
+                                    });
+                                  },
+                                ),
+                              )
+                            : Text(
+                                widget.session,
+                                style: const TextStyle(
+                                    color: Colors.black87, fontSize: 16),
+                              )
                         : Expanded(
                             child: TextField(
                               onChanged: (value) => setState(() {
@@ -271,14 +283,16 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 backgroundColor: Colors.green,
                 behavior: SnackBarBehavior.floating,
               ));
-              Navigator.pop(context);
+              Navigator.pop(context,uidsvalue);
             } else if (state is UpdateBatchSuccessState) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("Batch Updated Successfully"),
                 backgroundColor: Colors.green,
                 behavior: SnackBarBehavior.floating,
               ));
-              Navigator.pop(context);
+              Navigator.pop(
+                context, uidsvalue
+              );
             } else if (state is CreateBatchErrorState) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(state.error.toString()),
@@ -327,12 +341,10 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       padding: const EdgeInsets.all(10.0),
                       itemCount: filteredUser.length,
                       itemBuilder: (context, index) {
-                        // return ListTile(
-                        //     title: Text(filteredUser[index]['name']));
                         return Card(
                           child: ListTile(
                             title: Text(
-                                '${filteredUser[index].name}(${filteredUser[index].session})'),
+                                '${filteredUser[index].name}(${filteredUser[index].semester})'),
                             trailing: Checkbox(
                               onChanged: (value) {
                                 setState(() {
@@ -350,8 +362,8 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                               value: filteredUser[index].selected,
                             ),
                             subtitle: filteredUser[index].email != null
-                                ? Text(filteredUser[index].email!)
-                                : Text(filteredUser[index].phone!),
+                                ? Text('${filteredUser[index].email!}(${filteredUser[index].session})')
+                                : Text('${filteredUser[index].phone!}(${filteredUser[index].session})'),
                             leading: Container(
                               width: 55,
                               height: 55,

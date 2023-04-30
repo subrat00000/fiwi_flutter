@@ -31,19 +31,16 @@ class ViewBatchScreen extends StatefulWidget {
 
 class _ViewBatchScreenState extends State<ViewBatchScreen> {
   List<Student> student = [];
+  List<String> uidsvalue=[];
 
   selectedStudent(uids) async {
-    List<Student> ur =
+    List<Student> a =
         await BlocProvider.of<CreateBatchCubit>(context).getStudents();
-    for (int i = 0; i < ur.length; i++) {
-      if (uids.contains(ur[i].uid)) {
-        setState(() {
-          ur[i].selected = true;
-        });
-      }
-    }
+
+    List<Student> ur = a.where((e) => uids.contains(e.uid)).toList();
     setState(() {
       student = ur;
+      uidsvalue = uids;
     });
   }
 
@@ -58,7 +55,9 @@ class _ViewBatchScreenState extends State<ViewBatchScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.pushNamed(context, '/createbatch',
-              arguments: {'session': widget.session, 'uids': widget.uids}),
+                  arguments: {'session': widget.session, 'uids': uidsvalue})
+              .then((result) =>
+                  selectedStudent(List<String>.from(result as List))),
           child: Icon(Icons.edit_rounded),
         ),
         appBar: AppBar(

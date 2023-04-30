@@ -14,11 +14,11 @@ class CreateBatchCubit extends Cubit<CreateBatchState> {
   final DatabaseReference bref = FirebaseDatabase.instance.ref('batch');
 
   Future getStudents() async {
-    DataSnapshot users =
-        await ref.orderByChild('role').equalTo('student').get();
-    final itemsMap = users.value as Map;
+    DatabaseEvent users =
+        await ref.orderByChild('role').equalTo('student').once();
+    final itemsMap = users.snapshot.value as Map;
     final itemsList = itemsMap.values.toList();
-    List<Student> value = itemsList
+    return itemsList
         .map((e) => Student(
             email: e['email'],
             name: e['name'],
@@ -29,27 +29,58 @@ class CreateBatchCubit extends Cubit<CreateBatchState> {
             session: e['session'],
             semester: e['semester']))
         .toList();
-    return value;
   }
 
   Future createBatch(
       String sessionValue, bool update, List<String> value) async {
     try {
-      DataSnapshot batch = await bref.child(sessionValue).get();
+      DatabaseReference sessionRef = bref.child(sessionValue);
+      DataSnapshot batch = await sessionRef.get();
       if (!batch.exists) {
-        //create
-        bref.child(sessionValue).set({'session': sessionValue});
-        for (int i = 0; i < value.length; i++) {
-          bref.child(sessionValue).child('uid').update({value[i]: ''});
+        await sessionRef.set({'session':sessionValue});
+        TransactionResult result = await sessionRef.runTransaction((post) {
+          if (post == null) {
+            return Transaction.abort();
+          }
+          Map<String, dynamic> data = Map<String, dynamic>.from(post as Map);
+          Map<String, dynamic> uids = {};
+          for (int i = 0; i < value.length; i++) {
+            uids[value[i]]= '';
+          }
+          data['session']=sessionValue;
+          data['uid'] = uids;
+          log(data.toString());
+          return Transaction.success(data);
+        });
+        log(result.committed.toString());
+        if (result.committed) {
+          emit(CreateBatchSuccessState());
+        } else {
+          await sessionRef.remove();
+          emit(CreateBatchErrorState('Something Went Worng! Please try again'));
         }
-        emit(CreateBatchSuccessState());
       } else {
         if (update) {
           //update
-          for (int i = 0; i < value.length; i++) {
-            bref.child(sessionValue).child('uid').update({value[i]: ''});
+          TransactionResult result = await sessionRef.runTransaction((post) {
+            if (post == null) {
+              return Transaction.abort();
+            }
+            Map<String, dynamic> data = Map<String, dynamic>.from(post as Map);
+            Map<String, dynamic> uids = {};
+            for (int i = 0; i < value.length; i++) {
+              uids[value[i]]= '';
+            }
+            data['uid'] = uids;
+            log(data.toString());
+            return Transaction.success(data);
+          });
+          if (result.committed) {
+            emit(UpdateBatchSuccessState());
+          } else {
+            emit(CreateBatchErrorState(
+                'Something Went Worng! Please try again'));
           }
-          emit(UpdateBatchSuccessState());
         } else {
           emit(CreateBatchErrorState('A batch with same value already exist'));
         }

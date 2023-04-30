@@ -26,43 +26,43 @@ class ShowBatchScreen extends StatefulWidget {
 class _ShowBatchScreenState extends State<ShowBatchScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  deleteBatch(session){
+  deleteBatch(session) {
     showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Do you want to delete ',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: '$session',
-                        style: TextStyle(color: Colors.red[300]),
-                      ),
-                      TextSpan(
-                        text: '?',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Do you want to delete ',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    TextSpan(
+                      text: '$session',
+                      style: TextStyle(color: Colors.red[300]),
+                    ),
+                    TextSpan(
+                      text: '?',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
                 ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('No'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      BlocProvider.of<CreateBatchCubit>(context)
-                          .deleteBatch(session);
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Yes'),
-                  ),
-                ],
-              ));
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    BlocProvider.of<CreateBatchCubit>(context)
+                        .deleteBatch(session);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -104,11 +104,6 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
                       padding: const EdgeInsets.all(10.0),
                       itemCount: itemsList.length,
                       itemBuilder: (context, index) {
-                        final value = itemsList[index]['uid'] as Map;
-                        List<String> valueList = value.keys
-                            .toList()
-                            .map((e) => e.toString())
-                            .toList();
                         return Card(
                           child: ListTile(
                             trailing: PopupMenuButton(
@@ -118,6 +113,11 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
                               ),
                               onSelected: (value) {
                                 if (value == 0) {
+                                  final value = itemsList[index]['uid'] as Map;
+                                  List<String> valueList = value.keys
+                                      .toList()
+                                      .map((e) => e.toString())
+                                      .toList();
                                   Navigator.pushNamed(context, '/createbatch',
                                       arguments: {
                                         'session': itemsList[index]['session'],
@@ -154,6 +154,11 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
                             ),
                             title: Text('${itemsList[index]['session']}'),
                             onTap: () {
+                              final value = itemsList[index]['uid'] as Map;
+                              List<String> valueList = value.keys
+                                  .toList()
+                                  .map((e) => e.toString())
+                                  .toList();
                               Navigator.pushNamed(context, '/viewbatch',
                                   arguments: {
                                     'session': itemsList[index]['session'],
