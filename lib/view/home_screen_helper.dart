@@ -27,20 +27,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
   String chartValue = 'Day';
   List tableList = [];
   List<String> items = ['Semester', 'Month', 'Week', 'Day'];
-  final List<ChartData> data = <ChartData>[
-    ChartData('Jan', 15, 10),
-    ChartData('Feb', 20, 13),
-    ChartData('Mar', 25, 25),
-    ChartData('May', 13, 10),
-    ChartData('Apr', 21, 21),
-    ChartData('Jun', 18, 18),
-    ChartData('Jul', 24, 24),
-    ChartData('Aug', 23, 23),
-    ChartData('Sep', 19, 19),
-    ChartData('Oct', 31, 31),
-    ChartData('Nov', 39, 39),
-    ChartData('Dec', 50, 30),
-  ];
+  
 
   @override
   void initState() {
@@ -204,27 +191,7 @@ class HomeScreenHelperState extends State<HomeScreenHelper> {
               ),
               Container(
                 height: height * 0.2,
-                child: SfCartesianChart(
-                    enableAxisAnimation: true,
-                    primaryXAxis: CategoryAxis(),
-                    trackballBehavior: _trackballBehavior,
-                    series: <LineSeries<ChartData, String>>[
-                      LineSeries<ChartData, String>(
-                        dataSource: data,
-                        markerSettings: MarkerSettings(isVisible: true),
-                        name: 'Total No. of class',
-                        xValueMapper: (ChartData sales, _) => sales.month,
-                        yValueMapper: (ChartData sales, _) => sales.totalClass,
-                      ),
-                      LineSeries<ChartData, String>(
-                        dataSource: data,
-                        markerSettings: MarkerSettings(isVisible: true),
-                        name: 'Attended Class',
-                        xValueMapper: (ChartData sales, _) => sales.month,
-                        yValueMapper: (ChartData sales, _) =>
-                            sales.attendedClass,
-                      ),
-                    ]),
+                
               ),
             ],
           ))

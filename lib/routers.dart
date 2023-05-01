@@ -116,9 +116,8 @@ class Routers {
         String semester = itemsMap['semester'];
         String subjectCode = itemsMap['subject_code'];
         String subjectName = itemsMap['subject_name'];
-        String dt = itemsMap['datetime'];
         return MaterialPageRoute(
-            builder: (context) => ManageAttendanceScreen(semester:semester,subjectCode:subjectCode,subjectName:subjectName,datetime:dt));
+            builder: (context) => ManageAttendanceScreen(semester:semester,subjectCode:subjectCode,subjectName:subjectName));
       case '/assignfaculty':
         final args = setting.arguments;
         return MaterialPageRoute(

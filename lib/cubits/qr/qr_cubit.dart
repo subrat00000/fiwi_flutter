@@ -31,7 +31,7 @@ class QrCubit extends Cubit<QrState> {
       semester = semester.toLowerCase().replaceAll(' ', '');
       String plainText = jsonEncode({
         'session': session,
-        'semester': semester,
+        'semester': oldSemesterValue,
         'subject': subjectCode,
         'dt': dt
       });
@@ -42,54 +42,36 @@ class QrCubit extends Cubit<QrState> {
 
       final encrypted = encrypter.encrypt(plainText, iv: iv);
       // final decrypted = encrypter.decrypt(encrypted, iv: iv);
-
-      final value = await attref
+      DatabaseReference dtRef = attref
           .child(session)
           .child(semester)
           .child(subjectCode.toLowerCase())
-          .child(dt)
-          .get();
+          .child(dt);
+      final value = await dtRef.get();
       if (value.exists) {
         emit(AttendanceAlreadyInitialized(encrypted.base64));
       } else {
-        DatabaseReference dtRef = attref
-            .child(session)
-            .child(semester)
-            .child(subjectCode.toLowerCase())
-            .child(dt);
-        // DatabaseReference uidsRef = dtRef.child('uids');
-        await dtRef.set({
-          'createdAt': dt,
-          'semester': oldSemesterValue,
-          'session': session,
-          'subject_code': subjectCode,
-          'subject_name': subjectName,
-          'encrypted_qr': encrypted.base64,
-          'qractive': true,
-          'adminOrFacultyUid': _auth.currentUser!.uid
-        });
-        TransactionResult result = await dtRef.runTransaction((post) {
-          if (post == null) {
-            return Transaction.abort();
-          }
-          Map<String, dynamic> data = Map<String, dynamic>.from(post as Map);
-          log(itemsValue.toString());
-          Map<String, dynamic> uidList = {};
-          final map = {};
-          for (int i = 0; i < itemsValue.length; i++) {
-            
-                uidList[itemsValue[i]] ={'uid': itemsValue[i], 'status': false};
-          }
-          data['uids'] = uidList;
-          return Transaction.success(data);
-        });
-        if (result.committed) {
-          emit(PreSetupForAttendanceSuccessState(encrypted.base64));
-        } else {
-          await dtRef.remove();
-          emit(QrErrorState("Transaction failed. Please try again"));
+        Map<String, dynamic> uidList = {};
+
+        for (int i = 0; i < itemsValue.length; i++) {
+          uidList[itemsValue[i]] = {'uid': itemsValue[i], 'status': false};
         }
-        log(result.committed.toString());
+        await dtRef
+            .set({
+              'createdAt': dt,
+              'semester': oldSemesterValue,
+              'session': session,
+              'subject_code': subjectCode,
+              'subject_name': subjectName,
+              'encrypted_qr': encrypted.base64,
+              'qractive': true,
+              'adminOrFacultyUid': _auth.currentUser!.uid,
+              'uids': uidList
+            })
+            .then((value) =>
+                emit(PreSetupForAttendanceSuccessState(encrypted.base64)))
+            .onError(
+                (error, stackTrace) => emit(QrErrorState(error.toString())));
       }
     } catch (e) {
       emit(QrErrorState(e.toString()));

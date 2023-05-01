@@ -56,7 +56,11 @@ class _StudentAttendanceScreenState extends State<StudentAttendanceScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.popUntil(context, (route) => route.isFirst);
-          Navigator.pushNamed(context, '/manageattendance');
+          Navigator.pushNamed(context, '/manageattendance', arguments: {
+            'semester': widget.semester,
+            'subject_code': widget.subjectCode,
+            'subject_name': widget.subjectName,
+          });
         },
         child: const Icon(Icons.arrow_forward_ios_rounded),
       ),

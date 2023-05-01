@@ -20,23 +20,22 @@ class ManageAttendanceScreen extends StatefulWidget {
   final String semester;
   final String subjectCode;
   final String subjectName;
-  final String datetime;
-  const ManageAttendanceScreen(
-      {super.key,
-      required this.semester,
-      required this.subjectCode,
-      required this.subjectName,
-      required this.datetime});
+  const ManageAttendanceScreen({
+    super.key,
+    required this.semester,
+    required this.subjectCode,
+    required this.subjectName,
+  });
 
   @override
   State<ManageAttendanceScreen> createState() => _ManageAttendanceScreenState();
 }
 
 class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
-  List<ChartData>? data;
+  List<ChartData> chartData = [];
   List<String>? sessions;
   late TrackballBehavior _trackballBehavior;
-
+  int? totalStudent;
   @override
   void initState() {
     _trackballBehavior = TrackballBehavior(
@@ -65,24 +64,84 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         .child(widget.semester.toLowerCase().replaceAll(' ', ''))
         .child(widget.subjectCode.toLowerCase())
         .get();
-    final itemsMap = val.value as Map;
-    final itemsList = itemsMap.values.toList();
-    itemsList.sort((a, b) =>
-        a['createdAt'].toString().compareTo(b['createdAt'].toString()));
-    setState(() {
-      data = itemsList
-          .map((e) => ChartData(
-              DateFormat.Hm().format(DateTime.fromMicrosecondsSinceEpoch(
-                  int.parse(e['createdAt']))),
-              (e['uids'] as Map).values.toList().length,
-              (e['uids'] as Map)
-                  .values
-                  .toList()
-                  .where((e) => e['status'] == true)
-                  .toList()
-                  .length))
+    if (val.exists) {
+      final itemsMap =
+          Map<String, dynamic>.from(val.value as Map).values.toList();
+      final total = itemsMap.toList().length;
+      final presentList = itemsMap
+          .map((e) => (e['uids'] as Map)
+              .values
+              .toList()
+              .where((element) => element['status'] == true)
+              .toList())
           .toList();
-    });
+      log(presentList.toString());
+      final present = itemsMap
+          .map((e) => (e['uids'] as Map)
+              .values
+              .toList()
+              .where((element) => element['status'] == true)
+              .toList()
+              .length)
+          .toList();
+      double averagePresent = present.reduce((a, b) => a + b) / total;
+      final absent = itemsMap
+          .map((e) => (e['uids'] as Map)
+              .values
+              .toList()
+              .where((element) => element['status'] == false)
+              .toList()
+              .length)
+          .toList();
+      double averageAbsent = absent.reduce((a, b) => a + b) / total;
+      final batch = await FirebaseDatabase.instance
+          .ref('batch')
+          .child(sessionValue)
+          .child('uid')
+          .get();
+      List uids = (batch.value as Map).keys.toList();
+      int map = uids.length;
+      log(uids.toString());
+      // List<Map<String,dynamic>> a = [];
+      var countMap = Map<String, int>();
+
+// Loop through each element of a
+      presentList.forEach((element) {
+        // Loop through each map inside the element
+        element.forEach((map) {
+          // Check if the uid is in b
+          if (uids.contains(map['uid'])) {
+            // Increment the count for this uid
+            if (countMap.containsKey(map['uid'])) {
+              countMap[map['uid']]=countMap[map['uid']]!+1;
+            } else {
+              countMap[map['uid']] = 1;
+            }
+          }
+        });
+      });
+      log(countMap.toString());
+      // log(presentList
+      //     .map(
+      //       (a) => a
+      //           .map((b) => {
+      //                 'uid': b['uid'].toString(),
+      //                 'length':
+      //                     uids.where((c) => b['uid'].toString() == c).length
+      //               })
+      //           .toList(),
+      //     )
+      //     .toList()
+      //     .toString());
+
+      setState(() {
+        totalStudent = map;
+        chartData = [
+          ChartData('Present', averagePresent.round(), Colors.greenAccent),
+          ChartData('Absent', averageAbsent.round(), Colors.red[200]!)
+        ];
+      });
+    }
   }
 
   _modalDelete(index, courses) {
@@ -166,6 +225,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         margin: EdgeInsets.only(left: 16, right: 16),
         child: SingleChildScrollView(
             child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Center(
               child: ElevatedButton(
@@ -175,34 +235,53 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                       style: TextStyle(color: Colors.black87)),
                   onPressed: () {}),
             ),
-            data != null
-                ? Container(
-                    height: 200,
-                    child: SfCartesianChart(
-                        enableAxisAnimation: true,
-                        primaryXAxis: CategoryAxis(),
-                        primaryYAxis: NumericAxis(interval: 1),
-                        trackballBehavior: _trackballBehavior,
-                        series: <LineSeries<ChartData, String>>[
-                          LineSeries<ChartData, String>(
-                            dataSource: data!,
-                            markerSettings: MarkerSettings(isVisible: true),
-                            name: 'Total No. of class',
-                            xValueMapper: (ChartData value, _) => value.month,
-                            yValueMapper: (ChartData value, _) =>
-                                value.totalClass,
-                          ),
-                          LineSeries<ChartData, String>(
-                            dataSource: data!,
-                            markerSettings: MarkerSettings(isVisible: true),
-                            name: 'Attended Class',
-                            xValueMapper: (ChartData value, _) => value.month,
-                            yValueMapper: (ChartData value, _) =>
-                                value.attendedClass,
-                          ),
-                        ]),
-                  )
-                : Container(),
+            chartData.isNotEmpty
+                ? Card(
+                    // height: 200,
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                          child: Text(
+                        'Total Students: $totalStudent',
+                        style: TextStyle(fontSize: 17),
+                      )),
+                      Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          child: const Text(
+                            'Average Attendance',
+                            style: TextStyle(fontSize: 17),
+                          )),
+                      SfCircularChart(
+                          tooltipBehavior: TooltipBehavior(enable: true),
+                          series: <CircularSeries>[
+                            // Renders doughnut chart
+                            DoughnutSeries<ChartData, String>(
+                                enableTooltip: true,
+                                dataLabelSettings: const DataLabelSettings(
+                                  isVisible: true,
+                                  labelPosition: ChartDataLabelPosition.outside,
+                                ),
+                                dataLabelMapper: (datum, index) =>
+                                    '${datum.count}(${datum.x.split('')[0]})',
+                                dataSource: chartData,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color,
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.count)
+                          ]),
+                    ],
+                  ))
+                : Container(
+                    height: 300,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text('No Data Exist!!!')],
+                    ),
+                  ),
           ],
         )),
       ),
