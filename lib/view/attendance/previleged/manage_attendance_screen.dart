@@ -47,9 +47,11 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
     );
     super.initState();
     Timer(const Duration(seconds: 5), () {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     });
     _loadData();
     _loadChart('2021-23');
@@ -72,16 +74,11 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         .child(sessionValue)
         .child(widget.semester.toLowerCase().replaceAll(' ', ''))
         .child(widget.subjectCode.toLowerCase())
-        .get();
-    if (val.exists) {
-      final itemsMap = Map<String, dynamic>.from(val.value as Map).values;
+        .once();
+    if (val.snapshot.exists) {
+      final itemsMap = Map<String, dynamic>.from(val.snapshot.value as Map).values;
       final total = itemsMap.length;
-      final presentList = <Set<String>>{};
-      for (var e in itemsMap) {
-        for (var v in (e['uids'] as Map).values) {
-          if (v['status'] == true) presentList.add({v['uid']});
-        }
-      }
+
       final present = List.generate(total, (i) {
         final count = (itemsMap.elementAt(i)['uids'] as Map)
             .values
@@ -98,42 +95,40 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
       });
       double averagePresent = present.reduce((a, b) => a + b) / total;
       double averageAbsent = absent.reduce((a, b) => a + b) / total;
-      final batch = await FirebaseDatabase.instance
-          .ref('batch')
-          .child(sessionValue)
-          .child('uid')
-          .get();
-      final uids = (batch.value as Map).keys.toList();
-      final countMap = <String, int>{};
-      for (var element in presentList) {
-        for (var map in element) {
-          if (uids.contains(map)) {
-            if (countMap.containsKey(map)) {
-              countMap[map] = countMap[map]! + 1;
+      //Second doughnut
+      final presentList = {};
+      for (var e in itemsMap) {
+        for (var v in (e['uids'] as Map).values) {
+          if (v['status'] == true) {
+            if (presentList.containsKey(v['uid'])) {
+              presentList[v['uid']] = presentList[v['uid']] + 1;
             } else {
-              countMap[map] = 1;
+              presentList[v['uid']] = 1;
             }
           }
         }
       }
-      final outputMap = <int, Set<String>>{};
-      countMap.forEach((key, value) {
-        if (!outputMap.containsKey(value)) {
-          outputMap[value] = {};
-        }
-        outputMap[value]!.add(key);
-      });
-      final finalOutput = outputMap.entries.map((entry) {
-        return {'day': entry.key, 'student': entry.value.length};
-      }).toList();
-      log(finalOutput.toString());
+      log(presentList.toString());
+      final batch = await FirebaseDatabase.instance
+          .ref('batch')
+          .child(sessionValue)
+          .child('uid')
+          .once();
+      final uids = (batch.snapshot.value as Map).keys.toList();
+
       setState(() {
         totalStudent = uids.length;
         chartData = [
-          ChartData('Present', averagePresent.round(), Colors.greenAccent),
-          ChartData('Absent', averageAbsent.round(), Colors.red[200]!)
+          ChartData('Present', averagePresent.round(), Color(0x41F3A9)),
+          ChartData('Absent', averageAbsent.round(), Color(0xFC576D))
         ];
-        chartData2 = [];
+        chartData2 = [
+          ChartData('Present', averagePresent.round(), Color(0x41F3A9)),
+          ChartData('Absent', averageAbsent.round(), Color(0xFC576D)),
+          ChartData('Present', averagePresent.round(), Color(0x41F3A9)),
+          ChartData('Absent', averageAbsent.round(), Color(0xFC576D)),
+          ChartData('Present', averagePresent.round(), Color(0xFC576D)),
+        ];
       });
     }
     log((DateTime.now().difference(a).inMilliseconds).toString());
@@ -255,6 +250,10 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                           series: <CircularSeries>[
                             // Renders doughnut chart
                             DoughnutSeries<ChartData, String>(
+                                onPointTap: (a) {
+                                  log(a.dataPoints![a.pointIndex!].x
+                                      .toString());
+                                },
                                 enableTooltip: true,
                                 dataLabelSettings: const DataLabelSettings(
                                   isVisible: true,
@@ -268,13 +267,41 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                 xValueMapper: (ChartData data, _) => data.x,
                                 yValueMapper: (ChartData data, _) => data.count)
                           ]),
+                      Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          child: const Text(
+                            'Student - Class Atttended',
+                            style: TextStyle(fontSize: 17),
+                          )),
+                      SfCircularChart(
+                          tooltipBehavior: TooltipBehavior(enable: true),
+                          series: <CircularSeries>[
+                            // Renders doughnut chart
+                            DoughnutSeries<ChartData, String>(
+                                enableTooltip: true,
+                                dataLabelSettings: const DataLabelSettings(
+                                  isVisible: true,
+                                  labelPosition: ChartDataLabelPosition.outside,
+                                ),
+                                dataLabelMapper: (datum, index) =>
+                                    '${datum.count} - ${datum.x}',
+                                dataSource: chartData2,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color,
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.count)
+                          ]),
                     ],
                   ))
                 : Container(
                     height: 300,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [ _isLoading?CircularProgressIndicator(): Text('No Data Exist!!!')],
+                      children: [
+                        _isLoading
+                            ? CircularProgressIndicator()
+                            : Text('No Data Exist!!!')
+                      ],
                     ),
                   ),
           ],
