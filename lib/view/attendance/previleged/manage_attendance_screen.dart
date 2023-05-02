@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ffi';
 
@@ -33,9 +34,11 @@ class ManageAttendanceScreen extends StatefulWidget {
 
 class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   List<ChartData> chartData = [];
+  List<ChartData> chartData2 = [];
   List<String>? sessions;
   late TrackballBehavior _trackballBehavior;
   int? totalStudent;
+  bool _isLoading = true;
   @override
   void initState() {
     _trackballBehavior = TrackballBehavior(
@@ -43,6 +46,11 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
       tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
     );
     super.initState();
+    Timer(const Duration(seconds: 5), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
     _loadData();
     _loadChart('2021-23');
   }
@@ -58,6 +66,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   }
 
   _loadChart(sessionValue) async {
+    DateTime a = DateTime.now();
     final val = await FirebaseDatabase.instance
         .ref('attendance')
         .child(sessionValue)
@@ -65,83 +74,69 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         .child(widget.subjectCode.toLowerCase())
         .get();
     if (val.exists) {
-      final itemsMap =
-          Map<String, dynamic>.from(val.value as Map).values.toList();
-      final total = itemsMap.toList().length;
-      final presentList = itemsMap
-          .map((e) => (e['uids'] as Map)
-              .values
-              .toList()
-              .where((element) => element['status'] == true)
-              .toList())
-          .toList();
-      log(presentList.toString());
-      final present = itemsMap
-          .map((e) => (e['uids'] as Map)
-              .values
-              .toList()
-              .where((element) => element['status'] == true)
-              .toList()
-              .length)
-          .toList();
+      final itemsMap = Map<String, dynamic>.from(val.value as Map).values;
+      final total = itemsMap.length;
+      final presentList = <Set<String>>{};
+      for (var e in itemsMap) {
+        for (var v in (e['uids'] as Map).values) {
+          if (v['status'] == true) presentList.add({v['uid']});
+        }
+      }
+      final present = List.generate(total, (i) {
+        final count = (itemsMap.elementAt(i)['uids'] as Map)
+            .values
+            .where((element) => element['status'] == true)
+            .length;
+        return count;
+      });
+      final absent = List.generate(total, (i) {
+        final count = (itemsMap.elementAt(i)['uids'] as Map)
+            .values
+            .where((element) => element['status'] == false)
+            .length;
+        return count;
+      });
       double averagePresent = present.reduce((a, b) => a + b) / total;
-      final absent = itemsMap
-          .map((e) => (e['uids'] as Map)
-              .values
-              .toList()
-              .where((element) => element['status'] == false)
-              .toList()
-              .length)
-          .toList();
       double averageAbsent = absent.reduce((a, b) => a + b) / total;
       final batch = await FirebaseDatabase.instance
           .ref('batch')
           .child(sessionValue)
           .child('uid')
           .get();
-      List uids = (batch.value as Map).keys.toList();
-      int map = uids.length;
-      log(uids.toString());
-      // List<Map<String,dynamic>> a = [];
-      var countMap = Map<String, int>();
-
-// Loop through each element of a
-      presentList.forEach((element) {
-        // Loop through each map inside the element
-        element.forEach((map) {
-          // Check if the uid is in b
-          if (uids.contains(map['uid'])) {
-            // Increment the count for this uid
-            if (countMap.containsKey(map['uid'])) {
-              countMap[map['uid']]=countMap[map['uid']]!+1;
+      final uids = (batch.value as Map).keys.toList();
+      final countMap = <String, int>{};
+      for (var element in presentList) {
+        for (var map in element) {
+          if (uids.contains(map)) {
+            if (countMap.containsKey(map)) {
+              countMap[map] = countMap[map]! + 1;
             } else {
-              countMap[map['uid']] = 1;
+              countMap[map] = 1;
             }
           }
-        });
+        }
+      }
+      final outputMap = <int, Set<String>>{};
+      countMap.forEach((key, value) {
+        if (!outputMap.containsKey(value)) {
+          outputMap[value] = {};
+        }
+        outputMap[value]!.add(key);
       });
-      log(countMap.toString());
-      // log(presentList
-      //     .map(
-      //       (a) => a
-      //           .map((b) => {
-      //                 'uid': b['uid'].toString(),
-      //                 'length':
-      //                     uids.where((c) => b['uid'].toString() == c).length
-      //               })
-      //           .toList(),
-      //     )
-      //     .toList()
-      //     .toString());
-
+      final finalOutput = outputMap.entries.map((entry) {
+        return {'day': entry.key, 'student': entry.value.length};
+      }).toList();
+      log(finalOutput.toString());
       setState(() {
-        totalStudent = map;
+        totalStudent = uids.length;
         chartData = [
           ChartData('Present', averagePresent.round(), Colors.greenAccent),
           ChartData('Absent', averageAbsent.round(), Colors.red[200]!)
         ];
+        chartData2 = [];
       });
     }
+    log((DateTime.now().difference(a).inMilliseconds).toString());
   }
 
   _modalDelete(index, courses) {
@@ -279,7 +274,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                     height: 300,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Text('No Data Exist!!!')],
+                      children: [ _isLoading?CircularProgressIndicator(): Text('No Data Exist!!!')],
                     ),
                   ),
           ],
