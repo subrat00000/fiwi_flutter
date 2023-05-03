@@ -86,11 +86,11 @@ class QrCubit extends Cubit<QrState> {
   }
 
   Future getStudents() async {
-    DataSnapshot users =
-        await ref.orderByChild('role').equalTo('student').get();
-    final itemsMap = users.value as Map;
+    DatabaseEvent users =
+        await ref.orderByChild('role').equalTo('student').once();
+    final itemsMap = users.snapshot.value as Map;
     final itemsList = itemsMap.values.toList();
-    List<Student> value = itemsList
+    return itemsList
         .map((e) => Student(
             email: e['email'],
             name: e['name'],
@@ -101,7 +101,6 @@ class QrCubit extends Cubit<QrState> {
             session: e['session'],
             semester: e['semester']))
         .toList();
-    return value;
   }
 
   takeAttendance(String session, String semester, String subject,

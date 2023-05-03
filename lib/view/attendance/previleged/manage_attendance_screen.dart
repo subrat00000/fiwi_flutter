@@ -2,18 +2,22 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ffi';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_cubit.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_state.dart';
 import 'package:fiwi/cubits/manage_course/manage_course_cubit.dart';
+import 'package:fiwi/cubits/qr/qr_cubit.dart';
 import 'package:fiwi/models/chartdata.dart';
 import 'package:fiwi/models/course.dart';
+import 'package:fiwi/models/student.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -35,6 +39,8 @@ class ManageAttendanceScreen extends StatefulWidget {
 class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   List<ChartData> chartData = [];
   List<ChartData> chartData2 = [];
+  Map<String, Set<String>> attendStudentUid = {};
+  Map<String, dynamic> studentWithPercent = {};
   List<String>? sessions;
   late TrackballBehavior _trackballBehavior;
   int? totalStudent;
@@ -60,6 +66,9 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   _loadData() async {
     final ses = await FirebaseDatabase.instance.ref('attendance').get();
     final sessionMap = ses.value as Map;
+    if (!mounted) {
+      return;
+    }
     setState(() {
       sessions = sessionMap.keys.map((e) => e.toString()).toList();
       sessions!.sort((a, b) => b.compareTo(a));
@@ -76,7 +85,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         .child(widget.subjectCode.toLowerCase())
         .once();
     if (val.snapshot.exists) {
-      final itemsMap = Map<String, dynamic>.from(val.snapshot.value as Map).values;
+      final itemsMap =
+          Map<String, dynamic>.from(val.snapshot.value as Map).values;
       final total = itemsMap.length;
 
       final present = List.generate(total, (i) {
@@ -108,69 +118,140 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
           }
         }
       }
-      log(presentList.toString());
+      Map<int, Set<String>> finalList = {};
+      presentList.forEach((a, b) {
+        if (!finalList.containsKey(b)) {
+          finalList[b] = {};
+        }
+        finalList[b]!.add(a);
+      });
+
+      Map<String, dynamic> lst = finalList.map((a, b) => MapEntry(
+          double.parse(((a / total) * 100).toStringAsFixed(2)).toString(), b));
+      Map<String, int> groupedAttendanceMap = {
+        "0-20": 0,
+        "20-40": 0,
+        "40-60": 0,
+        "60-80": 0,
+        "80-100": 0
+      };
+      Map<String, Set<String>> uidz = {
+        "0-20": {},
+        "20-40": {},
+        "40-60": {},
+        "60-80": {},
+        "80-100": {}
+      };
+
+      lst.forEach((percentage, students) {
+        double p = double.parse(percentage);
+        int s = (students as Set<String>).length;
+        if (p >= 0 && p < 20) {
+          groupedAttendanceMap["0-20"] = groupedAttendanceMap["0-20"]! + s;
+          uidz["0-20"]!.addAll(students);
+        } else if (p >= 20 && p < 40) {
+          groupedAttendanceMap["20-40"] = groupedAttendanceMap["20-40"]! + s;
+          uidz["20-40"]!.addAll(students);
+        } else if (p >= 40 && p < 60) {
+          groupedAttendanceMap["40-60"] = groupedAttendanceMap["40-60"]! + s;
+          uidz["40-60"]!.addAll(students);
+        } else if (p >= 60 && p < 80) {
+          groupedAttendanceMap["60-80"] = groupedAttendanceMap["60-80"]! + s;
+          uidz["60-80"]!.addAll(students);
+        } else if (p >= 80 && p <= 100) {
+          groupedAttendanceMap["80-100"] = groupedAttendanceMap["80-100"]! + s;
+          uidz["80-100"]!.addAll(students);
+        }
+      });
+      log(groupedAttendanceMap.toString());
+      log(uidz.toString());
       final batch = await FirebaseDatabase.instance
           .ref('batch')
           .child(sessionValue)
           .child('uid')
           .once();
       final uids = (batch.snapshot.value as Map).keys.toList();
-
+      if (!mounted) {
+        return;
+      }
       setState(() {
         totalStudent = uids.length;
+        attendStudentUid = uidz;
+        studentWithPercent = lst;
         chartData = [
-          ChartData('Present', averagePresent.round(), Color(0x41F3A9)),
-          ChartData('Absent', averageAbsent.round(), Color(0xFC576D))
+          ChartData('Present', averagePresent.round(),
+              const Color.fromARGB(0, 34, 255, 163)),
+          ChartData('Absent', averageAbsent.round(),
+              const Color.fromARGB(0, 252, 87, 109))
         ];
         chartData2 = [
-          ChartData('Present', averagePresent.round(), Color(0x41F3A9)),
-          ChartData('Absent', averageAbsent.round(), Color(0xFC576D)),
-          ChartData('Present', averagePresent.round(), Color(0x41F3A9)),
-          ChartData('Absent', averageAbsent.round(), Color(0xFC576D)),
-          ChartData('Present', averagePresent.round(), Color(0xFC576D)),
+          ChartData("80-100", groupedAttendanceMap["80-100"]!,
+              const Color.fromARGB(0, 34, 255, 163)),
+          ChartData("60-80", groupedAttendanceMap["60-80"]!,
+              const Color.fromARGB(0, 146, 255, 43)),
+          ChartData("40-60", groupedAttendanceMap["40-60"]!,
+              const Color.fromARGB(0, 243, 196, 65)),
+          ChartData("20-40", groupedAttendanceMap["20-40"]!,
+              const Color.fromARGB(0, 252, 161, 87)),
+          ChartData("0-20", groupedAttendanceMap["0-20"]!,
+              const Color.fromARGB(0, 252, 87, 109)),
         ];
       });
     }
     log((DateTime.now().difference(a).inMilliseconds).toString());
   }
 
-  _modalDelete(index, courses) {
+  openDialog(List<Map<String, dynamic>> student) {
+    log(student.toString());
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Do you want to delete ',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    TextSpan(
-                      text: '${courses[index].name!}(${courses[index].code!})',
-                      style: TextStyle(color: Colors.red[300]),
-                    ),
-                    TextSpan(
-                      text: '?',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('No'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // BlocProvider.of<ManageAttendanceCubit>(context)
-                    //     .deleteCourse(courses[index].code!);
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Yes'),
-                ),
-              ],
-            ));
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return ListView.builder(
+                    itemCount: student.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(student[index]['name']),
+                          trailing: Text('${student[index]['percent']}%'),
+                          leading: Container(
+                            width: 55,
+                            height: 55,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: student[index]['photo'] != null &&
+                                    student[index]['photo'] != ''
+                                ? CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: student[index]['photo'],
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  )
+                                : Image.asset('assets/no_image.png'),
+                          ),
+                        ),
+                      );
+                    });
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -191,7 +272,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
             },
             itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem<int>(
+                const PopupMenuItem<int>(
                   value: 0,
                   child: Text("History"),
                 ),
@@ -212,7 +293,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         ),
       ),
       body: Container(
-        margin: EdgeInsets.only(left: 16, right: 16),
+        margin: const EdgeInsets.only(left: 16, right: 16),
         child: SingleChildScrollView(
             child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
@@ -231,16 +312,16 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                     child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Center(
                           child: Text(
                         'Total Students: $totalStudent',
-                        style: TextStyle(fontSize: 17),
+                        style: const TextStyle(fontSize: 17),
                       )),
                       Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
                           child: const Text(
                             'Average Attendance',
                             style: TextStyle(fontSize: 17),
@@ -268,9 +349,9 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                 yValueMapper: (ChartData data, _) => data.count)
                           ]),
                       Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
                           child: const Text(
-                            'Student - Class Atttended',
+                            'Student - Attendance Percentage',
                             style: TextStyle(fontSize: 17),
                           )),
                       SfCircularChart(
@@ -278,13 +359,44 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                           series: <CircularSeries>[
                             // Renders doughnut chart
                             DoughnutSeries<ChartData, String>(
+                                onPointTap: (a) async {
+                                  DateTime old = DateTime.now();
+                                  List<Student> student =
+                                      await BlocProvider.of<QrCubit>(context)
+                                          .getStudents();
+                                  List<Student> filteredStudent = student
+                                      .where((stud) => attendStudentUid[
+                                              a.dataPoints![a.pointIndex!].x]!
+                                          .contains(stud.uid))
+                                      .toList();
+                                  log('${a.dataPoints![a.pointIndex!].x}   ${a.dataPoints![a.pointIndex!].y}');
+                                  List<Map<String, dynamic>> studentList = [];
+                                  for (Student e in filteredStudent) {
+                                    for (var entry
+                                        in studentWithPercent.entries) {
+                                      if (entry.value.contains(e.uid)) {
+                                        studentList.add({
+                                          'name': e.name,
+                                          'percent': entry.key,
+                                          'photo': e.photo,
+                                        });
+                                        break;
+                                      }
+                                    }
+                                  }
+                                  log((DateTime.now()
+                                          .difference(old)
+                                          .inMilliseconds)
+                                      .toString());
+                                  openDialog(studentList);
+                                },
                                 enableTooltip: true,
                                 dataLabelSettings: const DataLabelSettings(
                                   isVisible: true,
                                   labelPosition: ChartDataLabelPosition.outside,
                                 ),
                                 dataLabelMapper: (datum, index) =>
-                                    '${datum.count} - ${datum.x}',
+                                    '${datum.count} - (${datum.x})%',
                                 dataSource: chartData2,
                                 pointColorMapper: (ChartData data, _) =>
                                     data.color,
@@ -299,8 +411,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _isLoading
-                            ? CircularProgressIndicator()
-                            : Text('No Data Exist!!!')
+                            ? const CircularProgressIndicator()
+                            : const Text('No Data Exist!!!')
                       ],
                     ),
                   ),
