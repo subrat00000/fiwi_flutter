@@ -58,6 +58,7 @@ dependencies:
   rxdart: ^0.27.7
   qr_flutter: ^4.0.0
   encrypt: ^5.0.1
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:
