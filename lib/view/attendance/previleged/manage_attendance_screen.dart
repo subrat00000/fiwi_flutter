@@ -41,9 +41,10 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   List<ChartData> chartData2 = [];
   Map<String, Set<String>> attendStudentUid = {};
   Map<String, dynamic> studentWithPercent = {};
-  List<String>? sessions;
+  List<String> sessions=[];
   late TrackballBehavior _trackballBehavior;
   int? totalStudent;
+  String? chartValue;
   bool _isLoading = true;
   @override
   void initState() {
@@ -60,7 +61,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
       }
     });
     _loadData();
-    _loadChart('2021-23');
+    
   }
 
   _loadData() async {
@@ -71,9 +72,11 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
     }
     setState(() {
       sessions = sessionMap.keys.map((e) => e.toString()).toList();
-      sessions!.sort((a, b) => b.compareTo(a));
+      sessions.sort((a, b) => b.compareTo(a));
     });
     log(sessions.toString());
+    chartValue = sessions[0];
+    _loadChart(sessions[0]);
   }
 
   _loadChart(sessionValue) async {
@@ -256,6 +259,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -320,6 +325,32 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                         'Total Students: $totalStudent',
                         style: const TextStyle(fontSize: 17),
                       )),
+                      Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  width: width * 0.3,
+                  height: height * 0.05,
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      hint: const Text("Semester"),
+                      items:
+                          sessions.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      value: chartValue,
+                      onChanged: (value) {
+                        _loadChart(value);
+                        setState(() {
+                          chartValue = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
                       Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           child: const Text(
