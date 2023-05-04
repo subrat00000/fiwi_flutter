@@ -255,7 +255,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         chartData = [
           ChartData('Present', averagePresent.round(),
               const Color.fromARGB(0, 34, 255, 163)),
-          ChartData('Absent', averageAbsent.round(),
+          ChartData('Absent', averageAbsent.floor(),
               const Color.fromARGB(0, 252, 87, 109))
         ];
         chartData2 = [
@@ -374,149 +374,160 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
             child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(
-              child: ElevatedButton(
-                  style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.white)),
-                  child: const Text('Take Attendance',
-                      style: TextStyle(color: Colors.black87)),
-                  onPressed: () {
-                    getBatchDialog(widget.semester,widget.subjectCode,widget.subjectName,dt);
-                  }),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(Colors.white)),
+                    child: const Text('Take Attendance',
+                        style: TextStyle(color: Colors.black87)),
+                    onPressed: () {
+                      getBatchDialog(widget.semester, widget.subjectCode,
+                          widget.subjectName, dt);
+                    }),
+                ElevatedButton(
+                    style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(Colors.white)),
+                    child: const Text('Attendance Report',
+                        style: TextStyle(color: Colors.black87)),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/attendancereport');
+                    }),
+              ],
             ),
             chartData.isNotEmpty
                 ? Card(
                     // height: 200,
-                    child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Total Students: $totalStudent',
-                            style: const TextStyle(fontSize: 17),
-                          ),
-                          Text(
-                            'Total Classes: $totalClasses',
-                            style: const TextStyle(fontSize: 17),
-                          ),
-                        ],
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: width * 0.3,
-                          height: height * 0.05,
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              hint: const Text("Semester"),
-                              items: sessions.map<DropdownMenuItem<String>>(
-                                  (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              value: chartValue,
-                              onChanged: (value) {
-                                _loadChart(value);
-                                setState(() {
-                                  chartValue = value;
-                                });
-                              },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Total Students: $totalStudent',
+                              style: const TextStyle(fontSize: 17),
+                            ),
+                            Text(
+                              'Total Classes: $totalClasses',
+                              style: const TextStyle(fontSize: 17),
+                            ),
+                          ],
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: SizedBox(
+                            width: width * 0.25,
+                            height: height * 0.05,
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                hint: const Text("Semester"),
+                                items: sessions.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                value: chartValue,
+                                onChanged: (value) {
+                                  _loadChart(value);
+                                  setState(() {
+                                    chartValue = value;
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          child: const Text(
-                            'Average Attendance',
-                            style: TextStyle(fontSize: 17),
-                          )),
-                      SfCircularChart(
-                          tooltipBehavior: TooltipBehavior(enable: true),
-                          series: <CircularSeries>[
-                            // Renders doughnut chart
-                            DoughnutSeries<ChartData, String>(
-                                onPointTap: (a) {
-                                  log(a.dataPoints![a.pointIndex!].x
-                                      .toString());
-                                },
-                                enableTooltip: true,
-                                dataLabelSettings: const DataLabelSettings(
-                                  isVisible: true,
-                                  labelPosition: ChartDataLabelPosition.outside,
-                                ),
-                                dataLabelMapper: (datum, index) =>
-                                    '${datum.count}(${datum.x.split('')[0]})',
-                                dataSource: chartData,
-                                pointColorMapper: (ChartData data, _) =>
-                                    data.color,
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.count)
-                          ]),
-                      Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          child: const Text(
-                            'Student - Attendance Percentage',
-                            style: TextStyle(fontSize: 17),
-                          )),
-                      SfCircularChart(
-                          tooltipBehavior: TooltipBehavior(enable: true),
-                          series: <CircularSeries>[
-                            // Renders doughnut chart
-                            DoughnutSeries<ChartData, String>(
-                                onPointTap: (a) async {
-                                  DateTime old = DateTime.now();
-                                  List<Student> student =
-                                      await BlocProvider.of<QrCubit>(context)
-                                          .getStudents();
-                                  List<Student> filteredStudent = student
-                                      .where((stud) => attendStudentUid[
-                                              a.dataPoints![a.pointIndex!].x]!
-                                          .contains(stud.uid))
-                                      .toList();
-                                  log('${a.dataPoints![a.pointIndex!].x}   ${a.dataPoints![a.pointIndex!].y}');
-                                  List<Map<String, dynamic>> studentList = [];
-                                  for (Student e in filteredStudent) {
-                                    for (var entry
-                                        in studentWithPercent.entries) {
-                                      if (entry.value.contains(e.uid)) {
-                                        studentList.add({
-                                          'name': e.name,
-                                          'percent': entry.key,
-                                          'photo': e.photo,
-                                        });
-                                        break;
+                        const Text(
+                          'Average Attendance',
+                          style: TextStyle(fontSize: 17),
+                        ),
+                        SfCircularChart(
+                            tooltipBehavior: TooltipBehavior(enable: true),
+                            series: <CircularSeries>[
+                              // Renders doughnut chart
+                              DoughnutSeries<ChartData, String>(
+                                  onPointTap: (a) {
+                                    log(a.dataPoints![a.pointIndex!].x
+                                        .toString());
+                                  },
+                                  enableTooltip: true,
+                                  dataLabelSettings: const DataLabelSettings(
+                                    isVisible: true,
+                                    labelPosition: ChartDataLabelPosition.outside,
+                                  ),
+                                  dataLabelMapper: (datum, index) =>
+                                      '${datum.count}(${datum.x.split('')[0]})',
+                                  dataSource: chartData,
+                                  pointColorMapper: (ChartData data, _) =>
+                                      data.color,
+                                  xValueMapper: (ChartData data, _) => data.x,
+                                  yValueMapper: (ChartData data, _) => data.count)
+                            ]),
+                        const Text(
+                          'Student - Attendance Percentage',
+                          style: TextStyle(fontSize: 17),
+                        ),
+                        SfCircularChart(
+                            tooltipBehavior: TooltipBehavior(enable: true),
+                            series: <CircularSeries>[
+                              // Renders doughnut chart
+                              DoughnutSeries<ChartData, String>(
+                                  onPointTap: (a) async {
+                                    DateTime old = DateTime.now();
+                                    List<Student> student =
+                                        await BlocProvider.of<QrCubit>(context)
+                                            .getStudents();
+                                    List<Student> filteredStudent = student
+                                        .where((stud) => attendStudentUid[
+                                                a.dataPoints![a.pointIndex!].x]!
+                                            .contains(stud.uid))
+                                        .toList();
+                                    log('${a.dataPoints![a.pointIndex!].x}   ${a.dataPoints![a.pointIndex!].y}');
+                                    List<Map<String, dynamic>> studentList = [];
+                                    for (Student e in filteredStudent) {
+                                      for (var entry
+                                          in studentWithPercent.entries) {
+                                        if (entry.value.contains(e.uid)) {
+                                          studentList.add({
+                                            'name': e.name,
+                                            'percent': entry.key,
+                                            'photo': e.photo,
+                                          });
+                                          break;
+                                        }
                                       }
                                     }
-                                  }
-                                  log((DateTime.now()
-                                          .difference(old)
-                                          .inMilliseconds)
-                                      .toString());
-                                  openDialog(studentList);
-                                },
-                                enableTooltip: true,
-                                dataLabelSettings: const DataLabelSettings(
-                                  isVisible: true,
-                                  labelPosition: ChartDataLabelPosition.outside,
-                                ),
-                                dataLabelMapper: (datum, index) =>
-                                    '${datum.count} - (${datum.x})%',
-                                dataSource: chartData2,
-                                pointColorMapper: (ChartData data, _) =>
-                                    data.color,
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.count)
-                          ]),
-                    ],
-                  ))
+                                    log((DateTime.now()
+                                            .difference(old)
+                                            .inMilliseconds)
+                                        .toString());
+                                    openDialog(studentList);
+                                  },
+                                  enableTooltip: true,
+                                  dataLabelSettings: const DataLabelSettings(
+                                    isVisible: true,
+                                    labelPosition: ChartDataLabelPosition.outside,
+                                  ),
+                                  dataLabelMapper: (datum, index) =>
+                                      '${datum.count} - (${datum.x})%',
+                                  dataSource: chartData2,
+                                  pointColorMapper: (ChartData data, _) =>
+                                      data.color,
+                                  xValueMapper: (ChartData data, _) => data.x,
+                                  yValueMapper: (ChartData data, _) => data.count)
+                            ]),
+                      ],
+                                      ),
+                    ))
                 : Container(
                     height: 300,
                     child: Column(

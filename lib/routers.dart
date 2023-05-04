@@ -9,6 +9,7 @@ import 'package:fiwi/view/admin/batch/create_batch.dart';
 import 'package:fiwi/view/admin/delete_account.dart';
 import 'package:fiwi/view/admin/manage_courses.dart';
 import 'package:fiwi/view/admin/manage_role.dart';
+import 'package:fiwi/view/attendance/previleged/attendance_report.dart';
 import 'package:fiwi/view/attendance/previleged/manage_attendance_screen.dart';
 import 'package:fiwi/view/attendance/previleged/qr_screen.dart';
 import 'package:fiwi/view/attendance/previleged/student_attendance.dart';
@@ -70,6 +71,9 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/attendancereport':
+        return MaterialPageRoute(
+            builder: (context) => const AttendanceReportScreen());
       case '/studentattendance':
         final itemsMap = setting.arguments as Map;
         String session = itemsMap['session'];
