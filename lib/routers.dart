@@ -72,8 +72,13 @@ class Routers {
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
       case '/attendancereport':
+        final itemsMap = setting.arguments as Map;
+        String session = itemsMap['session'];
+        String semester = itemsMap['semester'];
+        String subjectCode = itemsMap['subject_code'];
+        String subjectName = itemsMap['subject_name'];
         return MaterialPageRoute(
-            builder: (context) => const AttendanceReportScreen());
+            builder: (context) => AttendanceReportScreen(session:session,semester:semester,subjectCode:subjectCode,subjectName: subjectName));
       case '/studentattendance':
         final itemsMap = setting.arguments as Map;
         String session = itemsMap['session'];

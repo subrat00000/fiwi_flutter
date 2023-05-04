@@ -67,7 +67,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
     getBatch();
   }
 
-  getBatchDialog(semester,subjectCode,subjectName,datetime) {
+  getBatchDialog(semester, subjectCode, subjectName, datetime) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -297,8 +297,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                           title: Text(student[index]['name']),
                           trailing: Text('${student[index]['percent']}%'),
                           leading: Container(
-                            width: 55,
-                            height: 55,
+                            width: 45,
+                            height: 45,
                             clipBehavior: Clip.antiAliasWithSaveLayer,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
@@ -379,7 +379,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
               children: [
                 ElevatedButton(
                     style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.white)),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Colors.white)),
                     child: const Text('Take Attendance',
                         style: TextStyle(color: Colors.black87)),
                     onPressed: () {
@@ -388,11 +389,18 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                     }),
                 ElevatedButton(
                     style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.white)),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Colors.white)),
                     child: const Text('Attendance Report',
                         style: TextStyle(color: Colors.black87)),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/attendancereport');
+                      Navigator.pushNamed(context, '/attendancereport',
+                          arguments: {
+                            'session': chartValue,
+                            'semester': widget.semester,
+                            'subject_code': widget.subjectCode,
+                            'subject_name': widget.subjectName,
+                          });
                     }),
               ],
             ),
@@ -400,8 +408,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                 ? Card(
                     // height: 200,
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
@@ -462,7 +470,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                   enableTooltip: true,
                                   dataLabelSettings: const DataLabelSettings(
                                     isVisible: true,
-                                    labelPosition: ChartDataLabelPosition.outside,
+                                    labelPosition:
+                                        ChartDataLabelPosition.outside,
                                   ),
                                   dataLabelMapper: (datum, index) =>
                                       '${datum.count}(${datum.x.split('')[0]})',
@@ -470,7 +479,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                   pointColorMapper: (ChartData data, _) =>
                                       data.color,
                                   xValueMapper: (ChartData data, _) => data.x,
-                                  yValueMapper: (ChartData data, _) => data.count)
+                                  yValueMapper: (ChartData data, _) =>
+                                      data.count)
                             ]),
                         const Text(
                           'Student - Attendance Percentage',
@@ -515,7 +525,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                   enableTooltip: true,
                                   dataLabelSettings: const DataLabelSettings(
                                     isVisible: true,
-                                    labelPosition: ChartDataLabelPosition.outside,
+                                    labelPosition:
+                                        ChartDataLabelPosition.outside,
                                   ),
                                   dataLabelMapper: (datum, index) =>
                                       '${datum.count} - (${datum.x})%',
@@ -523,11 +534,12 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                   pointColorMapper: (ChartData data, _) =>
                                       data.color,
                                   xValueMapper: (ChartData data, _) => data.x,
-                                  yValueMapper: (ChartData data, _) => data.count)
+                                  yValueMapper: (ChartData data, _) =>
+                                      data.count)
                             ]),
                       ],
-                                      ),
-                    ))
+                    ),
+                  ))
                 : Container(
                     height: 300,
                     child: Column(
