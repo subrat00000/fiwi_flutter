@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
@@ -18,11 +20,13 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
   List<String> batch = [];
 
   openDialog(myClasses) {
+    log(myClasses.toString());
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           // title: Text('Choose Batch'),
           child: Container(
             padding: EdgeInsets.all(16.0),
@@ -31,9 +35,16 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
               builder: (BuildContext context, StateSetter setState) {
                 return Column(
                   children: [
-                    const SizedBox(height: 25,),
-                    Text('Choose Batch',style: TextStyle(fontSize: 20),),
-                    const SizedBox(height: 15,),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    Text(
+                      'Choose Batch',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     Expanded(
                       child: ListView.builder(
                           itemCount: batch.length,
@@ -43,13 +54,14 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                               child: ListTile(
                                 title: Text(batch[index]),
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/qrscreen', arguments: {
-                                    'session': batch[index],
-                                    'semester': myClasses[index]['semester'],
-                                    'subject_code': myClasses[index]['code'],
-                                    'subject_name': myClasses[index]['name'],
-                                    'datetime': dt
-                                  });
+                                  Navigator.pushNamed(context, '/qrscreen',
+                                      arguments: {
+                                        'session': batch[index],
+                                        'semester': myClasses['semester'],
+                                        'subject_code': myClasses['code'],
+                                        'subject_name': myClasses['name'],
+                                        'datetime': dt
+                                      });
                                 },
                               ),
                             );
@@ -136,16 +148,20 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                                 child: ListTile(
                                   onTap: () => Navigator.pushNamed(
                                       context, '/manageattendance',
-                                      arguments: {'semester':myClasses[index]['semester'],
-                                      'subject_code':myClasses[index]['code'],
-                                      'subject_name':myClasses[index]['name'],
-                                      'datetime':dt}),
+                                      arguments: {
+                                        'semester': myClasses[index]
+                                            ['semester'],
+                                        'subject_code': myClasses[index]
+                                            ['code'],
+                                        'subject_name': myClasses[index]
+                                            ['name'],
+                                      }),
                                   title: Text(
                                       '${myClasses[index]['name']}(${myClasses[index]['code']})'),
                                   subtitle: Text(myClasses[index]['semester']),
                                   trailing: ElevatedButton(
                                       onPressed: () {
-                                        openDialog(myClasses);
+                                        openDialog(myClasses[index]);
                                       },
                                       style: const ButtonStyle(
                                           backgroundColor:
@@ -177,13 +193,22 @@ class _AdminAttendanceScreenState extends State<AdminAttendanceScreen> {
                                 child: ListTile(
                                   onTap: () => Navigator.pushNamed(
                                       context, '/manageattendance',
-                                      arguments: myClasses[index]['uid']),
+                                      arguments: {
+                                        'semester': otherClasses[index]
+                                            ['semester'],
+                                        'subject_code': otherClasses[index]
+                                            ['code'],
+                                        'subject_name': otherClasses[index]
+                                            ['name'],
+                                      }),
                                   title: Text(
                                       '${otherClasses[index]['name']}(${otherClasses[index]['code']})'),
                                   subtitle:
                                       Text(otherClasses[index]['semester']),
                                   trailing: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        openDialog(otherClasses[index]);
+                                      },
                                       style: const ButtonStyle(
                                           backgroundColor:
                                               MaterialStatePropertyAll(

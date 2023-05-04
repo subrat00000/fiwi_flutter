@@ -41,11 +41,14 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   List<ChartData> chartData2 = [];
   Map<String, Set<String>> attendStudentUid = {};
   Map<String, dynamic> studentWithPercent = {};
-  List<String> sessions=[];
+  String dt = DateTime.now().microsecondsSinceEpoch.toString();
+  List<String> sessions = [];
   late TrackballBehavior _trackballBehavior;
   int? totalStudent;
   String? chartValue;
   bool _isLoading = true;
+  int? totalClasses;
+  List<String> batch = [];
   @override
   void initState() {
     _trackballBehavior = TrackballBehavior(
@@ -61,7 +64,74 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
       }
     });
     _loadData();
-    
+    getBatch();
+  }
+
+  getBatchDialog(semester,subjectCode,subjectName,datetime) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          // title: Text('Choose Batch'),
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  children: [
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    Text(
+                      'Choose Batch',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: batch.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                title: Text(batch[index]),
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/qrscreen',
+                                      arguments: {
+                                        'session': batch[index],
+                                        'semester': semester,
+                                        'subject_code': subjectCode,
+                                        'subject_name': subjectName,
+                                        'datetime': datetime
+                                      });
+                                },
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  getBatch() async {
+    List<String> bt = await BlocProvider.of<QrCubit>(context).getBatchDetails();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      batch = bt;
+    });
   }
 
   _loadData() async {
@@ -90,7 +160,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
     if (val.snapshot.exists) {
       final itemsMap =
           Map<String, dynamic>.from(val.snapshot.value as Map).values;
-      final total = itemsMap.length;
+      int total = itemsMap.length;
 
       final present = List.generate(total, (i) {
         final count = (itemsMap.elementAt(i)['uids'] as Map)
@@ -178,6 +248,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         return;
       }
       setState(() {
+        totalClasses = total;
         totalStudent = uids.length;
         attendStudentUid = uidz;
         studentWithPercent = lst;
@@ -309,7 +380,9 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                       backgroundColor: MaterialStatePropertyAll(Colors.white)),
                   child: const Text('Take Attendance',
                       style: TextStyle(color: Colors.black87)),
-                  onPressed: () {}),
+                  onPressed: () {
+                    getBatchDialog(widget.semester,widget.subjectCode,widget.subjectName,dt);
+                  }),
             ),
             chartData.isNotEmpty
                 ? Card(
@@ -320,37 +393,45 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Center(
-                          child: Text(
-                        'Total Students: $totalStudent',
-                        style: const TextStyle(fontSize: 17),
-                      )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Total Students: $totalStudent',
+                            style: const TextStyle(fontSize: 17),
+                          ),
+                          Text(
+                            'Total Classes: $totalClasses',
+                            style: const TextStyle(fontSize: 17),
+                          ),
+                        ],
+                      ),
                       Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  width: width * 0.3,
-                  height: height * 0.05,
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      hint: const Text("Semester"),
-                      items:
-                          sessions.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      value: chartValue,
-                      onChanged: (value) {
-                        _loadChart(value);
-                        setState(() {
-                          chartValue = value;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          width: width * 0.3,
+                          height: height * 0.05,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              hint: const Text("Semester"),
+                              items: sessions.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              value: chartValue,
+                              onChanged: (value) {
+                                _loadChart(value);
+                                setState(() {
+                                  chartValue = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                       Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           child: const Text(
