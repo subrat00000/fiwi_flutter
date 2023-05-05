@@ -394,13 +394,18 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                     child: const Text('Attendance Report',
                         style: TextStyle(color: Colors.black87)),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/attendancereport',
+                      if(chartValue != null){
+                        Navigator.pushNamed(context, '/attendancereport',
                           arguments: {
                             'session': chartValue,
                             'semester': widget.semester,
                             'subject_code': widget.subjectCode,
                             'subject_name': widget.subjectName,
                           });
+                      }else {
+                        
+                      }
+                      
                     }),
               ],
             ),

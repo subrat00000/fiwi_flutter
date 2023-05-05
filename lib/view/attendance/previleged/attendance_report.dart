@@ -26,6 +26,8 @@ class AttendanceReportScreen extends StatefulWidget {
 
 class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   List<Student> st = [];
+  List<String> uids = [];
+  bool isSimple = true;
   @override
   void initState() {
     super.initState();
@@ -33,13 +35,15 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   }
 
   _loadData() async {
-    List<Student> student =
-        await BlocProvider.of<QrCubit>(context).getStudents();
+    final cubit = BlocProvider.of<QrCubit>(context);
+    List<Student> student = await cubit.getStudents();
+    List<String> u = await cubit.getBatchUids(widget.session);
     if (!mounted) {
       return;
     }
     setState(() {
       st = student;
+      uids = u;
     });
   }
 
@@ -47,6 +51,19 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          Center(
+            child: isSimple?
+            Text('Simple',style: TextStyle(color:Colors.black87)):Text('Details',style: TextStyle(color:Colors.black87),),
+          ),
+          Switch(
+              value: isSimple,
+              onChanged: (value) {
+                setState(() {
+                  isSimple = value;
+                });
+              })
+        ],
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -54,103 +71,205 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded,
               color: Colors.black87),
         ),
-        title: const Text(
-          'Attendance Report',
-          style: TextStyle(color: Colors.black87, fontSize: 20),
+        title: Text(
+          'Attendance Report(${widget.session})',
+          style: const TextStyle(color: Colors.black87, fontSize: 20),
         ),
       ),
-      body: SingleChildScrollView(
-        child: StreamBuilder(
-            stream: FirebaseDatabase.instance
-                .ref('attendance')
-                .child(widget.session)
-                .child(widget.semester.toLowerCase().replaceAll(' ', ''))
-                .child(widget.subjectCode.toLowerCase())
-                .onValue,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data == null) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else {
-                final attendance = Map<String, dynamic>.from(
-                        snapshot.data!.snapshot.value as Map)
-                    .values
-                    .toList();
-                final present = List.generate(attendance.length, (i) {
-                  final count = (attendance.elementAt(i)['uids'] as Map)
+      body: st.isNotEmpty
+          ? StreamBuilder(
+              stream: FirebaseDatabase.instance
+                  .ref('attendance')
+                  .child(widget.session)
+                  .child(widget.semester.toLowerCase().replaceAll(' ', ''))
+                  .child(widget.subjectCode.toLowerCase())
+                  .onValue,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  final attendance = Map<String, dynamic>.from(
+                          snapshot.data!.snapshot.value as Map)
                       .values
-                      .where((element) => element['status'] == true);
-                  return count;
-                }).expand((element) => element).toList();
-                final absent = List.generate(attendance.length, (i) {
-                  final count = (attendance.elementAt(i)['uids'] as Map)
-                      .values
-                      .where((element) => element['status'] == false);
-                  return count;
-                }).expand((element) => element).toList();
-                Map<String, int> result = present
-                    .map((e) => e["uid"]) // Get a list of uids
-                    .fold<Map<String, int>>({}, (acc, uid) {
-                  // Iterate through the uids and count their occurrences
-                  acc[uid] = (acc[uid] ?? 0) + 1;
-                  return acc;
-                });
-                Map<String, int> absentResult = absent
-                    .map((e) => e["uid"])
-                    .fold<Map<String, int>>({}, (acc, uid) {
-                  acc[uid] = (acc[uid] ?? 0) + 1;
-                  return acc;
-                });
-                
-                Map<String,int> absentPercentage = absentResult.map((a, b) =>
-                    MapEntry(a, ((b / attendance.length) * 100).toInt()));
-                absentPercentage.forEach((key, value) {
-                  if (value == 100) {
-                    result[key] = 0;
-                  }
-                });
-                final percentage = result.map((a, b) => MapEntry(
-                    a, ((b / attendance.length) * 100).toStringAsFixed(1)));
-                List<Student> student = st
-                    .where((student) => percentage.containsKey(student.uid))
-                    .toList();
-                return ListView.builder(
-                    itemCount: student.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Card(
-                          child: ListTile(
-                              leading: Container(
-                                width: 45,
-                                height: 45,
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
+                      .toList();
+                  final present = List.generate(attendance.length, (i) {
+                    final count = (attendance.elementAt(i)['uids'] as Map)
+                        .values
+                        .where((element) => element['status'] == true);
+                    return count;
+                  }).expand((element) => element).toList();
+                  final absent = List.generate(attendance.length, (i) {
+                    final count = (attendance.elementAt(i)['uids'] as Map)
+                        .values
+                        .where((element) => element['status'] == false);
+                    return count;
+                  }).expand((element) => element).toList();
+                  Map<String, int> result = present
+                      .map((e) => e["uid"]) // Get a list of uids
+                      .fold<Map<String, int>>({}, (acc, uid) {
+                    // Iterate through the uids and count their occurrences
+                    acc[uid] = (acc[uid] ?? 0) + 1;
+                    return acc;
+                  });
+                  Map<String, int> absentResult = absent
+                      .map((e) => e["uid"])
+                      .fold<Map<String, int>>({}, (acc, uid) {
+                    acc[uid] = (acc[uid] ?? 0) + 1;
+                    return acc;
+                  });
+
+                  Map<String, int> absentPercentage = absentResult.map((a, b) =>
+                      MapEntry(a, ((b / attendance.length) * 100).toInt()));
+                  absentPercentage.forEach((key, value) {
+                    if (value == 100) {
+                      result[key] = 0;
+                    }
+                  });
+                  final percentage = result.map((a, b) => MapEntry(
+                      a, ((b / attendance.length) * 100).toStringAsFixed(1)));
+                  List<Student> student = st
+                      .where((student) => percentage.containsKey(student.uid))
+                      .toList();
+                  student.sort((a, b) => a.name!.compareTo(b.name!));
+                  attendance.sort((a, b) =>
+                      a['createdAt'].toString().compareTo(b['createdAt']));
+                  //Second ListView.builder
+                  // log(uids.toString()+"************");
+                  List<Student> batchStudent = st
+                      .where((student) => uids.contains(student.uid))
+                      .toList();
+                  batchStudent.sort((a, b) => a.name!.compareTo(b.name!));
+                  return Stack(
+                    children: [
+                      Visibility(
+                        visible: isSimple,
+                        child: ListView.builder(
+                            itemCount: student.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                  child: ListTile(
+                                      leading: Container(
+                                        width: 45,
+                                        height: 45,
+                                        clipBehavior:
+                                            Clip.antiAliasWithSaveLayer,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                        child: student[index].photo != null &&
+                                                student[index].photo != ''
+                                            ? CachedNetworkImage(
+                                                fit: BoxFit.cover,
+                                                imageUrl: student[index].photo!,
+                                                progressIndicatorBuilder:
+                                                    (context, url,
+                                                            downloadProgress) =>
+                                                        CircularProgressIndicator(
+                                                            value:
+                                                                downloadProgress
+                                                                    .progress),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                              )
+                                            : Image.asset(
+                                                'assets/no_image.png'),
+                                      ),
+                                      trailing: Text(
+                                          '${percentage[student[index].uid]}%'),
+                                      title: Text(student[index].name!),
+                                      onTap: () {}));
+                            }),
+                      ),
+                      Visibility(
+                        visible: !isSimple,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: DataTable(
+                              columns: [
+                                const DataColumn(
+                                  label: Text(''),
                                 ),
-                                child: student[index].photo != null &&
-                                        student[index].photo != ''
-                                    ? CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: student[index].photo!,
-                                        progressIndicatorBuilder: (context, url,
-                                                downloadProgress) =>
-                                            CircularProgressIndicator(
-                                                value:
-                                                    downloadProgress.progress),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                      )
-                                    : Image.asset('assets/no_image.png'),
-                              ),
-                              trailing:
-                                  Text('${percentage[student[index].uid]}%'),
-                              title: Text(student[index].name!),
-                              onTap: () {}));
-                    });
-              }
-            }),
-      ),
+                                const DataColumn(
+                                  label: Text('Name'),
+                                ),
+                                for (int i = 0; i < attendance.length; i++)
+                                  DataColumn(
+                                    label: Text(
+                                        '${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).day}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).month}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).year} ${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).hour}:${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).minute}'),
+                                  ),
+                              ],
+                              rows: batchStudent
+                                  .map(
+                                    (student) => DataRow(
+                                      cells: [
+                                        DataCell(
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: student.photo != null &&
+                                                    student.photo != ''
+                                                ? CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl: student.photo!,
+                                                    progressIndicatorBuilder: (context,
+                                                            url,
+                                                            downloadProgress) =>
+                                                        CircularProgressIndicator(
+                                                            value:
+                                                                downloadProgress
+                                                                    .progress),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        const Icon(Icons.error),
+                                                  )
+                                                : Image.asset(
+                                                    'assets/no_image.png'),
+                                          ),
+                                        ),
+                                        DataCell(Text(student.name!)),
+                                        for (int k = 0;
+                                            k < attendance.length;
+                                            k++)
+                                          DataCell(
+                                            (attendance[k]['uids'] as Map)
+                                                        .values
+                                                        .toList()
+                                                        .where(
+                                                          (e) =>
+                                                              e['uid'] ==
+                                                              student.uid,
+                                                        )
+                                                        .first['status']
+                                                        .toString() ==
+                                                    'true'
+                                                ? const Text('P')
+                                                : const Text('A'),
+                                          ),
+                                      ],
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              })
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 }
