@@ -8,6 +8,7 @@ import 'package:fiwi/cubits/qr/qr_state.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrScreen extends StatefulWidget {
@@ -43,17 +44,60 @@ class _QrScreenState extends State<QrScreen> {
         widget.semester, widget.subjectCode, widget.subjectName, updatedt!);
   }
 
+  openDialogAppSettings() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text(
+                  'Location permission is permanently denied. Open App Setting...'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Geolocator.openAppSettings();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
+  }
+  openDialogLocationSettings() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text(
+                  'Location Service is disabled. Open Location Setting...'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Geolocator.openLocationSettings();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'QR Code',
           style: TextStyle(color: Colors.black87),
         ),
         leading: IconButton(
           color: Colors.black54,
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -66,11 +110,17 @@ class _QrScreenState extends State<QrScreen> {
             listener: (context, state) {
               if (state is QrErrorState) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.error),
+                  content: Text(state.error.toString()),
                   backgroundColor: Colors.redAccent[400],
                   behavior: SnackBarBehavior.floating,
                 ));
                 Navigator.pop(context);
+              } else if (state is QrLocationServiceErrorState) {
+                Navigator.pop(context);
+                openDialogLocationSettings();
+              } else if (state is QrLocationPermissionErrorState) {
+                Navigator.pop(context);
+                openDialogAppSettings();
               }
             },
             builder: (context, state) {
@@ -86,7 +136,7 @@ class _QrScreenState extends State<QrScreen> {
                           child: state is AttendanceAlreadyInitialized
                               ? Center(
                                   child: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  margin: const EdgeInsets.symmetric(horizontal: 20),
                                   child: Column(
                                     children: [
                                       const Text(
@@ -132,7 +182,8 @@ class _QrScreenState extends State<QrScreen> {
                         borderRadius: 50,
                         icontext: false,
                         onPressed: () {
-                          if (state is PreSetupForAttendanceSuccessState || state is AttendanceAlreadyInitialized) {
+                          if (state is PreSetupForAttendanceSuccessState ||
+                              state is AttendanceAlreadyInitialized) {
                             Navigator.pushNamed(context, '/studentattendance',
                                 arguments: {
                                   'session': widget.session,
@@ -142,9 +193,8 @@ class _QrScreenState extends State<QrScreen> {
                                   'datetime': updatedt
                                 });
                           } else {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(
-                              content:const Text(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text(
                                   "Initialization is in progress. Please wait a second."),
                               backgroundColor: Colors.redAccent[400],
                               behavior: SnackBarBehavior.floating,

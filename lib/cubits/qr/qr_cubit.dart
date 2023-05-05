@@ -8,6 +8,7 @@ import 'package:fiwi/cubits/delete_account/delete_account_state.dart';
 import 'package:fiwi/cubits/qr/qr_state.dart';
 import 'package:fiwi/models/student.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -24,54 +25,84 @@ class QrCubit extends Cubit<QrState> {
       String subjectName, String dt) async {
     try {
       emit(QrInitialState());
-      DataSnapshot students = await bref.child(session).child('uid').get();
-      final itemsMap = students.value as Map;
-      final itemsValue = itemsMap.keys.toList();
-      final oldSemesterValue = semester;
-      semester = semester.toLowerCase().replaceAll(' ', '');
-      String plainText = jsonEncode({
-        'session': session,
-        'semester': oldSemesterValue,
-        'subject': subjectCode,
-        'dt': dt
-      });
-      final key = encrypt.Key.fromUtf8(box.get('key'));
-      final iv = IV.fromLength(16);
+      bool serviceEnabled;
+      LocationPermission permission;
 
-      final encrypter = Encrypter(AES(key));
+      permission = await Geolocator.checkPermission();
 
-      final encrypted = encrypter.encrypt(plainText, iv: iv);
-      // final decrypted = encrypter.decrypt(encrypted, iv: iv);
-      DatabaseReference dtRef = attref
-          .child(session)
-          .child(semester)
-          .child(subjectCode.toLowerCase())
-          .child(dt);
-      final value = await dtRef.get();
-      if (value.exists) {
-        emit(AttendanceAlreadyInitialized(encrypted.base64));
-      } else {
-        Map<String, dynamic> uidList = {};
-
-        for (int i = 0; i < itemsValue.length; i++) {
-          uidList[itemsValue[i]] = {'uid': itemsValue[i], 'status': false};
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        log(permission.name.toString());
+        if (permission == LocationPermission.denied) {
+          log('hello');
+          emit(QrErrorState('Allow location permission to continue'));
+        } else if (permission == LocationPermission.deniedForever) {
+          emit(QrLocationPermissionErrorState());
         }
-        await dtRef
-            .set({
-              'createdAt': dt,
-              'semester': oldSemesterValue,
-              'session': session,
-              'subject_code': subjectCode,
-              'subject_name': subjectName,
-              'encrypted_qr': encrypted.base64,
-              'qractive': true,
-              'adminOrFacultyUid': _auth.currentUser!.uid,
-              'uids': uidList
-            })
-            .then((value) =>
-                emit(PreSetupForAttendanceSuccessState(encrypted.base64)))
-            .onError(
-                (error, stackTrace) => emit(QrErrorState(error.toString())));
+      } else if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          emit(QrLocationServiceErrorState(
+              "Turn on Location Service to continue..."));
+          log('not enabled');
+        } else {
+          Position pos = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.bestForNavigation);
+          DataSnapshot students = await bref.child(session).child('uid').get();
+          final itemsMap = students.value as Map;
+          final itemsValue = itemsMap.keys.toList();
+          final oldSemesterValue = semester;
+          semester = semester.toLowerCase().replaceAll(' ', '');
+          String plainText = jsonEncode({
+            'session': session,
+            'semester': oldSemesterValue,
+            'subject': subjectCode,
+            'dt': dt,
+            'latitude': pos.latitude,
+            'longitude': pos.longitude
+          });
+          final key = encrypt.Key.fromUtf8(box.get('key'));
+          final iv = IV.fromLength(16);
+
+          final encrypter = Encrypter(AES(key));
+
+          final encrypted = encrypter.encrypt(plainText, iv: iv);
+          // final decrypted = encrypter.decrypt(encrypted, iv: iv);
+          DatabaseReference dtRef = attref
+              .child(session)
+              .child(semester)
+              .child(subjectCode.toLowerCase())
+              .child(dt);
+          final value = await dtRef.get();
+          if (value.exists) {
+            emit(AttendanceAlreadyInitialized(encrypted.base64));
+          } else {
+            Map<String, dynamic> uidList = {};
+
+            for (int i = 0; i < itemsValue.length; i++) {
+              uidList[itemsValue[i]] = {'uid': itemsValue[i], 'status': false};
+            }
+            await dtRef
+                .set({
+                  'createdAt': dt,
+                  'semester': oldSemesterValue,
+                  'session': session,
+                  'subject_code': subjectCode,
+                  'subject_name': subjectName,
+                  'encrypted_qr': encrypted.base64,
+                  'qractive': true,
+                  'adminOrFacultyUid': _auth.currentUser!.uid,
+                  'uids': uidList,
+                  'latitude': pos.latitude,
+                  'longitude': pos.longitude
+                })
+                .then((value) =>
+                    emit(PreSetupForAttendanceSuccessState(encrypted.base64)))
+                .onError((error, stackTrace) =>
+                    emit(QrErrorState(error.toString())));
+          }
+        }
       }
     } catch (e) {
       emit(QrErrorState(e.toString()));

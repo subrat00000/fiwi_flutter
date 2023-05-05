@@ -7,20 +7,28 @@ class PreSetupForAttendanceSuccessState extends QrState {
   PreSetupForAttendanceSuccessState(this.encryptedMessage);
 }
 
-class AttendanceAlreadyInitialized extends QrState{
+class AttendanceAlreadyInitialized extends QrState {
   String encryptedOldMessage;
   AttendanceAlreadyInitialized(this.encryptedOldMessage);
 }
-class TakeAttendanceSuccessState extends QrState{}
+
+class TakeAttendanceSuccessState extends QrState {}
 
 class TakeAttendanceErrorState extends QrState {
   String error;
   TakeAttendanceErrorState(this.error);
 }
 
-class UpdateAttendanceSuccessState extends QrState{}
+class UpdateAttendanceSuccessState extends QrState {}
 
 class QrErrorState extends QrState {
   String error;
   QrErrorState(this.error);
 }
+
+class QrLocationServiceErrorState extends QrState {
+  String error;
+  QrLocationServiceErrorState(this.error);
+}
+
+class QrLocationPermissionErrorState extends QrState {}
