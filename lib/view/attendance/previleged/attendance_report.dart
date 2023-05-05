@@ -96,14 +96,25 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                   acc[uid] = (acc[uid] ?? 0) + 1;
                   return acc;
                 });
-                absent.forEach((el){result[el['uid']]=0;});
-                // log(absent['uid'].toString());
+                Map<String, int> absentResult = absent
+                    .map((e) => e["uid"])
+                    .fold<Map<String, int>>({}, (acc, uid) {
+                  acc[uid] = (acc[uid] ?? 0) + 1;
+                  return acc;
+                });
+                
+                Map<String,int> absentPercentage = absentResult.map((a, b) =>
+                    MapEntry(a, ((b / attendance.length) * 100).toInt()));
+                absentPercentage.forEach((key, value) {
+                  if (value == 100) {
+                    result[key] = 0;
+                  }
+                });
                 final percentage = result.map((a, b) => MapEntry(
                     a, ((b / attendance.length) * 100).toStringAsFixed(1)));
                 List<Student> student = st
                     .where((student) => percentage.containsKey(student.uid))
                     .toList();
-                // return Text(student.map((e) => e.name).toString());
                 return ListView.builder(
                     itemCount: student.length,
                     shrinkWrap: true,
