@@ -18,6 +18,8 @@ class TakeAttendanceErrorState extends QrState {
   TakeAttendanceErrorState(this.error);
 }
 
+class UpdateAttendanceSuccessState extends QrState{}
+
 class QrErrorState extends QrState {
   String error;
   QrErrorState(this.error);

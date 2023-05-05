@@ -119,8 +119,26 @@ class QrCubit extends Cubit<QrState> {
       emit(TakeAttendanceErrorState(e.toString()));
     }
   }
-  getBatchUids(sessionValue)async{
+
+  getBatchUids(sessionValue) async {
     DatabaseEvent data = await bref.child(sessionValue).child('uid').once();
     return (data.snapshot.value as Map).keys.map((e) => e.toString()).toList();
+  }
+
+  updateAttendance(String session, String semester, String subject,
+      String datetime, String uid, bool value) async {
+    try {
+      await attref
+          .child(session)
+          .child(semester.toLowerCase().replaceAll(' ', ''))
+          .child(subject.toLowerCase())
+          .child(datetime)
+          .child('uids')
+          .child(uid)
+          .update({'status': value});
+      emit(UpdateAttendanceSuccessState());
+    } catch (e) {
+      emit(QrErrorState(e.toString()));
+    }
   }
 }
