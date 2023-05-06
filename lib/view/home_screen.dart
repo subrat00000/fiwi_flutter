@@ -16,7 +16,7 @@ import 'package:fiwi/repositories/notification.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance/previleged/admin_attendance_screen.dart';
-import 'package:fiwi/view/attendance/previleged/attendance_screen.dart';
+import 'package:fiwi/view/attendance/student/attendance_screen.dart';
 import 'package:fiwi/view/attendance/previleged/faculty_attendance_screen.dart';
 import 'package:fiwi/view/home_screen_helper.dart';
 import 'package:fiwi/view/library/library_screen.dart';
@@ -289,6 +289,7 @@ class HomeScreenState extends State<HomeScreen> {
     const HomeScreenHelper(),
     const TimeTable(),
     const FacultyAttendanceScreen(),
+    const LibraryScreen(),
   ];
   final _pageNavigationLibrarian = [
     const HomeScreenHelper(),

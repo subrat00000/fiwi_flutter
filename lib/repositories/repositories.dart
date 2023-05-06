@@ -6,14 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class Repositories {
-  showExitDialog(BuildContext context) {
-    return showDialog(
+  Future<bool> showExitDialog(BuildContext context) async {
+    return await showDialog(
         context: context,
         builder: (context) => AlertDialog(
               title: const Text('Do you want to exit the app?'),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.pop(context,false),
                   child: const Text('No'),
                 ),
                 TextButton(

@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/create_batch/create_batch_cubit.dart';
-import 'package:fiwi/cubits/qr/qr_cubit.dart';
+import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/models/student.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

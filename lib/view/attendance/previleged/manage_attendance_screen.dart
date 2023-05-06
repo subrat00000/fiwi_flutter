@@ -7,7 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_cubit.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_state.dart';
 import 'package:fiwi/cubits/manage_course/manage_course_cubit.dart';
-import 'package:fiwi/cubits/qr/qr_cubit.dart';
+import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/models/chartdata.dart';
 import 'package:fiwi/models/course.dart';
 import 'package:fiwi/models/student.dart';
