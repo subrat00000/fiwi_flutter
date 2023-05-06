@@ -13,6 +13,7 @@ import 'package:fiwi/view/attendance/previleged/attendance_report.dart';
 import 'package:fiwi/view/attendance/previleged/manage_attendance_screen.dart';
 import 'package:fiwi/view/attendance/previleged/qr_screen.dart';
 import 'package:fiwi/view/attendance/previleged/student_attendance.dart';
+import 'package:fiwi/view/attendance/student/qr_scan.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile/edit_profile_screen.dart';
@@ -71,6 +72,9 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/qrscan':
+        return MaterialPageRoute(
+            builder: (context) => const QrScan());
       case '/attendancereport':
         final itemsMap = setting.arguments as Map;
         String session = itemsMap['session'];
