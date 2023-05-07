@@ -13,19 +13,25 @@
             "name": "Emulator 1",
             "request": "launch",
             "type": "dart",
-            "deviceId": "127.0.0.1:5555"
+            "deviceId": "emulator-5554"
         },
         {
             "name": "Phone",
             "request": "launch",
             "type": "dart",
             "deviceId": "RZ8RA0ZTTSH"
+        },
+        {
+            "name": "Sudhansu Dada",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "DT89571GA1951304724"
         }
     ],
     "compounds": [
         {
             "name": "All Devices",
-            "configurations": ["Emulator 1","Phone"]
+            "configurations": ["Emulator 1","Phone","Sudhansu Dada"]
         }
     ]
 }
