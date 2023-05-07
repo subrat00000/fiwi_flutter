@@ -172,4 +172,16 @@ class QrCubit extends Cubit<QrState> {
       emit(QrErrorState(e.toString()));
     }
   }
+
+  deleteAttendance(String session,String semester,String subject,String datetime) async{
+    try{
+      await attref
+          .child(session)
+          .child(semester.toLowerCase().replaceAll(' ', ''))
+          .child(subject.toLowerCase())
+          .child(datetime).remove();
+    }catch(e){
+      emit(QrErrorState(e.toString()));
+    }
+  }
 }

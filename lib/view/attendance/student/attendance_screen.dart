@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/student_attendance/attendance_cubit.dart';
 import 'package:fiwi/cubits/student_attendance/attendance_state.dart';
@@ -20,6 +21,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Box box = Hive.box('user');
   String? session;
   String? semester;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  List presentPercent = [];
 
   @override
   void initState() {
@@ -27,32 +30,56 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     session = box.get('session') ?? '';
     semester = box.get('semester') ?? '';
 
-    // _getPercent();
+    _getData();
   }
 
-  _getData(String subjectCode) async {
-    DatabaseEvent data = await FirebaseDatabase.instance
-        .ref('attendance')
-        .child(session!)
-        .child(semester!.toLowerCase().replaceAll(' ', ''))
-        .child(subjectCode.toLowerCase())
+  _getData() async {
+    List temp = [];
+    DatabaseEvent course = await FirebaseDatabase.instance
+        .ref('courseList')
+        .orderByChild('semester')
+        .equalTo(semester)
         .once();
-    if (data.snapshot.value != null) {
-      final itemsList = Map<String, dynamic>.from(data.snapshot.value as Map);
-      log(itemsList.toString());
-    } else {
-      log('Empty');
+    if (course.snapshot.value != null) {
+      final courseList = Map<String, dynamic>.from(course.snapshot.value as Map)
+          .values
+          .toList();
+      courseList.forEach((element) async {
+        String code = element['code'].toString().toLowerCase();
+        DatabaseEvent data = await FirebaseDatabase.instance
+            .ref('attendance')
+            .child(session!)
+            .child(semester!.toLowerCase().replaceAll(' ', ''))
+            .child(code)
+            .once();
+        if (data.snapshot.value != null) {
+          final itemsList =
+              Map<String, dynamic>.from(data.snapshot.value as Map)
+                  .values
+                  .toList();
+          final present = List.generate(itemsList.length, (i) {
+            final count = (itemsList.elementAt(i)['uids'] as Map)
+                .values
+                .where((element) =>
+                    element['status'] == true &&
+                    element['uid'] == _auth.currentUser!.uid)
+                .length;
+            return count;
+          });
+          double percent =
+              (present.reduce((a, b) => a + b) / itemsList.length) * 100;
+          log(code + percent.toString());
+          temp.add({code: percent});
+        }
+      });
+      setState(() {
+        presentPercent = temp;
+      });
     }
-  }
-
-  _getPercent(String subjectCode) {
-    _getData(subjectCode);
-    return 'a';
   }
 
   @override
   Widget build(BuildContext context) {
-    log(box.get('semester'));
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.pushNamed(context, '/qrscan'),
@@ -81,12 +108,20 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(10.0),
                     itemBuilder: (context, index) {
-                      return Card(
-                          child: ListTile(
-                        trailing: Text(_getPercent(data[index]['code'])),
-                        title: Text(
-                            '${data[index]['name']}(${data[index]['code']})'),
-                      ));
+                      if (presentPercent.isNotEmpty) {
+                        String percent = presentPercent
+                            .where((e) =>
+                                data[index]['code'].toString().toLowerCase() ==
+                                (e as Map).keys.first)
+                            .first[data[index]['code'].toString().toLowerCase()]
+                            .toString();
+                        return Card(
+                            child: ListTile(
+                          trailing: Text('$percent%'),
+                          title: Text(
+                              '${data[index]['name']}(${data[index]['code']})'),
+                        ));
+                      }
                     });
               }
             }));

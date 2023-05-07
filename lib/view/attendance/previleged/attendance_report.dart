@@ -48,23 +48,133 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
     });
   }
 
-  Widget profilepic(photo){ return Container(
-    width: 45,
-    height: 45,
-    clipBehavior: Clip.antiAliasWithSaveLayer,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(50),
-    ),
-    child: photo != null && photo != ''
-        ? CachedNetworkImage(
-            fit: BoxFit.cover,
-            imageUrl: photo!,
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          )
-        : Image.asset('assets/no_image.png'),
-  );
+  deleteDialog(datetime) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text.rich(
+                TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'Do you want to delete attendance of ',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    TextSpan(
+                      text:
+                          '${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).day}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).month}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).year} ${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).hour}:${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).minute}',
+                      style: TextStyle(color: Colors.red[300]),
+                    ),
+                    const TextSpan(
+                      text: '?',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    BlocProvider.of<QrCubit>(context).deleteAttendance(
+                        widget.session,
+                        widget.semester,
+                        widget.subjectCode,
+                        datetime);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
+  }
+
+  togglePresentDialog(value, datetime, uid, name, photo) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(child: profilepic(photo)),
+                  Text(
+                    'Name: $name',
+                  ),
+                  Text(
+                      'Date Time: ${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).day}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).month}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).year} ${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).hour}:${DateTime.fromMicrosecondsSinceEpoch(int.parse(datetime)).minute}'),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'From: ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: value ? 'Present' : 'Absent',
+                          style: TextStyle(color: Colors.red[300]),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'To: ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: !value ? 'Present' : 'Absent',
+                          style: TextStyle(color: Colors.green[300]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    BlocProvider.of<QrCubit>(context).updateAttendance(
+                        widget.session,
+                        widget.semester,
+                        widget.subjectCode,
+                        datetime,
+                        uid,
+                        !value);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
+  }
+
+  Widget profilepic(photo) {
+    return Container(
+      width: 45,
+      height: 45,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: photo != null && photo != ''
+          ? CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl: photo!,
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            )
+          : Image.asset('assets/no_image.png'),
+    );
   }
 
   @override
@@ -74,8 +184,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
           actions: [
             Center(
               child: isSimple
-                  ? Text('Simple', style: TextStyle(color: Colors.black87))
-                  : Text(
+                  ? const Text('Simple', style: TextStyle(color: Colors.black87))
+                  : const Text(
                       'Details',
                       style: TextStyle(color: Colors.black87),
                     ),
@@ -125,7 +235,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                       .child(widget.subjectCode.toLowerCase())
                       .onValue,
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.data == null) {
+                    if (!snapshot.hasData || snapshot.data == null ||snapshot.data!.snapshot.value == null) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
@@ -192,7 +302,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                                 itemBuilder: (context, index) {
                                   return Card(
                                       child: ListTile(
-                                          leading: profilepic(student[index].photo),
+                                          leading:
+                                              profilepic(student[index].photo),
                                           trailing: Text(
                                               '${percentage[student[index].uid]}%'),
                                           title: Text(student[index].name!),
@@ -215,17 +326,19 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                                     ),
                                     for (int i = 0; i < attendance.length; i++)
                                       DataColumn(
-                                        label: Text(
-                                            '${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).day}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).month}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).year} ${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).hour}:${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).minute}'),
+                                        label: GestureDetector(
+                                          onDoubleTap: () => deleteDialog(
+                                              attendance[i]['createdAt']),
+                                          child: Text(
+                                              '${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).day}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).month}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).year} ${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).hour}:${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[i]['createdAt'])).minute}'),
+                                        ),
                                       ),
                                   ],
                                   rows: batchStudent
                                       .map(
                                         (student) => DataRow(
                                           cells: [
-                                            DataCell(
-                                              profilepic(student.photo)
-                                            ),
+                                            DataCell(profilepic(student.photo)),
                                             DataCell(Text(student.name!)),
                                             for (int k = 0;
                                                 k < attendance.length;
@@ -242,91 +355,13 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                                                             student.uid,
                                                       )
                                                       .first['status'];
-                                                  showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (context) =>
-                                                              AlertDialog(
-                                                                content: Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  mainAxisSize: MainAxisSize.min,
-                                                                  children: [
-                                                                    Center(child: profilepic(student.photo)),
-                                                                    Text(
-                                                                        'Name: ${student.name}',),
-                                                                    Text(
-                                                                        'Date Time: ${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[k]['createdAt'])).day}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[k]['createdAt'])).month}/${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[k]['createdAt'])).year} ${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[k]['createdAt'])).hour}:${DateTime.fromMicrosecondsSinceEpoch(int.parse(attendance[k]['createdAt'])).minute}'),
-                                                                    Text.rich(
-                                                                      TextSpan(
-                                                                        children: [
-                                                                          TextSpan(
-                                                                            text:
-                                                                                'From: ',
-                                                                            style:
-                                                                                TextStyle(color: Colors.black),
-                                                                          ),
-                                                                          TextSpan(
-                                                                            text: value?
-                                                                                'Present':'Absent',
-                                                                            style:
-                                                                                TextStyle(color: Colors.red[300]),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                    Text.rich(
-                                                                      TextSpan(
-                                                                        children: [
-                                                                          TextSpan(
-                                                                            text:
-                                                                                'To: ',
-                                                                            style:
-                                                                                TextStyle(color: Colors.black),
-                                                                          ),
-                                                                          TextSpan(
-                                                                            text: !value?
-                                                                                'Present':'Absent',
-                                                                            style:
-                                                                                TextStyle(color: Colors.green[300]),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                actions: <
-                                                                    Widget>[
-                                                                  TextButton(
-                                                                    onPressed: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop(),
-                                                                    child:
-                                                                        const Text(
-                                                                            'No'),
-                                                                  ),
-                                                                  TextButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      BlocProvider.of<QrCubit>(context).updateAttendance(
-                                                                          widget
-                                                                              .session,
-                                                                          widget
-                                                                              .semester,
-                                                                          widget
-                                                                              .subjectCode,
-                                                                          attendance[k]
-                                                                              [
-                                                                              'createdAt'],
-                                                                          student
-                                                                              .uid!,
-                                                                          !value);
-                                                                          Navigator.pop(context);
-                                                                    },
-                                                                    child: const Text(
-                                                                        'Yes'),
-                                                                  ),
-                                                                ],
-                                                              ));
+                                                  togglePresentDialog(
+                                                      value,
+                                                      attendance[k]
+                                                          ['createdAt'],
+                                                      student.uid,
+                                                      student.name,
+                                                      student.photo);
                                                 },
                                                 (attendance[k]['uids'] as Map)
                                                             .values
