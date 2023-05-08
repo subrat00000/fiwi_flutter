@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
@@ -17,25 +21,61 @@ class StudentHomeScreen extends StatefulWidget {
   State<StudentHomeScreen> createState() => StudentHomeScreenState();
 }
 
-
-
 class StudentHomeScreenState extends State<StudentHomeScreen> {
-  late TrackballBehavior _trackballBehavior;
   int todayAsDay = DateTime.now().weekday;
   Box box = Hive.box('user');
   bool loading = true;
   String chartValue = 'Day';
   List tableList = [];
   List<String> items = ['Semester', 'Month', 'Week', 'Day'];
-  
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
-    _trackballBehavior = TrackballBehavior(
-      enable: true,
-      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-    );
     super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
+    DatabaseEvent data = await FirebaseDatabase.instance
+        .ref('attendance')
+        .child(box.get('session'))
+        .child(box.get('semester').toString().toLowerCase().replaceAll(' ', ''))
+        .once();
+    if (data.snapshot.exists) {
+      final itemsList = Map<String, dynamic>.from(data.snapshot.value as Map);
+      final subjectList = itemsList.keys.toList();
+      final value1 = itemsList.values
+          .map((e) => (e as Map).values)
+          .expand((element) => element)
+          .toList();
+
+      Map<String, Map<String, dynamic>> streamsData = {};
+
+      // Iterate over each subject
+      itemsList.forEach((key, value) {
+        // String stream = key.substring(0, 1);
+        // log(stream.toString());
+        streamsData[key] ??= {'total': 0, 'present': 0};
+        // Iterate over each student in the subject
+        for (var element in (value as Map).values) {
+          streamsData[key]!['total'] += 1;
+          (element['uids'] as Map).forEach((uid, student) {
+            if (student['status'] == true &&
+                student['uid'] == _auth.currentUser!.uid) {
+              streamsData[key]!['present'] += 1;
+            }
+          });
+        }
+      });
+
+      // Print the present percentage for each stream
+      streamsData.forEach((stream, data) {
+        double presentPercent = (data['present'] / data['total']) * 100;
+        print('Stream $stream: Present percentage - $presentPercent%');
+      });
+      // log(itemsList.toString());
+    }
   }
 
   @override
@@ -191,7 +231,6 @@ class StudentHomeScreenState extends State<StudentHomeScreen> {
               ),
               Container(
                 height: height * 0.2,
-                
               ),
             ],
           ))
