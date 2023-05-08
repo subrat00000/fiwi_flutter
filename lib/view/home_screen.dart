@@ -18,7 +18,10 @@ import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance/previleged/admin_attendance_screen.dart';
 import 'package:fiwi/view/attendance/student/attendance_screen.dart';
 import 'package:fiwi/view/attendance/previleged/faculty_attendance_screen.dart';
-import 'package:fiwi/view/home_screen_helper.dart';
+import 'package:fiwi/view/home_screen/admin_home_screen.dart';
+import 'package:fiwi/view/home_screen/faculty_home_screen.dart';
+import 'package:fiwi/view/home_screen/librarian_home_screen.dart';
+import 'package:fiwi/view/home_screen/student_home_screen.dart';
 import 'package:fiwi/view/library/library_screen.dart';
 import 'package:fiwi/view/library/previleged_library_screen.dart';
 import 'package:fiwi/view/timetable/timetable_screen.dart';
@@ -273,26 +276,26 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   final _pageNavigationAdmin = [
-    const HomeScreenHelper(),
+    const AdminHomeScreen(),
     const TimeTable(),
     const AdminAttendanceScreen(),
     const PrevilegedLibraryScreen(),
     const AdminScreen()
   ];
   final _pageNavigationStudent = [
-    const HomeScreenHelper(),
+    const StudentHomeScreen(),
     const TimeTable(),
     const AttendanceScreen(),
     const LibraryScreen(),
   ];
   final _pageNavigationFaculty = [
-    const HomeScreenHelper(),
+    const FacultyHomeScreen(),
     const TimeTable(),
     const FacultyAttendanceScreen(),
     const LibraryScreen(),
   ];
   final _pageNavigationLibrarian = [
-    const HomeScreenHelper(),
+    const LibrarianHomeScreen(),
     const PrevilegedLibraryScreen(),
   ];
 

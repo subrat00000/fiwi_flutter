@@ -10,16 +10,16 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class HomeScreenHelper extends StatefulWidget {
-  const HomeScreenHelper({super.key});
+class FacultyHomeScreen extends StatefulWidget {
+  const FacultyHomeScreen({super.key});
 
   @override
-  State<HomeScreenHelper> createState() => HomeScreenHelperState();
+  State<FacultyHomeScreen> createState() => FacultyHomeScreenState();
 }
 
 
 
-class HomeScreenHelperState extends State<HomeScreenHelper> {
+class FacultyHomeScreenState extends State<FacultyHomeScreen> {
   late TrackballBehavior _trackballBehavior;
   int todayAsDay = DateTime.now().weekday;
   Box box = Hive.box('user');
