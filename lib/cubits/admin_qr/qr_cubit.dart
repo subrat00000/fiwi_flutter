@@ -113,6 +113,7 @@ class QrCubit extends Cubit<QrState> {
     DataSnapshot batch = await bref.get();
     final itemsMap = batch.value as Map;
     final itemsList = itemsMap.keys.map((e) => e.toString()).toList();
+    itemsList.sort((a, b) => b.compareTo(a));
     return itemsList;
   }
 

@@ -27,7 +27,6 @@ class StudentHomeScreenState extends State<StudentHomeScreen> {
   bool loading = true;
   String chartValue = 'Day';
   List tableList = [];
-  List<String> items = ['Semester', 'Month', 'Week', 'Day'];
   List chartData = [];
   Map<String, dynamic> subjectData = {};
 
@@ -208,66 +207,75 @@ class StudentHomeScreenState extends State<StudentHomeScreen> {
                 SizedBox(
                   height: height * 0.02,
                 ),
-                (chartData.isNotEmpty && subjectData.isNotEmpty)? ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: chartData.length,
-                  itemBuilder: (context, index) {
-                    // return Text(chartData[index].toString(),style: TextStyle(color:Colors.black87),);
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 20),
-                            child: Text(
-                                '${subjectData[chartData[index]['subject'].toString()]['name']}(${subjectData[chartData[index]['subject'].toString()]['code']})'),
-                          ),
-                        ),
-                        SfCircularChart(
-                            tooltipBehavior: TooltipBehavior(enable: true),
-                            series: <CircularSeries>[
-                              // Renders doughnut chart
-                              DoughnutSeries<ChartData, String>(
-                                  onPointTap: (a) {
-                                    log(a.dataPoints![a.pointIndex!].x
-                                        .toString());
-                                  },
-                                  enableTooltip: true,
-                                  dataLabelSettings: const DataLabelSettings(
-                                    isVisible: true,
-                                    labelPosition:
-                                        ChartDataLabelPosition.outside,
-                                  ),
-                                  dataLabelMapper: (datum, index) =>
-                                      '${datum.count}%(${datum.x.split('')[0]})',
-                                  dataSource: [
-                                    ChartData(
-                                        'Present',
-                                        double.parse(chartData[index]['present']
-                                                .toString())
-                                            .round(),
-                                        const Color.fromARGB(0, 34, 255, 163)),
-                                    ChartData(
-                                        'Absent',
-                                        (100 -
-                                                double.parse(chartData[index]
-                                                        ['present']
-                                                    .toString()))
-                                            .floor(),
-                                        const Color.fromARGB(0, 252, 87, 109))
-                                  ],
-                                  pointColorMapper: (ChartData data, _) =>
-                                      data.color,
-                                  xValueMapper: (ChartData data, _) => data.x,
-                                  yValueMapper: (ChartData data, _) =>
-                                      data.count)
-                            ]),
-                      ],
-                    );
-                  },
-                ): const Center(child: CircularProgressIndicator()),
+                (chartData.isNotEmpty && subjectData.isNotEmpty)
+                    ? ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: chartData.length,
+                        itemBuilder: (context, index) {
+                          // return Text(chartData[index].toString(),style: TextStyle(color:Colors.black87),);
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  margin: const EdgeInsets.only(left: 20),
+                                  child: Text(
+                                      '${subjectData[chartData[index]['subject'].toString()]['name']}(${subjectData[chartData[index]['subject'].toString()]['code']})'),
+                                ),
+                              ),
+                              SfCircularChart(
+                                  tooltipBehavior:
+                                      TooltipBehavior(enable: true),
+                                  series: <CircularSeries>[
+                                    // Renders doughnut chart
+                                    DoughnutSeries<ChartData, String>(
+                                        onPointTap: (a) {
+                                          log(a.dataPoints![a.pointIndex!].x
+                                              .toString());
+                                        },
+                                        enableTooltip: true,
+                                        dataLabelSettings:
+                                            const DataLabelSettings(
+                                          isVisible: true,
+                                          labelPosition:
+                                              ChartDataLabelPosition.outside,
+                                        ),
+                                        dataLabelMapper: (datum, index) =>
+                                            '${datum.count}%(${datum.x.split('')[0]})',
+                                        dataSource: [
+                                          ChartData(
+                                              'Present',
+                                              double.parse(chartData[index]
+                                                          ['present']
+                                                      .toString())
+                                                  .round(),
+                                              const Color.fromARGB(
+                                                  0, 34, 255, 163)),
+                                          ChartData(
+                                              'Absent',
+                                              (100 -
+                                                      double.parse(
+                                                          chartData[index]
+                                                                  ['present']
+                                                              .toString()))
+                                                  .floor(),
+                                              const Color.fromARGB(
+                                                  0, 252, 87, 109))
+                                        ],
+                                        pointColorMapper: (ChartData data, _) =>
+                                            data.color,
+                                        xValueMapper: (ChartData data, _) =>
+                                            data.x,
+                                        yValueMapper: (ChartData data, _) =>
+                                            data.count)
+                                  ]),
+                            ],
+                          );
+                        },
+                      )
+                    : const Center(child: CircularProgressIndicator()),
                 //
                 SizedBox(
                   height: height * 0.02,

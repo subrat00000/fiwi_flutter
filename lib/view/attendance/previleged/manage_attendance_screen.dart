@@ -42,8 +42,6 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   Map<String, Set<String>> attendStudentUid = {};
   Map<String, dynamic> studentWithPercent = {};
   String dt = DateTime.now().microsecondsSinceEpoch.toString();
-  List<String> sessions = [];
-  late TrackballBehavior _trackballBehavior;
   int? totalStudent;
   String? chartValue;
   bool _isLoading = true;
@@ -51,10 +49,6 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
   List<String> batch = [];
   @override
   void initState() {
-    _trackballBehavior = TrackballBehavior(
-      enable: true,
-      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-    );
     super.initState();
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
@@ -63,7 +57,6 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         });
       }
     });
-    _loadData();
     getBatch();
   }
 
@@ -132,21 +125,9 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
     setState(() {
       batch = bt;
     });
-  }
-
-  _loadData() async {
-    final ses = await FirebaseDatabase.instance.ref('attendance').get();
-    final sessionMap = ses.value as Map;
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      sessions = sessionMap.keys.map((e) => e.toString()).toList();
-      sessions.sort((a, b) => b.compareTo(a));
-    });
-    log(sessions.toString());
-    chartValue = sessions[0];
-    _loadChart(sessions[0]);
+    chartValue = batch[0];
+    log(batch.toString());
+    _loadChart(chartValue);
   }
 
   _loadChart(sessionValue) async {
@@ -180,6 +161,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
       double averageAbsent = absent.reduce((a, b) => a + b) / total;
       //Second doughnut
       final presentList = {};
+      final absentList = {};
       for (var e in itemsMap) {
         for (var v in (e['uids'] as Map).values) {
           if (v['status'] == true) {
@@ -188,17 +170,34 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
             } else {
               presentList[v['uid']] = 1;
             }
+          } else if (v['status'] == false) {
+            if (absentList.containsKey(v['uid'])) {
+              absentList[v['uid']] = absentList[v['uid']] + 1;
+            } else {
+              absentList[v['uid']] = 1;
+            }
           }
         }
       }
+      // log(presentList.toString());
+      // log(absentList.toString());
       Map<int, Set<String>> finalList = {};
+      //we are adding finalList to uids having same number of values i.e. students having same number of present value
       presentList.forEach((a, b) {
         if (!finalList.containsKey(b)) {
           finalList[b] = {};
         }
         finalList[b]!.add(a);
       });
-
+      absentList.forEach((a, b) {
+        if(b==total){
+          if(!finalList.containsKey(b)){
+            finalList[0]={};
+          }
+          finalList[0]!.add(a);
+        }
+      });
+      log(finalList.toString());
       Map<String, dynamic> lst = finalList.map((a, b) => MapEntry(
           double.parse(((a / total) * 100).toStringAsFixed(2)).toString(), b));
       Map<String, int> groupedAttendanceMap = {
@@ -236,8 +235,8 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
           uidz["80-100"]!.addAll(students);
         }
       });
-      log(groupedAttendanceMap.toString());
-      log(uidz.toString());
+      // log(groupedAttendanceMap.toString());
+      // log(uidz.toString());
       final batch = await FirebaseDatabase.instance
           .ref('batch')
           .child(sessionValue)
@@ -369,7 +368,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.only(left: 16, right: 16),
+        margin: const EdgeInsets.only(left: 10, right: 10),
         child: SingleChildScrollView(
             child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
@@ -394,74 +393,78 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                     child: const Text('Attendance Report',
                         style: TextStyle(color: Colors.black87)),
                     onPressed: () {
-                      if(chartValue != null){
+                      if (chartValue != null) {
                         Navigator.pushNamed(context, '/attendancereport',
-                          arguments: {
-                            'session': chartValue,
-                            'semester': widget.semester,
-                            'subject_code': widget.subjectCode,
-                            'subject_name': widget.subjectName,
-                          });
-                      }else {
-                        
-                      }
-                      
+                            arguments: {
+                              'session': chartValue,
+                              'semester': widget.semester,
+                              'subject_code': widget.subjectCode,
+                              'subject_name': widget.subjectName,
+                            });
+                      } else {}
                     }),
               ],
             ),
             chartData.isNotEmpty
                 ? Card(
                     // height: 200,
-                    child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
                           height: 20,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total Students: $totalStudent',
-                              style: const TextStyle(fontSize: 17),
-                            ),
-                            Text(
-                              'Total Classes: $totalClasses',
-                              style: const TextStyle(fontSize: 17),
-                            ),
-                          ],
+                        Container(
+                          margin:EdgeInsets.only(left: 15,right: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Total Students: $totalStudent',
+                                style: const TextStyle(fontSize: 17),
+                              ),
+                              Text(
+                                'Total Classes: $totalClasses',
+                                style: const TextStyle(fontSize: 17),
+                              ),
+                            ],
+                          ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: SizedBox(
-                            width: width * 0.25,
-                            height: height * 0.05,
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                hint: const Text("Semester"),
-                                items: sessions.map<DropdownMenuItem<String>>(
-                                    (String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                value: chartValue,
-                                onChanged: (value) {
-                                  _loadChart(value);
-                                  setState(() {
-                                    chartValue = value;
-                                  });
-                                },
+                        Container(
+                          margin:EdgeInsets.only(left: 15,right: 15),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              width: width * 0.25,
+                              height: height * 0.05,
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  hint: const Text("Session"),
+                                  items: batch.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  value: chartValue,
+                                  onChanged: (value) {
+                                    _loadChart(value);
+                                    setState(() {
+                                      chartValue = value;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        const Text(
-                          'Average Attendance',
-                          style: TextStyle(fontSize: 17),
+                        Container(
+                          margin:EdgeInsets.only(left: 15,right: 15),
+                          child: const Text(
+                            'Average Attendance',
+                            style: TextStyle(fontSize: 17),
+                          ),
                         ),
                         SfCircularChart(
                             tooltipBehavior: TooltipBehavior(enable: true),
@@ -487,9 +490,12 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                   yValueMapper: (ChartData data, _) =>
                                       data.count)
                             ]),
-                        const Text(
-                          'Student - Attendance Percentage',
-                          style: TextStyle(fontSize: 17),
+                        Container(
+                          margin:EdgeInsets.only(left: 15,right: 15),
+                          child: const Text(
+                            'Student - Attendance Percentage',
+                            style: TextStyle(fontSize: 17),
+                          ),
                         ),
                         SfCircularChart(
                             tooltipBehavior: TooltipBehavior(enable: true),
@@ -543,8 +549,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                       data.count)
                             ]),
                       ],
-                    ),
-                  ))
+                    ))
                 : Container(
                     height: 300,
                     child: Column(

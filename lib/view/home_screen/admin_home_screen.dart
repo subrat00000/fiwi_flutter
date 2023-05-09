@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
 import 'package:fiwi/models/chartdata.dart';
@@ -20,22 +24,52 @@ class AdminHomeScreen extends StatefulWidget {
 
 
 class AdminHomeScreenState extends State<AdminHomeScreen> {
-  late TrackballBehavior _trackballBehavior;
   int todayAsDay = DateTime.now().weekday;
   Box box = Hive.box('user');
   bool loading = true;
-  String chartValue = 'Day';
   List tableList = [];
-  List<String> items = ['Semester', 'Month', 'Week', 'Day'];
+  List<String> batch = [];
+  bool _isLoading = true;
+  String? chartValue;
   
 
   @override
   void initState() {
-    _trackballBehavior = TrackballBehavior(
-      enable: true,
-      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-    );
     super.initState();
+    Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+    getBatch();
+  }
+    getBatch() async {
+    List<String> bt = await BlocProvider.of<QrCubit>(context).getBatchDetails();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      batch = bt;
+    });
+    chartValue = batch[0];
+    log(batch.toString());
+    _loadChart(chartValue);
+  }
+
+  _loadChart(sessionValue) async{
+    final val = await FirebaseDatabase.instance
+        .ref('attendance')
+        .child(sessionValue)
+        .once();
+    if (val.snapshot.exists) {
+      final itemsMap =
+          Map<String, dynamic>.from(val.snapshot.value as Map);
+      log(itemsMap.toString());
+
+    }
+
   }
 
   @override
@@ -170,7 +204,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                     child: DropdownButton<String>(
                       hint: const Text("Semester"),
                       items:
-                          items.map<DropdownMenuItem<String>>((String value) {
+                          batch.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
