@@ -21,8 +21,6 @@ class AdminHomeScreen extends StatefulWidget {
   State<AdminHomeScreen> createState() => AdminHomeScreenState();
 }
 
-
-
 class AdminHomeScreenState extends State<AdminHomeScreen> {
   int todayAsDay = DateTime.now().weekday;
   Box box = Hive.box('user');
@@ -31,7 +29,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
   List<String> batch = [];
   bool _isLoading = true;
   String? chartValue;
-  
+  List chartData = [];
 
   @override
   void initState() {
@@ -45,7 +43,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     });
     getBatch();
   }
-    getBatch() async {
+
+  getBatch() async {
     List<String> bt = await BlocProvider.of<QrCubit>(context).getBatchDetails();
     if (!mounted) {
       return;
@@ -58,18 +57,59 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     _loadChart(chartValue);
   }
 
-  _loadChart(sessionValue) async{
+  _loadChart(sessionValue) async {
     final val = await FirebaseDatabase.instance
         .ref('attendance')
         .child(sessionValue)
         .once();
-    if (val.snapshot.exists) {
-      final itemsMap =
-          Map<String, dynamic>.from(val.snapshot.value as Map);
-      log(itemsMap.toString());
+    final studentList = await FirebaseDatabase.instance
+        .ref('batch')
+        .child(sessionValue)
+        .child('uid')
+        .once();
+    if (val.snapshot.exists && studentList.snapshot.exists) {
+      final itemsMap = Map<String, dynamic>.from(val.snapshot.value as Map);
+      final totalStudentList =
+          (studentList.snapshot.value as Map).keys.toList().length;
+      Map<String, Map<String, Map<String, dynamic>>> attendanceDetails = {};
 
+      itemsMap.forEach((semester, subjects) {
+        Map<String, Map<String, dynamic>> streamsData = {};
+
+        subjects.forEach((key, value) {
+          streamsData[key] ??= {'total_class': 0, 'present': 0,'semester':'','subject':''};
+          for (var element in (value as Map).values) {
+            streamsData[key]!['total_class'] += 1;
+            streamsData[key]!['semester'] = element['semester'];
+            streamsData[key]!['subject'] = element['subject_name'];
+            (element['uids'] as Map).forEach((uid, student) {
+              if (student['status'] == true) {
+                streamsData[key]!['present'] += 1;
+              }
+            });
+          }
+        });
+        attendanceDetails[semester] = streamsData;
+      });
+      List myData = [];
+      attendanceDetails.forEach((semester, subjects) {
+        subjects.forEach((stream, data) {
+          double presentPercent = (data['present'] /
+                  (int.parse(data['total_class'].toString()) *
+                      totalStudentList)) *
+              100;
+          myData.add({'subject_code': stream, 'present': presentPercent,'semester':data['semester'],'subject_name':data['subject']});
+        });
+      });
+      myData.sort((a, b) => a['semester'].toString().compareTo(b['semester'].toString()));
+      log(myData.toString());
+      if(!mounted){
+        return;
+      }
+      setState(() {
+        chartData = myData;
+      });
     }
-
   }
 
   @override
@@ -225,7 +265,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
               ),
               Container(
                 height: height * 0.2,
-                
               ),
             ],
           ))

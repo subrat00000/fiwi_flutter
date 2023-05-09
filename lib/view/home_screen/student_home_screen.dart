@@ -72,6 +72,9 @@ class StudentHomeScreenState extends State<StudentHomeScreen> {
         double presentPercent = (data['present'] / data['total']) * 100;
         myData.add({'subject': stream, 'present': presentPercent});
       });
+      if(!mounted){
+        return;
+      }
       setState(() {
         subjectData = subjectList;
         chartData = myData;

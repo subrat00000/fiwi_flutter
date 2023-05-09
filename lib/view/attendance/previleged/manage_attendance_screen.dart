@@ -191,7 +191,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
       });
       absentList.forEach((a, b) {
         if(b==total){
-          if(!finalList.containsKey(b)){
+          if(!finalList.containsKey(0)){
             finalList[0]={};
           }
           finalList[0]!.add(a);
