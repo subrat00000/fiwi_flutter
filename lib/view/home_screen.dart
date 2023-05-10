@@ -22,8 +22,8 @@ import 'package:fiwi/view/home_screen/admin_home_screen.dart';
 import 'package:fiwi/view/home_screen/faculty_home_screen.dart';
 import 'package:fiwi/view/home_screen/librarian_home_screen.dart';
 import 'package:fiwi/view/home_screen/student_home_screen.dart';
-import 'package:fiwi/view/library/library_screen.dart';
-import 'package:fiwi/view/library/previleged_library_screen.dart';
+import 'package:fiwi/view/library/non_previleged/library_screen.dart';
+import 'package:fiwi/view/library/previleged/add_book.dart';
 import 'package:fiwi/view/timetable/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -279,7 +279,7 @@ class HomeScreenState extends State<HomeScreen> {
     const AdminHomeScreen(),
     const TimeTable(),
     const AdminAttendanceScreen(),
-    const PrevilegedLibraryScreen(),
+    const LibrarianHomeScreen(),
     const AdminScreen()
   ];
   final _pageNavigationStudent = [
@@ -296,13 +296,12 @@ class HomeScreenState extends State<HomeScreen> {
   ];
   final _pageNavigationLibrarian = [
     const LibrarianHomeScreen(),
-    const PrevilegedLibraryScreen(),
   ];
 
   Widget _buildBottomNav() {
     return SizedBox(
       height: 50,
-      child: BottomNavigationBar(
+      child: role!='librarian'? BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
         selectedLabelStyle: const TextStyle(fontSize: 13),
@@ -326,6 +325,7 @@ class HomeScreenState extends State<HomeScreen> {
                 label: 'Attendance',
                 activeIcon:
                     Image.asset('assets/attendances.png', cacheHeight: 22)),
+          if (role != 'librarian')
           BottomNavigationBarItem(
               icon: Image.asset('assets/librarys.png', cacheHeight: 17),
               label: 'Library',
@@ -336,7 +336,7 @@ class HomeScreenState extends State<HomeScreen> {
                 label: 'Admin Panel',
                 activeIcon: Image.asset('assets/admin.png', cacheHeight: 22)),
         ],
-      ),
+      ):Container(),
     );
   }
 

@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
-class PrevilegedLibraryScreen extends StatefulWidget {
-  const PrevilegedLibraryScreen({super.key});
+class AddBookScreen extends StatefulWidget {
+  const AddBookScreen({super.key});
 
   @override
-  State<PrevilegedLibraryScreen> createState() => _PrevilegedLibraryScreenState();
+  State<AddBookScreen> createState() => _AddBookScreenState();
 }
 
-class _PrevilegedLibraryScreenState extends State<PrevilegedLibraryScreen> {
+class _AddBookScreenState extends State<AddBookScreen> {
   var internet = true;
   @override
   Widget build(BuildContext context) {
