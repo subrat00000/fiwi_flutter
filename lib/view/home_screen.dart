@@ -23,7 +23,7 @@ import 'package:fiwi/view/home_screen/faculty_home_screen.dart';
 import 'package:fiwi/view/home_screen/librarian_home_screen.dart';
 import 'package:fiwi/view/home_screen/student_home_screen.dart';
 import 'package:fiwi/view/library/non_previleged/library_screen.dart';
-import 'package:fiwi/view/library/previleged/add_book.dart';
+import 'package:fiwi/view/library/previleged/manage_book.dart';
 import 'package:fiwi/view/timetable/timetable_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

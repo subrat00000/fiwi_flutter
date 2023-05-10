@@ -29,16 +29,16 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
   Widget float1() {
     return const FloatingActionButton(
       onPressed: null,
-      heroTag: "btn1",
-      tooltip: 'Borrowed Books',
+      heroTag: "student_borrowed",
+      tooltip: 'Student Borrowed',
       child: Icon(Icons.add),
     );
   }
 
   Widget float2() {
-    return const FloatingActionButton(
-      onPressed: null,
-      heroTag: "btn2",
+    return FloatingActionButton(
+      onPressed: () => Navigator.pushNamed(context, '/addbooks'),
+      heroTag: "books",
       tooltip: 'Books',
       child: Icon(Icons.menu_book_rounded),
     );

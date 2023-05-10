@@ -15,6 +15,7 @@ import 'package:fiwi/view/attendance/previleged/qr_screen.dart';
 import 'package:fiwi/view/attendance/previleged/student_attendance.dart';
 import 'package:fiwi/view/attendance/student/qr_scan.dart';
 import 'package:fiwi/view/home_screen.dart';
+import 'package:fiwi/view/library/previleged/manage_book.dart';
 import 'package:fiwi/view/notification_screen.dart';
 import 'package:fiwi/view/profile/edit_profile_screen.dart';
 import 'package:fiwi/view/profile/profile_screen.dart';
@@ -72,6 +73,9 @@ class Routers {
       case '/changesemester':
         return MaterialPageRoute(
             builder: (context) => const ChangeSemesterScreen());
+      case '/addbooks':
+        return MaterialPageRoute(
+            builder: (context) => const AddBookScreen());
       case '/qrscan':
         return MaterialPageRoute(
             builder: (context) => const QrScan());
