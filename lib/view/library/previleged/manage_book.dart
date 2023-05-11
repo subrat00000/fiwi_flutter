@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/manage_book/manage_book_cubit.dart';
 import 'package:fiwi/cubits/botttom_nav_cubit.dart';
+import 'package:fiwi/cubits/manage_book/manage_book_state.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -373,7 +374,35 @@ class _AddBookScreenState extends State<AddBookScreen> {
             textAlign: TextAlign.start,
           ),
         ),
-        body: books.isNotEmpty
+        body: BlocListener<ManageBookCubit, ManageBookState>(
+        listener: (context, state) {
+          if (state is AddBookSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Book details added successfully."),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (state is UpdateBookSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Book details updated successfully."),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (state is DeleteBookSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Book details deleted successfully"),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ));
+          }else if (state is ManageBookErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.error.toString()),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          }
+        },
+        child: books.isNotEmpty
             ? ListView.builder(
                 padding: const EdgeInsets.all(10.0),
                 itemCount: books.length,
@@ -423,7 +452,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                   ));
                 })
             : const Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(),)
               ));
   }
 }

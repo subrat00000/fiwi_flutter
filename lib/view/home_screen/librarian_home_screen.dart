@@ -27,11 +27,12 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
   }
 
   Widget float1() {
-    return const FloatingActionButton(
+    return FloatingActionButton(
+      backgroundColor: Colors.white,
       onPressed: null,
       heroTag: "student_borrowed",
       tooltip: 'Student Borrowed',
-      child: Icon(Icons.add),
+      child: Image.asset('assets/borrow.png',cacheHeight: 35,),
     );
   }
 
