@@ -31,10 +31,10 @@ class ManageBookCubit extends Cubit<ManageBookState> {
       emit(ManageBookErrorState(e.toString()));
     }
   }
-    updateBook(bookName, bookCategory, authorName, publication, isbn, bookLocation,
-      quantity, childKey) async {
-    try {
 
+  updateBook(bookName, bookCategory, authorName, publication, isbn,
+      bookLocation, quantity, childKey) async {
+    try {
       await ref.child(childKey).update({
         'book_name': bookName,
         'book_category': bookCategory,
@@ -53,8 +53,21 @@ class ManageBookCubit extends Cubit<ManageBookState> {
 
   getBooks() async {
     DatabaseEvent books = await ref.once();
-    return Map<String, dynamic>.from(books.snapshot.value as Map)
-        .values
-        .toList();
+    if (books.snapshot.exists) {
+      return Map<String, dynamic>.from(books.snapshot.value as Map)
+          .values
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  deleteBook(childKey) async {
+    try {
+      await ref.child(childKey).remove();
+      emit(DeleteBookSuccessState());
+    } catch (e) {
+      emit(ManageBookErrorState(e.toString()));
+    }
   }
 }

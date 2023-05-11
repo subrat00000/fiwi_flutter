@@ -56,7 +56,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
     log(books.toString());
   }
 
-  _bottomModal({bool isView = false, bool isUpdate = false,String childKey=''}) {
+  _bottomModal(
+      {bool isView = false, bool isUpdate = false, String childKey = ''}) {
     showModalBottomSheet(
         backgroundColor: const Color(0x00ffffff),
         context: context,
@@ -383,7 +384,37 @@ class _AddBookScreenState extends State<AddBookScreen> {
                       _bottomModal(isView: true);
                     },
                     onLongPress: () {
-                      _bottomModal(isUpdate: true);
+                      showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(0, 0, 0, 0),
+                        items: const [
+                          PopupMenuItem(
+                            child: Text('Edit'),
+                            value: 1,
+                          ),
+                          PopupMenuItem(
+                            child: Text('Delete'),
+                            value: 2,
+                          ),
+                        ],
+                        elevation: 8.0,
+                      ).then((value) {
+                        if (value == 1) {
+                          bookName.text = books[index]['book_name'];
+                          selectedBook = books[index]['book_category'];
+                          authorName.text = books[index]['author_name'];
+                          publication.text = books[index]['publication'];
+                          isbn.text = books[index]['isbn'];
+                          bookLocation.text = books[index]['book_location'];
+                          quantity.text = books[index]['quantity'];
+
+                          _bottomModal(
+                              isUpdate: true, childKey: books[index]['key']);
+                        } else if(value == 2){
+                          BlocProvider.of<ManageBookCubit>(context).deleteBook(books[index]['key']);
+                          _loadData();
+                        }
+                      });
                     },
                     title: Text(
                         '${books[index]['book_name']}(${books[index]['quantity']})'),

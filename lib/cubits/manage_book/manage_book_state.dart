@@ -6,6 +6,8 @@ class AddBookSuccessState extends ManageBookState {}
 
 class UpdateBookSuccessState extends ManageBookState {}
 
+class DeleteBookSuccessState extends ManageBookState {}
+
 class ManageBookErrorState extends ManageBookState {
   String error;
   ManageBookErrorState(this.error);
