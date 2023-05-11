@@ -50,7 +50,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
   }
 
   _loadData() async {
-    final bookList = await BlocProvider.of<ManageBookCubit>(context).getBooks();
+    final List bookList =
+        await BlocProvider.of<ManageBookCubit>(context).getBooks();
+    bookList.sort((a, b) =>
+        a['book_name'].toString().compareTo(b['book_name'].toString()));
     setState(() {
       books = bookList;
     });
@@ -101,12 +104,21 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                 ? const Text(
                                     "",
                                   )
-                                : const Text("Add New Book",
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                        fontSize: 23,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87)),
+                                : isUpdate
+                                    ? const Text("Update Book",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black87))
+                                    : const Text("Add New Book",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black87)),
+                            const SizedBox(height: 20),
+                            (isView || isUpdate)? Text('Unique id: $childKey'):Container(),
                             const SizedBox(height: 20),
                             TextFormField(
                               validator: (value) {
@@ -337,6 +349,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                                   bookLocation.text,
                                                   quantity.text);
                                         }
+                                        _loadData();
                                         Navigator.pop(context);
                                       }
                                     })
@@ -375,60 +388,41 @@ class _AddBookScreenState extends State<AddBookScreen> {
           ),
         ),
         body: BlocListener<ManageBookCubit, ManageBookState>(
-        listener: (context, state) {
-          if (state is AddBookSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Book details added successfully."),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ));
-          } else if (state is UpdateBookSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Book details updated successfully."),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ));
-          } else if (state is DeleteBookSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Book details deleted successfully"),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ));
-          }else if (state is ManageBookErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.error.toString()),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ));
-          }
-        },
-        child: books.isNotEmpty
-            ? ListView.builder(
-                padding: const EdgeInsets.all(10.0),
-                itemCount: books.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                      child: ListTile(
-                    onTap: () {
-                      _bottomModal(isView: true);
-                    },
-                    onLongPress: () {
-                      showMenu(
-                        context: context,
-                        position: RelativeRect.fromLTRB(0, 0, 0, 0),
-                        items: const [
-                          PopupMenuItem(
-                            child: Text('Edit'),
-                            value: 1,
-                          ),
-                          PopupMenuItem(
-                            child: Text('Delete'),
-                            value: 2,
-                          ),
-                        ],
-                        elevation: 8.0,
-                      ).then((value) {
-                        if (value == 1) {
+            listener: (context, state) {
+              if (state is AddBookSuccessState) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Book details added successfully."),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ));
+              } else if (state is UpdateBookSuccessState) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Book details updated successfully."),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ));
+              } else if (state is DeleteBookSuccessState) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Book details deleted successfully"),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ));
+              } else if (state is ManageBookErrorState) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(state.error.toString()),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                ));
+              }
+            },
+            child: books.isNotEmpty
+                ? ListView.builder(
+                    padding: const EdgeInsets.all(10.0),
+                    itemCount: books.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                          child: ListTile(
+                        onTap: () {
                           bookName.text = books[index]['book_name'];
                           selectedBook = books[index]['book_category'];
                           authorName.text = books[index]['author_name'];
@@ -436,23 +430,52 @@ class _AddBookScreenState extends State<AddBookScreen> {
                           isbn.text = books[index]['isbn'];
                           bookLocation.text = books[index]['book_location'];
                           quantity.text = books[index]['quantity'];
-
                           _bottomModal(
-                              isUpdate: true, childKey: books[index]['key']);
-                        } else if(value == 2){
-                          BlocProvider.of<ManageBookCubit>(context).deleteBook(books[index]['key']);
-                          _loadData();
-                        }
-                      });
-                    },
-                    title: Text(
-                        '${books[index]['book_name']}(${books[index]['quantity']})'),
-                    subtitle: Text(
-                        '${books[index]['publication']}(${books[index]['author_name']})'),
-                  ));
-                })
-            : const Center(
-                child: CircularProgressIndicator(),)
-              ));
+                              isView: true, childKey: books[index]['key']);
+                        },
+                        onLongPress: () {
+                          showMenu(
+                            context: context,
+                            position: RelativeRect.fromLTRB(0, 0, 0, 0),
+                            items: const [
+                              PopupMenuItem(
+                                child: Text('Edit'),
+                                value: 1,
+                              ),
+                              PopupMenuItem(
+                                child: Text('Delete'),
+                                value: 2,
+                              ),
+                            ],
+                            elevation: 8.0,
+                          ).then((value) {
+                            if (value == 1) {
+                              bookName.text = books[index]['book_name'];
+                              selectedBook = books[index]['book_category'];
+                              authorName.text = books[index]['author_name'];
+                              publication.text = books[index]['publication'];
+                              isbn.text = books[index]['isbn'];
+                              bookLocation.text = books[index]['book_location'];
+                              quantity.text = books[index]['quantity'];
+
+                              _bottomModal(
+                                  isUpdate: true,
+                                  childKey: books[index]['key']);
+                            } else if (value == 2) {
+                              BlocProvider.of<ManageBookCubit>(context)
+                                  .deleteBook(books[index]['key']);
+                              _loadData();
+                            }
+                          });
+                        },
+                        title: Text(
+                            '${books[index]['book_name']}(${books[index]['quantity']})'),
+                        subtitle: Text(
+                            '${books[index]['publication']}(${books[index]['author_name']})'),
+                      ));
+                    })
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  )));
   }
 }
