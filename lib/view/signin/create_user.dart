@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
 import 'package:fiwi/cubits/create_user/create_user_cubit.dart';
 import 'package:fiwi/cubits/create_user/create_user_state.dart';
-import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
-import 'package:fiwi/cubits/phone_signin/phone_signin_state.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -289,7 +287,7 @@ class CreateUserState extends State<CreateUser> {
                           onPressed: () {
                             BlocProvider.of<AuthCubit>(context).logOut();
                           },
-                          child: Text('Logout'))
+                          child: const Text('Logout'))
                     ],
                   ),
                 ),

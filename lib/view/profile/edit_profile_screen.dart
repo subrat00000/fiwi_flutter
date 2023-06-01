@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -126,7 +126,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             onPressed: () {
                               validation = true;
                               if (_formKey.currentState!.validate()) {
-                                print('hello');
+                                log('hello');
                                 BlocProvider.of<ProfileCubit>(context)
                                     .saveData({label: modalController.text});
                                 Navigator.pop(context);
@@ -217,7 +217,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             onPressed: () {
                               // validation = true;
                               if (_formKey.currentState!.validate()) {
-                                print('hello');
+                                log('hello');
                                 BlocProvider.of<ProfileCubit>(context)
                                     .saveData({label: semesterValue!});
                                 _loadData();
@@ -382,19 +382,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-            title: Text(
+            title: const Text(
               'Edit Profile',
               style: TextStyle(color: Colors.black87),
             ),
             leading: IconButton(
               color: Colors.black54,
-              icon: Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             bottom: PreferredSize(
-              preferredSize: Size.fromHeight(0.2),
+              preferredSize: const Size.fromHeight(0.2),
               child: Container(
                 height: 0.2,
                 color: Colors.grey[400],
@@ -432,13 +432,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("PROFILE PICTURE",
+                                  const Text("PROFILE PICTURE",
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   IconButton(
                                       alignment: Alignment.centerRight,
                                       onPressed: () =>getImage(),
@@ -483,7 +483,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 children: [
                                   Text(name.toUpperCase(),
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
@@ -498,7 +498,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               Text(vname!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
                                 mainAxisAlignment:
@@ -506,7 +506,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 children: [
                                   Text(bio.toUpperCase(),
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
@@ -521,7 +521,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               Text(vbio!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               role=='student'?Row(
                                 mainAxisAlignment:
@@ -531,11 +531,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(sem.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                     ],
                                   ),
                                   IconButton(
@@ -549,7 +549,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ):Container(),
                               role=='student'?Text(vsemester!,
-                                  style: TextStyle(color: Colors.black87)):Container(),
+                                  style: const TextStyle(color: Colors.black87)):Container(),
                               role=='student'?SizedBox(height:height*0.015):Container(),
                               role=='student'?Row(
                                 mainAxisAlignment:
@@ -559,11 +559,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(rollno.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                     ],
                                   ),
                                   IconButton(
@@ -577,7 +577,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ):Container(),
                               role=='student'?Text(vrollno!,
-                                  style: TextStyle(color: Colors.black87)):Container(),
+                                  style: const TextStyle(color: Colors.black87)):Container(),
                               role=='student'?SizedBox(height:height*0.015):Container(),
                               role=='admin'?Row(
                                 mainAxisAlignment:
@@ -587,11 +587,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(designation.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                     ],
                                   ),
                                   IconButton(
@@ -604,7 +604,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ))
                                 ],
                               ):Container(),
-                              role=='admin'?Text(vdesignation!,style:TextStyle(color:Colors.black87)):Container(),
+                              role=='admin'?Text(vdesignation!,style:const TextStyle(color:Colors.black87)):Container(),
                               SizedBox(height: height * 0.015),
                               role=='admin'?Row(
                                 mainAxisAlignment:
@@ -614,11 +614,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(qualification.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                     ],
                                   ),
                                   IconButton(
@@ -631,7 +631,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ))
                                 ],
                               ):Container(),
-                              role=='admin'?Text(vqualification!,style:TextStyle(color:Colors.black87)):Container(),
+                              role=='admin'?Text(vqualification!,style:const TextStyle(color:Colors.black87)):Container(),
                               role=='admin'?SizedBox(height: height * 0.015):Container(),
                               Row(
                                 mainAxisAlignment:
@@ -641,11 +641,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(address.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                     ],
                                   ),
                                   IconButton(
@@ -659,7 +659,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               Text(vaddress!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                             ],
                           ),
@@ -701,11 +701,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(phone.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       isSignedInWithPhone
                                           ? Row(
                                               children: [
@@ -713,8 +713,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     width: 5,
                                                     height: 5,
                                                     color: Colors.grey),
-                                                SizedBox(width: 8),
-                                                Text('VERIFIED',
+                                                const SizedBox(width: 8),
+                                                const Text('VERIFIED',
                                                     style: TextStyle(
                                                         color: Colors.green)),
                                               ],
@@ -737,7 +737,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               
                               Text(vphone!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
                               Row(
                                 mainAxisAlignment:
@@ -745,7 +745,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 children: [
                                   Text(birthday.toUpperCase(),
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
@@ -762,7 +762,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               vbirthday!=''?Text(
                                   DateFormat.yMMMMd()
                                       .format(DateTime.parse(vbirthday!)),
-                                  style: TextStyle(color: Colors.black87)):Container(),
+                                  style: const TextStyle(color: Colors.black87)):Container(),
                               SizedBox(height: height * 0.025),
                               Row(
                                 mainAxisAlignment:
@@ -772,11 +772,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     children: [
                                       Text(email.toUpperCase(),
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500)),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       isSignedInWithGoogle
                                           ? Row(
                                               children: [
@@ -784,8 +784,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     width: 5,
                                                     height: 5,
                                                     color: Colors.grey),
-                                                SizedBox(width: 8),
-                                                Text('VERIFIED',
+                                                const SizedBox(width: 8),
+                                                const Text('VERIFIED',
                                                     style: TextStyle(
                                                         color: Colors.green)),
                                               ],
@@ -809,7 +809,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               Text(vemail!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                             ],
                           ),

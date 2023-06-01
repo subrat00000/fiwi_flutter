@@ -1,5 +1,3 @@
-import 'package:equatable/equatable.dart';
-
 abstract class HomeState { }
 
 class InitialState extends HomeState {}

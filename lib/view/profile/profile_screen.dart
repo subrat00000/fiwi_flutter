@@ -1,17 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
-import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
-import 'package:fiwi/cubits/google_signin/google_signin_state.dart';
-import 'package:fiwi/cubits/internet_cubit.dart';
-import 'package:fiwi/view/home_screen.dart';
-import 'package:fiwi/view/splash_screen.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -124,26 +116,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 Text(vname!,
                                     textAlign: TextAlign.left,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 23,
                                         fontWeight: FontWeight.w500)),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 role == 'student'
                                     ? Container(
                                         width: 5, height: 5, color: Colors.grey)
                                     : Container(),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 role == 'student'
                                     ? Text(vsemester!,
                                         style:
                                             TextStyle(color: Colors.grey[600]))
                                     : Container(),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 role == 'student' && vrollno != ''
                                     ? Container(
                                         width: 5, height: 5, color: Colors.grey)
                                     : Container(),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 role == 'student' && vrollno != ''
                                     ? Text(vrollno!,
                                         style:
@@ -151,20 +143,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     : Container()
                               ],
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(vbio!,
                                 textAlign: TextAlign.left,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14,
                                 )),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(vaddress!,
                                 textAlign: TextAlign.left,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black45,
                                   fontSize: 12,
                                 )),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                           ],
                         ),
                       )
@@ -200,24 +192,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SizedBox(height: height * 0.015),
                               Row(
                                 children: [
-                                  Text("PHONE",
+                                  const Text("PHONE",
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500)),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Container(
                                       width: 5, height: 5, color: Colors.grey),
-                                  SizedBox(width: 8),
-                                  Text('VERIFIED',
+                                  const SizedBox(width: 8),
+                                  const Text('VERIFIED',
                                       style: TextStyle(color: Colors.green)),
                                 ],
                               ),
                               Text(vphone!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.025),
-                              Row(
+                              const Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -232,9 +224,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               vbirthday!=''?Text(
                                   DateFormat.yMMMMd()
                                       .format(DateTime.parse(vbirthday!)),
-                                  style: TextStyle(color: Colors.black87)):Container(),
+                                  style: const TextStyle(color: Colors.black87)):Container(),
                               SizedBox(height: height * 0.025),
-                              Row(
+                              const Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -247,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ],
                               ),
                               Text(vemail!,
-                                  style: TextStyle(color: Colors.black87)),
+                                  style: const TextStyle(color: Colors.black87)),
                               SizedBox(height: height * 0.015),
                             ],
                           ),
@@ -283,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   itemBuilder: (BuildContext context) {
                     return [
-                      PopupMenuItem<int>(
+                      const PopupMenuItem<int>(
                         value: 0,
                         child: Text("Log Out"),
                       ),

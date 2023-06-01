@@ -1,7 +1,4 @@
-
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class LibraryScreen extends StatefulWidget {
@@ -27,7 +24,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           onPressed: () {
             // context.read<BottomNavCubit>().getHome();
           },
-          child: Text('GO TO HOME'),
+          child: const Text('GO TO HOME'),
         )
       ]),
     );

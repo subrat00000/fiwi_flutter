@@ -2,9 +2,7 @@
 //create all the subjects for university or college
 //activate the inactive student of university or college
 
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -16,7 +14,7 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   Box box = Hive.box('user');
-  List admin_list = [
+  List adminList = [
     {'icon': 'assets/role.png', 'title': 'Manage Role', 'route': '/managerole'},
     {
       'title': 'Manage Courses',
@@ -69,23 +67,23 @@ class _AdminScreenState extends State<AdminScreen> {
         color: Colors.white70,
         child: ListView.builder(
           shrinkWrap: true,
-            itemCount: admin_list.length,
+            itemCount: adminList.length,
             itemBuilder: ((context, index) {
               return Card(
                 child: ListTile(
 
-                  trailing: admin_list[index]['route'] == 'simplify_timetable'
+                  trailing: adminList[index]['route'] == 'simplify_timetable'
                       ? Switch(value: simpleTimetable, onChanged: (value) {
                         box.put('simpleTimetable', value);
                         _loadData();
                       })
                       : const SizedBox(width: 0,height: 0,),
-                  title: Text(admin_list[index]['title']),
-                  leading: Image.asset(admin_list[index]['icon'], height: 22),
+                  title: Text(adminList[index]['title']),
+                  leading: Image.asset(adminList[index]['icon'], height: 22),
                   onTap: () {
-                    if (admin_list[index]['route'] == 'simplify_timetable') {
+                    if (adminList[index]['route'] == 'simplify_timetable') {
                     } else {
-                      Navigator.pushNamed(context, admin_list[index]['route']);
+                      Navigator.pushNamed(context, adminList[index]['route']);
                     }
                   },
                 ),

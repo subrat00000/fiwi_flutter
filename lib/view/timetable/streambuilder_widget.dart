@@ -1,10 +1,7 @@
 import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiwi/cubits/timetable/selectable_grid_cubit.dart';
 import 'package:fiwi/models/timetable.dart';
-import 'package:fiwi/repositories/repositories.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
 import 'package:fiwi/view/timetable/selectable_grid.dart';
@@ -105,11 +102,11 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Align(
+                            const Align(
                               alignment: Alignment.center,
                               child: Text('Add Class',
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 23,
                                       fontWeight: FontWeight.w500,
                                       color: Colors.black87)),
@@ -175,7 +172,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                   Text(
                                     DateFormat.jm()
                                         .format(_convertToDateTime(startTime)),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600),
@@ -183,7 +180,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                   Text(
                                     DateFormat.jm()
                                         .format(_convertToDateTime(endTime)),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600),
@@ -278,7 +275,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                         : Image.asset(
                                                             'assets/no_image.png'),
                                                   )),
-                                              SizedBox(width: 10),
+                                              const SizedBox(width: 10),
                                               Text(value['name']),
                                             ],
                                           )),
@@ -368,13 +365,13 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                             barrierColor:
                                                 Colors.black.withOpacity(0.5),
                                             transitionDuration:
-                                                Duration(milliseconds: 500),
+                                                const Duration(milliseconds: 500),
                                             pageBuilder: (_, __, ___) {
                                               return Center(
                                                 child: Scaffold(
                                                   body: Container(
                                                     margin:
-                                                        EdgeInsets.symmetric(
+                                                        const EdgeInsets.symmetric(
                                                             vertical: 20,
                                                             horizontal: 40),
                                                     child: Column(
@@ -385,7 +382,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                           child: IconButton(
                                                             color:
                                                                 Colors.black54,
-                                                            icon: Icon(Icons
+                                                            icon: const Icon(Icons
                                                                 .arrow_back_ios_new_rounded),
                                                             onPressed: () {
                                                               Navigator.of(
@@ -397,7 +394,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                         Text(
                                                           semesterValue ??
                                                               "Semester 1",
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                               fontSize: 18,
                                                               color: Colors
                                                                   .black87),
@@ -414,7 +411,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                                                 (context, index,
                                                                     selected) {
                                                               return Container(
-                                                                margin: EdgeInsets
+                                                                margin: const EdgeInsets
                                                                     .only(
                                                                         bottom:
                                                                             5),
@@ -476,11 +473,11 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                               if (anim.status ==
                                                   AnimationStatus.reverse) {
                                                 tween = Tween(
-                                                    begin: Offset(0, 1),
+                                                    begin: const Offset(0, 1),
                                                     end: Offset.zero);
                                               } else {
                                                 tween = Tween(
-                                                    begin: Offset(0, -1),
+                                                    begin: const Offset(0, -1),
                                                     end: Offset.zero);
                                               }
 
@@ -595,11 +592,11 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Align(
+                            const Align(
                               alignment: Alignment.center,
                               child: Text('Add Class',
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 23,
                                       fontWeight: FontWeight.w500,
                                       color: Colors.black87)),
@@ -665,7 +662,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                   Text(
                                     DateFormat.jm()
                                         .format(_convertToDateTime(startTime)),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600),
@@ -673,7 +670,7 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                                   Text(
                                     DateFormat.jm()
                                         .format(_convertToDateTime(endTime)),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.black87,
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600),
@@ -788,16 +785,16 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
         Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
                 widget.day,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w500,
                     fontSize: 16),
               ),
             )),
-        Container(
+        SizedBox(
             height: 150, // MediaQuery.of(context).size.height * 0.3,
             child: StreamBuilder(
               stream: FirebaseDatabase.instance
@@ -876,13 +873,13 @@ class _StreamBuilderWidgetState extends State<StreamBuilderWidget> {
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0)),
+                                  const BorderRadius.all(Radius.circular(20.0)),
                             ),
-                            padding: EdgeInsets.only(
+                            padding: const EdgeInsets.only(
                                 left: 5, top: 5, bottom: 5, right: 5),
                             width: 220,
                             alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.fromLTRB(10.0, 5.0, 0.0,
+                            margin: const EdgeInsets.fromLTRB(10.0, 5.0, 0.0,
                                 5.0), //MediaQuery.of(context).size.width,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

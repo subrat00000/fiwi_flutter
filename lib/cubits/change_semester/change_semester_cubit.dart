@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/activate_student/activate_student_state.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_state.dart';
 import 'package:fiwi/repositories/notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +9,6 @@ import 'package:hive/hive.dart';
 class ChangeSemesterCubit extends Cubit<ChangeSemesterState> {
   final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
   final DatabaseReference logref = FirebaseDatabase.instance.ref("logs");
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   var box = Hive.box('user');
   DateTime now = DateTime.now();
   ChangeSemesterCubit() : super(ChangeSemesterInitialState());

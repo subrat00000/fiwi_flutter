@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -12,7 +10,6 @@ import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/home/home_cubit.dart';
 import 'package:fiwi/cubits/home/home_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
-import 'package:fiwi/repositories/notification.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/view/admin/admin_screen.dart';
 import 'package:fiwi/view/attendance/previleged/admin_attendance_screen.dart';
@@ -23,14 +20,11 @@ import 'package:fiwi/view/home_screen/faculty_home_screen.dart';
 import 'package:fiwi/view/home_screen/librarian_home_screen.dart';
 import 'package:fiwi/view/home_screen/student_home_screen.dart';
 import 'package:fiwi/view/library/non_previleged/library_screen.dart';
-import 'package:fiwi/view/library/previleged/manage_book.dart';
 import 'package:fiwi/view/timetable/timetable_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -265,7 +259,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void requestPermission() async {
-    NotificationSettings settings = await messaging.requestPermission(
+    await messaging.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -346,8 +340,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         return Repositories().showExitDialog(context);

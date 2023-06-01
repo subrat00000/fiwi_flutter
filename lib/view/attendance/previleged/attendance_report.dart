@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_state.dart';
 import 'package:fiwi/models/student.dart';

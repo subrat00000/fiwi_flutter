@@ -1,19 +1,10 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/create_batch/create_batch_cubit.dart';
 import 'package:fiwi/cubits/create_batch/create_batch_state.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
 import 'package:fiwi/models/student.dart';
-import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateBatchScreen extends StatefulWidget {
@@ -26,7 +17,6 @@ class CreateBatchScreen extends StatefulWidget {
 }
 
 class _CreateBatchScreenState extends State<CreateBatchScreen> {
-  final _formKey = GlobalKey<FormState>();
   List<String> items = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'];
   final myFocusNode = FocusNode();
   bool search = false;
@@ -34,8 +24,6 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   List<Student> users = [];
   String? query;
   String? semesterValue;
-  Stream? _stream;
-  Timer? _timer;
   List<String> batchYears = [];
   String? sessionValue;
   String batchName = 'session';
@@ -127,7 +115,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 ));
               }
             },
-            child: Icon(Icons.save_rounded),
+            child: const Icon(Icons.save_rounded),
           ),
           appBar: AppBar(
             leading: IconButton(
@@ -275,7 +263,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       ),
                       Text(
                         '${users.where((element) => element.selected == true).length}/${users.length}',
-                        style: TextStyle(color: Colors.black87, fontSize: 14),
+                        style: const TextStyle(color: Colors.black87, fontSize: 14),
                       )
                     ],
                   ),

@@ -1,19 +1,6 @@
-import 'dart:async';
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/create_batch/create_batch_cubit.dart';
-import 'package:fiwi/cubits/create_batch/create_batch_state.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
-import 'package:fiwi/models/student.dart';
-import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShowBatchScreen extends StatefulWidget {
@@ -24,7 +11,6 @@ class ShowBatchScreen extends StatefulWidget {
 }
 
 class _ShowBatchScreenState extends State<ShowBatchScreen> {
-  final _formKey = GlobalKey<FormState>();
 
   deleteBatch(session) {
     showDialog(
@@ -33,7 +19,7 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
               title: Text.rich(
                 TextSpan(
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: 'Do you want to delete ',
                       style: TextStyle(color: Colors.black),
                     ),
@@ -41,7 +27,7 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
                       text: '$session',
                       style: TextStyle(color: Colors.red[300]),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: '?',
                       style: TextStyle(color: Colors.black),
                     ),
@@ -70,7 +56,7 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.pushNamed(context, '/createbatch'),
-          child: Icon(Icons.add_rounded),
+          child: const Icon(Icons.add_rounded),
         ),
         appBar: AppBar(
           leading: IconButton(
@@ -80,7 +66,7 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
             color: Colors.black87,
           ),
-          title: Text(
+          title: const Text(
             'All Batches',
             style: TextStyle(color: Colors.black87),
           ),
@@ -129,20 +115,20 @@ class _ShowBatchScreenState extends State<ShowBatchScreen> {
                               },
                               itemBuilder: (BuildContext context) {
                                 return [
-                                  PopupMenuItem<int>(
+                                  const PopupMenuItem<int>(
                                     value: 0,
                                     child: Row(
-                                      children: const [
+                                      children: [
                                         Icon(Icons.edit_outlined),
                                         SizedBox(width: 5),
                                         Text('Edit'),
                                       ],
                                     ),
                                   ),
-                                  PopupMenuItem<int>(
+                                  const PopupMenuItem<int>(
                                     value: 1,
                                     child: Row(
-                                      children: const [
+                                      children: [
                                         Icon(Icons.delete_outline_rounded),
                                         SizedBox(width: 5),
                                         Text('Delete'),

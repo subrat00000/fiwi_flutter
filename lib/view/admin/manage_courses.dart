@@ -6,7 +6,6 @@ import 'package:fiwi/models/course.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ManageCourseScreen extends StatefulWidget {
@@ -38,7 +37,7 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
               title: Text.rich(
                 TextSpan(
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: 'Do you want to delete ',
                       style: TextStyle(color: Colors.black),
                     ),
@@ -46,7 +45,7 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                       text: '${courses[index].name!}(${courses[index].code!})',
                       style: TextStyle(color: Colors.red[300]),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: '?',
                       style: TextStyle(color: Colors.black),
                     ),
@@ -78,7 +77,6 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            double width = MediaQuery.of(context).size.width;
 
             return Padding(
               padding: EdgeInsets.only(
@@ -99,9 +97,9 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Text("Create Course",
+                          const Text("Create Course",
                               textAlign: TextAlign.left,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 23,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black87)),
@@ -290,7 +288,7 @@ class _ManageCourseScreenState extends State<ManageCourseScreen> {
                                           arguments: courses[index].code!),
                                       trailing: IconButton(
                                         icon:
-                                            Icon(Icons.delete_outline_rounded),
+                                            const Icon(Icons.delete_outline_rounded),
                                         color: Colors.red[300],
                                         onPressed: () =>
                                             _modalDelete(index, courses),

@@ -1,12 +1,9 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
 import 'package:fiwi/cubits/timetable/timetable_state.dart';
 import 'package:fiwi/view/timetable/streambuilder_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-
-import 'package:intl/intl.dart';
 
 class TimeTable extends StatefulWidget {
   const TimeTable({super.key});
@@ -48,19 +45,19 @@ class _TimeTableState extends State<TimeTable> {
         BlocListener<TimetableCubit, TimetableState>(
             listener: (context, state) {
           if (state is TimetableAddPeriodSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Class Created Successfully."),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ));
           } else if (state is TimetableEditPeriodSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Class Updated Successfully."),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ));
           } else if (state is TimetableDeletePeriodSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Class Deleted Successfully."),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,

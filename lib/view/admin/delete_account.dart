@@ -2,17 +2,11 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/delete_account/delete_account_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
 import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
@@ -23,7 +17,6 @@ class DeleteAccountScreen extends StatefulWidget {
 }
 
 class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
-  final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   // final TextEditingController _searchController = TextEditingController();
   bool search = false;
@@ -38,7 +31,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 title: Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: 'Do you want to deactive ',
                         style: TextStyle(color: Colors.black),
                       ),
@@ -46,7 +39,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                         text: '${user['name']}',
                         style: TextStyle(color: Colors.red[300]),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text: '?',
                         style: TextStyle(color: Colors.black),
                       ),
@@ -133,7 +126,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   });
                   log(filteredUser.toString());
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search',
                   border: InputBorder.none,
                 ),

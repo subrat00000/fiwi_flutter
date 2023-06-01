@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fiwi/cubits/timetable/selectable_grid_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +36,7 @@ class _SelectableGridState extends State<SelectableGrid> {
           itemCount: widget.itemCount,
           
           itemBuilder: (context, index) {
-            print(index);
+            log(index.toString());
             if(widget.semester == widget.item[index]['semester']){
             return GestureDetector(
               onTap: () {
@@ -44,7 +46,7 @@ class _SelectableGridState extends State<SelectableGrid> {
               child: BlocBuilder<SelectableGridCubit, List<bool>>(
                 builder: (context, selection) {
                   return Container(
-                    padding: EdgeInsets.symmetric(vertical: 8,horizontal: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 10),
                     decoration: BoxDecoration(
                       color: selection[index] ? Colors.purple : Colors.white,
                       border: Border.all(

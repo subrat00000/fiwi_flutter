@@ -1,6 +1,4 @@
 import 'dart:developer';
-import 'dart:typed_data';
-
 import 'package:fiwi/cubits/student_attendance/attendance_cubit.dart';
 import 'package:fiwi/cubits/student_attendance/attendance_state.dart';
 import 'package:flutter/material.dart';
@@ -139,7 +137,7 @@ class _QrScan extends State<QrScan> {
                       : Center(
                           child: Text(
                           message.toString(),
-                          style: TextStyle(color: Colors.green, fontSize: 17),
+                          style: const TextStyle(color: Colors.green, fontSize: 17),
                         ))
                   : Center(
                       child: Text(

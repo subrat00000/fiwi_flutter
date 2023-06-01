@@ -1,9 +1,6 @@
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -43,7 +40,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           textAlign: TextAlign.start,
         ),
       ),
-      body: Container(
+      body: SizedBox(
           width: double.infinity,
           // color: Colors.white70,
           child: ListView.builder(
@@ -59,7 +56,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         subtitle: Text(notification[index]['body'].toString()),
                       ),
                       Container(
-                          margin: EdgeInsets.only(left: 16),
+                          margin: const EdgeInsets.only(left: 16),
                           child: Text(getTimeAgo(DateTime.parse(
                               notification[index]['dateTime'].toString())))),
                       const SizedBox(

@@ -1,15 +1,10 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
-import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
 import 'package:fiwi/models/chartdata.dart';
 import 'package:fiwi/models/timetable.dart';
-import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -113,7 +108,7 @@ class StudentHomeScreenState extends State<StudentHomeScreen> {
                 ? Card(
                     color: Colors.white,
                     elevation: 0,
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: 150, //MediaQuery.of(context).size.height * 0.3,
                       child: const Center(
@@ -129,7 +124,7 @@ class StudentHomeScreenState extends State<StudentHomeScreen> {
                     color: Colors.white,
                     elevation: 0,
                     child: Column(children: <Widget>[
-                      Container(
+                      SizedBox(
                         height: 150, //MediaQuery.of(context).size.height * 0.3,
                         child: StreamBuilder(
                           stream: FirebaseDatabase.instance

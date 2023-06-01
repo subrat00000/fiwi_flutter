@@ -1,8 +1,3 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_state.dart';
 import 'package:fiwi/widgets/custom_button.dart';
@@ -30,7 +25,6 @@ class QrScreen extends StatefulWidget {
 }
 
 class _QrScreenState extends State<QrScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   String? dt;
   bool newSession = false;
   String? updatedt;

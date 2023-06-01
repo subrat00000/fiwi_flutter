@@ -1,8 +1,6 @@
 import 'package:fiwi/cubits/google_signin/google_signin_cubit.dart';
 import 'package:fiwi/cubits/google_signin/google_signin_state.dart';
 import 'package:fiwi/cubits/internet_cubit.dart';
-import 'package:fiwi/view/home_screen.dart';
-import 'package:fiwi/view/splash_screen.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

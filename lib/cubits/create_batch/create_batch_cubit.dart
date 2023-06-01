@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/create_batch/create_batch_state.dart';
 import 'package:fiwi/models/student.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CreateBatchCubit extends Cubit<CreateBatchState> {
   CreateBatchCubit() : super(CreateBatchInitialState());
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference ref = FirebaseDatabase.instance.ref("users");
   final DatabaseReference bref = FirebaseDatabase.instance.ref('batch');
 

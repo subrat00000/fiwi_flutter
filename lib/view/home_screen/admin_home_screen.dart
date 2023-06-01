@@ -1,13 +1,9 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
-import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
 import 'package:fiwi/models/chartdata.dart';
 import 'package:fiwi/models/timetable.dart';
-import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -147,7 +143,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                 ? Card(
                     color: Colors.white,
                     elevation: 0,
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: 150, //MediaQuery.of(context).size.height * 0.3,
                       child: const Center(
@@ -163,7 +159,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                     color: Colors.white,
                     elevation: 0,
                     child: Column(children: <Widget>[
-                      Container(
+                      SizedBox(
                         height: 150, //MediaQuery.of(context).size.height * 0.3,
                         child: StreamBuilder(
                           stream: FirebaseDatabase.instance
@@ -223,7 +219,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
           height: height * 0.02,
         ),
         Container(
-            margin: EdgeInsets.only(left: 15, right: 15),
+            margin: const EdgeInsets.only(left: 15, right: 15),
             // height: height * 0.2,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             decoration: BoxDecoration(
@@ -243,7 +239,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                 ),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Container(
+                  child: SizedBox(
                     width: width * 0.3,
                     height: height * 0.05,
                     child: DropdownButtonHideUnderline(

@@ -1,15 +1,7 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
-import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ActivateStudentScreen extends StatefulWidget {
@@ -20,7 +12,6 @@ class ActivateStudentScreen extends StatefulWidget {
 }
 
 class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
-  final _formKey = GlobalKey<FormState>();
   final myFocusNode = FocusNode();
   bool search = false;
   List filteredUser = [];
@@ -34,7 +25,7 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                 title: Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: 'Do you want to deactive ',
                         style: TextStyle(color: Colors.black),
                       ),
@@ -42,7 +33,7 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                         text: '${user['name']}',
                         style: TextStyle(color: Colors.red[300]),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text: '?',
                         style: TextStyle(color: Colors.black),
                       ),
@@ -135,7 +126,7 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                     }).toList();
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search',
                   border: InputBorder.none,
                 ),

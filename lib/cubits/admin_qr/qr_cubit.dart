@@ -3,8 +3,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/activate_student/activate_student_state.dart';
-import 'package:fiwi/cubits/delete_account/delete_account_state.dart';
 import 'package:fiwi/cubits/admin_qr/qr_state.dart';
 import 'package:fiwi/models/student.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

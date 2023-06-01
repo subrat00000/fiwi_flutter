@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
 import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
 import 'package:fiwi/repositories/repositories.dart';
@@ -35,7 +32,6 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            double width = MediaQuery.of(context).size.width;
 
             return Padding(
               padding: EdgeInsets.only(
@@ -56,9 +52,9 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Text("Create Special User",
+                          const Text("Create Special User",
                               textAlign: TextAlign.left,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 23,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black87)),
@@ -121,6 +117,7 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
                                     validation) {
                                   return "Please enter a Phone number";
                                 }
+                                return null;
                               },
                               decoration: InputDecoration(
                                 hintText: "Enter phone number",
@@ -276,7 +273,7 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
         onPressed: () {
           _bottomModal();
         },
-        child: Icon(Icons.add_rounded),
+        child: const Icon(Icons.add_rounded),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: BlocListener<ManageRoleCubit, ManageRoleState>(

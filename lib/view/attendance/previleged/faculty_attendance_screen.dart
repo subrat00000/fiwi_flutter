@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +29,7 @@ class _FacultyAttendanceScreenState extends State<FacultyAttendanceScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           // title: Text('Choose Batch'),
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             height: MediaQuery.of(context).size.height * 0.7,
             child: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -39,7 +38,7 @@ class _FacultyAttendanceScreenState extends State<FacultyAttendanceScreen> {
                     const SizedBox(
                       height: 25,
                     ),
-                    Text(
+                    const Text(
                       'Choose Batch',
                       style: TextStyle(fontSize: 20),
                     ),
@@ -144,7 +143,7 @@ class _FacultyAttendanceScreenState extends State<FacultyAttendanceScreen> {
                                 style: const ButtonStyle(
                                     backgroundColor:
                                         MaterialStatePropertyAll(Colors.white)),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.flight_class_rounded,
                                   color: Colors.black87,
                                 )),

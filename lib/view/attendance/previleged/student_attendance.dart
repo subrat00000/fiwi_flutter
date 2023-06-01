@@ -1,15 +1,12 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/create_batch/create_batch_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/models/student.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class StudentAttendanceScreen extends StatefulWidget {
   final String datetime;
@@ -31,7 +28,6 @@ class StudentAttendanceScreen extends StatefulWidget {
 }
 
 class _StudentAttendanceScreenState extends State<StudentAttendanceScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   List<Student>? student;
 
   selectedStudent() async {
@@ -71,7 +67,7 @@ class _StudentAttendanceScreenState extends State<StudentAttendanceScreen> {
         ),
         leading: IconButton(
           color: Colors.black54,
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () {
             Navigator.of(context).pop();
           },

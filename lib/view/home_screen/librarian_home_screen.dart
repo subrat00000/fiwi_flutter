@@ -2,16 +2,7 @@ import 'dart:developer';
 
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
-import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
-import 'package:fiwi/models/chartdata.dart';
-import 'package:fiwi/models/timetable.dart';
-import 'package:fiwi/repositories/repositories.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class LibrarianHomeScreen extends StatefulWidget {
   const LibrarianHomeScreen({super.key});
@@ -21,7 +12,6 @@ class LibrarianHomeScreen extends StatefulWidget {
 }
 
 class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FocusNode book = FocusNode();
   FocusNode student = FocusNode();
   final bookRef = FirebaseDatabase.instance.ref('library');
@@ -35,7 +25,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
     bookRef
         .orderByChild("book_name")
         .startAt(searchText)
-        .endAt(searchText + "\uf8ff")
+        .endAt("$searchText\uf8ff")
         .once()
         .then((snapshot) {
       booksList.clear();
@@ -55,7 +45,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
     userRef
         .orderByChild("name")
         .startAt(searchText)
-        .endAt(searchText + "\uf8ff")
+        .endAt("$searchText\uf8ff")
         .once()
         .then((snapshot) {
       userList.clear();
@@ -96,8 +86,6 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
 
     return GestureDetector(
         onTap: () {

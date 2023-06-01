@@ -1,24 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ffi';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/assign_faculty/assign_faculty_cubit.dart';
-import 'package:fiwi/cubits/assign_faculty/assign_faculty_state.dart';
-import 'package:fiwi/cubits/manage_course/manage_course_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/models/chartdata.dart';
-import 'package:fiwi/models/course.dart';
 import 'package:fiwi/models/student.dart';
-import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ManageAttendanceScreen extends StatefulWidget {
@@ -69,7 +57,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           // title: Text('Choose Batch'),
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             height: MediaQuery.of(context).size.height * 0.7,
             child: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -78,7 +66,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                     const SizedBox(
                       height: 25,
                     ),
-                    Text(
+                    const Text(
                       'Choose Batch',
                       style: TextStyle(fontSize: 20),
                     ),
@@ -415,7 +403,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                           height: 20,
                         ),
                         Container(
-                          margin:EdgeInsets.only(left: 15,right: 15),
+                          margin:const EdgeInsets.only(left: 15,right: 15),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -431,7 +419,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                           ),
                         ),
                         Container(
-                          margin:EdgeInsets.only(left: 15,right: 15),
+                          margin:const EdgeInsets.only(left: 15,right: 15),
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: SizedBox(
@@ -460,7 +448,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                           ),
                         ),
                         Container(
-                          margin:EdgeInsets.only(left: 15,right: 15),
+                          margin:const EdgeInsets.only(left: 15,right: 15),
                           child: const Text(
                             'Average Attendance',
                             style: TextStyle(fontSize: 17),
@@ -491,7 +479,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                                       data.count)
                             ]),
                         Container(
-                          margin:EdgeInsets.only(left: 15,right: 15),
+                          margin:const EdgeInsets.only(left: 15,right: 15),
                           child: const Text(
                             'Student - Attendance Percentage',
                             style: TextStyle(fontSize: 17),
@@ -550,7 +538,7 @@ class _ManageAttendanceScreenState extends State<ManageAttendanceScreen> {
                             ]),
                       ],
                     ))
-                : Container(
+                : SizedBox(
                     height: 300,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

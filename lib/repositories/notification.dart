@@ -1,8 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 String key =
@@ -56,7 +53,7 @@ Future getSubscribedTopic(token) async {
       final a = topics.keys.toList();
       return a;
     } else {
-      print('Failed to get subscribed topics: ${response.statusCode}');
+      log('Failed to get subscribed topics: ${response.statusCode}');
     }
     log('successful');
   } catch (err) {

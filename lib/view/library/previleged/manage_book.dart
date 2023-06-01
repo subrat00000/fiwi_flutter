@@ -1,8 +1,5 @@
 import 'dart:developer';
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/manage_book/manage_book_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/manage_book/manage_book_state.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +66,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            double width = MediaQuery.of(context).size.width;
+            // double width = MediaQuery.of(context).size.width;
             double height = MediaQuery.of(context).size.height;
 
             return GestureDetector(
@@ -370,8 +367,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () => _bottomModal(),
-          child: const Icon(Icons.add),
           tooltip: 'Add New Books',
+          child: const Icon(Icons.add),
         ),
         appBar: AppBar(
           leading: IconButton(
@@ -436,15 +433,15 @@ class _AddBookScreenState extends State<AddBookScreen> {
                         onLongPress: () {
                           showMenu(
                             context: context,
-                            position: RelativeRect.fromLTRB(0, 0, 0, 0),
+                            position: const RelativeRect.fromLTRB(0, 0, 0, 0),
                             items: const [
                               PopupMenuItem(
-                                child: Text('Edit'),
                                 value: 1,
+                                child: Text('Edit'),
                               ),
                               PopupMenuItem(
-                                child: Text('Delete'),
                                 value: 2,
+                                child: Text('Delete'),
                               ),
                             ],
                             elevation: 8.0,

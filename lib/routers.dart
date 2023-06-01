@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fiwi/view/admin/activate_student.dart';
 import 'package:fiwi/view/admin/assign_faculty.dart';
 import 'package:fiwi/view/admin/batch/show_batches.dart';

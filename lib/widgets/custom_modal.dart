@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class BottomSheetWidget extends StatefulWidget {
@@ -27,7 +29,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               onPressed: () {
                 text = ' Hey, The button pressed and changed the text';
                 setState(() {});
-                print(text);
+                log(text);
               },
             ),
             ElevatedButton(

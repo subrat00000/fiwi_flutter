@@ -1,14 +1,9 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/student_attendance/attendance_cubit.dart';
-import 'package:fiwi/cubits/student_attendance/attendance_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
@@ -121,6 +116,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           title: Text(
                               '${data[index]['name']}(${data[index]['code']})'),
                         ));
+                      } else {
+                        return Container();
                       }
                     });
               }

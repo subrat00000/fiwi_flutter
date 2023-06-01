@@ -3,12 +3,8 @@ import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_cubit.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_state.dart';
-import 'package:fiwi/cubits/manage_course/manage_course_cubit.dart';
-import 'package:fiwi/models/course.dart';
 import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -47,7 +43,7 @@ class _AssignFacultyScreenState extends State<AssignFacultyScreen> {
               title: Text.rich(
                 TextSpan(
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: 'Do you want to delete ',
                       style: TextStyle(color: Colors.black),
                     ),
@@ -55,7 +51,7 @@ class _AssignFacultyScreenState extends State<AssignFacultyScreen> {
                       text: '${courses[index].name!}(${courses[index].code!})',
                       style: TextStyle(color: Colors.red[300]),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: '?',
                       style: TextStyle(color: Colors.black),
                     ),
@@ -92,7 +88,7 @@ class _AssignFacultyScreenState extends State<AssignFacultyScreen> {
         ),
         title: Text(
           'Assign to ${widget.args}',
-          style: TextStyle(color: Colors.black87, fontSize: 20),
+          style: const TextStyle(color: Colors.black87, fontSize: 20),
           textAlign: TextAlign.start,
         ),
       ),

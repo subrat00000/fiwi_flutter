@@ -1,17 +1,8 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
-import 'package:fiwi/cubits/botttom_nav_cubit.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_cubit.dart';
 import 'package:fiwi/cubits/change_semester/change_semester_state.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
-import 'package:fiwi/cubits/manage_role/manage_role_state.dart';
-import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -52,7 +43,7 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(left: 20, right: 20),
+          margin: const EdgeInsets.only(left: 20, right: 20),
           child: BlocConsumer<ChangeSemesterCubit, ChangeSemesterState>(
             listener: (context, state) {
               if (state is SuccessFetchUserState) {
@@ -82,7 +73,7 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Text('From',
+                      const Text('From',
                           style:
                               TextStyle(color: Colors.black87, fontSize: 20)),
                       const SizedBox(
@@ -125,7 +116,7 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Text('To',
+                      const Text('To',
                           style:
                               TextStyle(color: Colors.black87, fontSize: 20)),
                       const SizedBox(
@@ -188,15 +179,15 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                       ),
                       Row(
                         children: [
-                          Text('Unsubscribe Old Semester',
+                          const Text('Unsubscribe Old Semester',
                               style: TextStyle(fontSize: 18)),
                           unsubscribeSemester
-                              ? Icon(Icons.check_circle_outline_rounded,
+                              ? const Icon(Icons.check_circle_outline_rounded,
                                   color: Colors.green)
                               : Container(),
                           state is UnsubscribeFailedState
                               ? Text(state.error,
-                                  style: TextStyle(color: Colors.red))
+                                  style: const TextStyle(color: Colors.red))
                               : Container(),
                         ],
                       ),
@@ -205,12 +196,12 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                       ),
                       Row(
                         children: [
-                          Text(
+                          const Text(
                             'Changing Semester',
                             style: TextStyle(fontSize: 18),
                           ),
                           changeSemester
-                              ? Icon(Icons.check_circle_outline_rounded,
+                              ? const Icon(Icons.check_circle_outline_rounded,
                                   color: Colors.green)
                               : Container(),
                         ],
@@ -220,15 +211,15 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                       ),
                       Row(
                         children: [
-                          Text('Subscribe New Semester',
+                          const Text('Subscribe New Semester',
                               style: TextStyle(fontSize: 18)),
                           subscribeSemester
-                              ? Icon(Icons.check_circle_outline_rounded,
+                              ? const Icon(Icons.check_circle_outline_rounded,
                                   color: Colors.green)
                               : Container(),
                           state is SubscribeFailedState
                               ? Text(state.error,
-                                  style: TextStyle(color: Colors.red))
+                                  style: const TextStyle(color: Colors.red))
                               : Container(),
                         ],
                       ),
@@ -251,7 +242,7 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
                                     return ListTile(
-                                      contentPadding: EdgeInsets.all(0),
+                                      contentPadding: const EdgeInsets.all(0),
                                       title: Text(
                                           'Updated On: ${DateFormat.jm().format(DateTime.parse(data[index]['updatedAt'].toString()))}'),
                                       subtitle: Row(
@@ -267,9 +258,9 @@ class _ChangeSemesterScreenState extends State<ChangeSemesterScreen> {
                                         ],
                                       ),
                                       trailing: data[index]['success'] == true
-                                          ? Icon(Icons
+                                          ? const Icon(Icons
                                               .check_circle_outline_rounded)
-                                          : Icon(
+                                          : const Icon(
                                               Icons.close_rounded,
                                               color: Colors.red,
                                             ),
