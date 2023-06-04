@@ -11,7 +11,7 @@ class Repositories {
               title: const Text('Do you want to exit the app?'),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => Navigator.pop(context,false),
+                  onPressed: () => Navigator.pop(context, false),
                   child: const Text('No'),
                 ),
                 TextButton(
@@ -26,11 +26,21 @@ class Repositories {
 String toCamelCase(String input) {
   // Split the input into words
   final words = input.split(' ');
-
+  debugPrint(words.toString());
   // Convert the first letter of each word to uppercase and join the words
   return words
       .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
       .join('');
+}
+
+String toCamelCaseWithSpace(String input) {
+  // Split the input into words
+  final words = input.trim().split(' ');
+  debugPrint(words.toString());
+  // Convert the first letter of each word to uppercase and join the words
+  return words
+      .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
+      .join(' ');
 }
 
 class UpperCaseTextFormatter extends TextInputFormatter {

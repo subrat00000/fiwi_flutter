@@ -1,7 +1,10 @@
 import 'dart:developer';
 
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fiwi/repositories/repositories.dart';
+import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class LibrarianHomeScreen extends StatefulWidget {
@@ -11,15 +14,36 @@ class LibrarianHomeScreen extends StatefulWidget {
   State<LibrarianHomeScreen> createState() => LibrarianHomeScreenState();
 }
 
+@immutable
+class User {
+  const User({required this.photo, required this.name, required this.uid});
+
+  final String photo;
+  final String name;
+  final String uid;
+}
+
 class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
+  TextEditingController userController = TextEditingController();
   FocusNode book = FocusNode();
   FocusNode student = FocusNode();
   final bookRef = FirebaseDatabase.instance.ref('library');
   final userRef = FirebaseDatabase.instance.ref('users');
   List<Map<dynamic, dynamic>> booksList = [];
-  List<Map<dynamic,dynamic>> userList = [];
+  List<Map<dynamic, dynamic>> userList = [];
   String selectedBook = '';
-  String selectedStudent = '';
+  List<User> _userOptions = [];
+  String? selectedPhoto;
+  String? selectedName;
+  String? selectedUid;
+  static String _displayStringForOption(User option) => option.name;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getUser();
+  }
 
   void _searchBooks(String searchText) {
     bookRef
@@ -41,24 +65,20 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
       setState(() {});
     });
   }
-  void _searchStudent(String searchText) {
-    userRef
-        .orderByChild("name")
-        .startAt(searchText)
-        .endAt("$searchText\uf8ff")
-        .once()
-        .then((snapshot) {
-      userList.clear();
-      if (snapshot.snapshot.exists) {
-        var values = Map<String, dynamic>.from(snapshot.snapshot.value as Map);
-        if (values.isNotEmpty) {
-          values.forEach((key, value) {
-            userList.add(value);
-          });
-        }
-        setState(() {});
-      }
-      setState(() {});
+
+  void getUser() async {
+    DatabaseEvent users = await userRef.once();
+    final itemsMap = users.snapshot.value as Map;
+    final itemsList = itemsMap.values.toList();
+    final a = itemsList
+        .map((e) => User(
+              uid: e['uid'],
+              name: e['name'],
+              photo: e['photo'] ?? '',
+            ))
+        .toList();
+    setState(() {
+      _userOptions = a;
     });
   }
 
@@ -86,7 +106,6 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
         onTap: () {
           setState(() {
@@ -148,7 +167,8 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                   onTap: () {
                                     setState(() {
                                       book.unfocus();
-                                      selectedBook = 'Book Name: ${booksList[index]['book_name']}\nCategory: ${booksList[index]['book_category']}\nAuthor: ${booksList[index]['author_name']}\nPublication: ${booksList[index]['publication']}\nLocation: ${booksList[index]['book_location']}\nQuantity: ${booksList[index]['quantity']}';
+                                      selectedBook =
+                                          'Book Name: ${booksList[index]['book_name']}\nCategory: ${booksList[index]['book_category']}\nAuthor: ${booksList[index]['author_name']}\nPublication: ${booksList[index]['publication']}\nLocation: ${booksList[index]['book_location']}\nQuantity: ${booksList[index]['quantity']}';
                                     });
                                   },
                                 );
@@ -156,46 +176,173 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                             ),
                           )
                         : Container(),
-                        TextField(
-                            // autofocus: true,
-                            focusNode: student,
-                            decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Colors.black12),
+                    selectedUid == null
+                        ? Autocomplete<User>(
+                            optionsViewBuilder: (context, onSelected, options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  elevation: 7.0,
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.all(10.0),
+                                      itemCount: options.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        final User option =
+                                            options.elementAt(index);
+                                        if (options.length - 1 != index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              onSelected(option);
+                                            },
+                                            child: ListTile(
+                                              leading: Container(
+                                                width: 55,
+                                                height: 55,
+                                                clipBehavior:
+                                                    Clip.antiAliasWithSaveLayer,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: option.photo != ''
+                                                    ? CachedNetworkImage(
+                                                        fit: BoxFit.cover,
+                                                        imageUrl: option.photo,
+                                                        progressIndicatorBuilder: (context,
+                                                                url,
+                                                                downloadProgress) =>
+                                                            CircularProgressIndicator(
+                                                                value: downloadProgress
+                                                                    .progress),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            const Icon(
+                                                                Icons.error),
+                                                      )
+                                                    : Image.asset(
+                                                        'assets/no_image.png'),
+                                              ),
+                                              title: Text(option.name,
+                                                  style: const TextStyle(
+                                                      color: Colors.black87)),
+                                            ),
+                                          );
+                                        } else {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              onSelected(option);
+                                            },
+                                            child: ListTile(
+                                              leading: Container(
+                                                width: 55,
+                                                height: 55,
+                                                clipBehavior:
+                                                    Clip.antiAliasWithSaveLayer,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Image.asset(
+                                                        'assets/no_image.png'),
+                                              ),
+                                              title: Text(
+                                                  "${option.name} (new)",
+                                                  style: const TextStyle(
+                                                      color: Colors.black87)),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            fieldViewBuilder: (context, textEditingController,
+                                focusNode, onFieldSubmitted) {
+                              student = focusNode;
+                              userController = textEditingController;
+                              return TextField(
+                                onSubmitted: (value) => onFieldSubmitted,
+                                focusNode: student,
+                                controller: userController,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  labelText: 'Issuer Name',
+                                ),
+                              );
+                            },
+                            displayStringForOption: _displayStringForOption,
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable.empty();
+                              } else {
+                                var a = _userOptions.where((User option) {
+                                  return option.name
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(
+                                          textEditingValue.text.toLowerCase());
+                                }).toList();
+                                a.add(User(
+                                    photo: '',
+                                    name: toCamelCaseWithSpace(
+                                        userController.text),
+                                    uid: ''));
+
+                                log(a.length.toString());
+                                return a;
+                              }
+                            },
+                            onSelected: (User selection) {
+                              setState(() {
+                                selectedPhoto = selection.photo;
+                                selectedName = selection.name;
+                                selectedUid = selection.uid;
+                              });
+                              debugPrint('You just selected ${selection.name}');
+                            },
+                          )
+                        : ListTile(
+                            title: Text(selectedName!),
+                            leading: Container(
+                              width: 55,
+                              height: 55,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              labelText: 'Issuer Name',
+                              child: selectedPhoto != ''
+                                  ? CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: selectedPhoto!,
+                                      progressIndicatorBuilder: (context, url,
+                                              downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    )
+                                  : Image.asset('assets/no_image.png'),
                             ),
-                            onChanged: (value) => _searchStudent(value),
                           ),
-                          // SizedBox(height: 400,),
-                          student.hasFocus
-                        ? Card(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: userList.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                log(userList[index].toString());
-                                return ListTile(
-                                  title: Text(userList[index]["name"]),
-                                  subtitle:
-                                      Text(userList[index]["role"]),
-                                  onTap: () {
-                                    setState(() {
-                                      student.unfocus();
-                                      // selectedStudent = 'Book Name: ${booksList[index]['book_name']}\nCategory: ${booksList[index]['book_category']}\nAuthor: ${booksList[index]['author_name']}\nPublication: ${booksList[index]['publication']}\nLocation: ${booksList[index]['book_location']}\nQuantity: ${booksList[index]['quantity']}';
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : Container(),
+                    CustomButton(
+                      text: 'Submit',
+                      onPressed: () {},
+                      icontext: false,
+                    )
                   ],
                 ),
               ),
