@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fiwi/cubits/manage_book/manage_book_state.dart';
+import 'package:fiwi/models/book.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
@@ -11,7 +12,7 @@ class ManageBookCubit extends Cubit<ManageBookState> {
   addBook(bookName, bookCategory, authorName, publication, isbn, bookLocation,
       quantity) async {
     try {
-      final newChildRef = ref.push();
+      final newChildRef = ref.child('books').push();
       await newChildRef.set({
         'book_name': bookName,
         'book_category': bookCategory,
@@ -20,7 +21,7 @@ class ManageBookCubit extends Cubit<ManageBookState> {
         'isbn': isbn,
         'book_location': bookLocation,
         'quantity': quantity,
-        'key': newChildRef.key
+        'id': newChildRef.key
       });
       emit(AddBookSuccessState());
     } catch (e) {
@@ -31,7 +32,7 @@ class ManageBookCubit extends Cubit<ManageBookState> {
   updateBook(bookName, bookCategory, authorName, publication, isbn,
       bookLocation, quantity, childKey) async {
     try {
-      await ref.child(childKey).update({
+      await ref.child('books').child(childKey).update({
         'book_name': bookName,
         'book_category': bookCategory,
         'author_name': authorName,
@@ -39,7 +40,7 @@ class ManageBookCubit extends Cubit<ManageBookState> {
         'isbn': isbn,
         'book_location': bookLocation,
         'quantity': quantity,
-        'key': childKey
+        'id': childKey
       });
       emit(UpdateBookSuccessState());
     } catch (e) {
@@ -48,19 +49,30 @@ class ManageBookCubit extends Cubit<ManageBookState> {
   }
 
   getBooks() async {
-    DatabaseEvent books = await ref.once();
+    DatabaseEvent books = await ref.child('books').once();
     if (books.snapshot.exists) {
-      return Map<String, dynamic>.from(books.snapshot.value as Map)
-          .values
+      final itemsMap = books.snapshot.value as Map;
+      final itemsList = itemsMap.values.toList();
+      List<Book> a = itemsList
+          .map((e) => Book(
+              authorName: e['author_name'],
+              bookCategory: e['book_category'],
+              bookLocation: e['book_location'],
+              bookName: e['book_name'],
+              publication: e['publication'],
+              quantity: e['quantity'],
+              bookId: e['id'],
+              isbn: e['isbn']))
           .toList();
+      return a;
     } else {
-      return [];
+      return <Book>[];
     }
   }
 
   deleteBook(childKey) async {
     try {
-      await ref.child(childKey).remove();
+      await ref.child('books').child(childKey).remove();
       emit(DeleteBookSuccessState());
     } catch (e) {
       emit(ManageBookErrorState(e.toString()));

@@ -277,7 +277,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                                 child: Container(
                                   margin: const EdgeInsets.only(left: 20),
                                   child: Text(
-                                      '${chartData[index]['subject_name']}(${chartData[index]['subject_code']})(${chartData[index]['semester']})'),
+                                      '${chartData[index]['subject_name']}(${chartData[index]['subject_code'].toString().toUpperCase()})(${chartData[index]['semester']})'),
                                 ),
                               ),
                               SfCircularChart(

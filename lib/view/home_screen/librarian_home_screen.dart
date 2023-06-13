@@ -3,9 +3,13 @@ import 'dart:developer';
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fiwi/cubits/manage_book/manage_book_cubit.dart';
+import 'package:fiwi/models/book.dart';
+import 'package:fiwi/models/user.dart';
 import 'package:fiwi/repositories/repositories.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LibrarianHomeScreen extends StatefulWidget {
   const LibrarianHomeScreen({super.key});
@@ -14,28 +18,25 @@ class LibrarianHomeScreen extends StatefulWidget {
   State<LibrarianHomeScreen> createState() => LibrarianHomeScreenState();
 }
 
-@immutable
-class User {
-  const User({required this.photo, required this.name, required this.uid});
-
-  final String photo;
-  final String name;
-  final String uid;
-}
-
 class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
-  TextEditingController userController = TextEditingController();
   FocusNode book = FocusNode();
   FocusNode student = FocusNode();
   final bookRef = FirebaseDatabase.instance.ref('library');
   final userRef = FirebaseDatabase.instance.ref('users');
   List<Map<dynamic, dynamic>> booksList = [];
   List<Map<dynamic, dynamic>> userList = [];
-  String selectedBook = '';
   List<User> _userOptions = [];
+  List<Book> _bookOptions = [];
   String? selectedPhoto;
   String? selectedName;
   String? selectedUid;
+  String? selectedBookName;
+  String? selectedBookCategory;
+  String? selectedBookAuthorName;
+  String? selectedBookPublication;
+  String? selectedBookLocation;
+  String? selectedBookQuantity;
+  String? selectedBookId;
   static String _displayStringForOption(User option) => option.name;
 
   @override
@@ -43,26 +44,13 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
     super.initState();
 
     getUser();
+    getBook();
   }
 
-  void _searchBooks(String searchText) {
-    bookRef
-        .orderByChild("book_name")
-        .startAt(searchText)
-        .endAt("$searchText\uf8ff")
-        .once()
-        .then((snapshot) {
-      booksList.clear();
-      if (snapshot.snapshot.exists) {
-        var values = Map<String, dynamic>.from(snapshot.snapshot.value as Map);
-        if (values.isNotEmpty) {
-          values.forEach((key, value) {
-            booksList.add(value);
-          });
-        }
-        setState(() {});
-      }
-      setState(() {});
+  void getBook() async {
+    List<Book> book = await BlocProvider.of<ManageBookCubit>(context).getBooks();
+    setState(() {
+      _bookOptions = book;
     });
   }
 
@@ -130,52 +118,99 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                   children: [
                     const Center(
                         child: Text(
-                      'Accept Book Issue',
+                      'Manual Book Issue and Allow',
                       style: TextStyle(fontSize: 18, color: Colors.black87),
                     )),
                     const SizedBox(height: 20),
-                    selectedBook == ''
-                        ? TextField(
-                            // autofocus: true,
-                            focusNode: book,
-                            decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Colors.black12),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              labelText: 'Book Name',
-                            ),
-                            onChanged: (value) => _searchBooks(value),
+                    selectedBookId == null
+                        ? Autocomplete<Book>(
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable.empty();
+                              } else {
+                                var a = _bookOptions.where((Book option) {
+                                  return option.bookName
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(
+                                          textEditingValue.text.toLowerCase());
+                                }).toList();
+
+                                log(a.length.toString());
+                                return a;
+                              }
+                            },
+                            fieldViewBuilder: (context, textEditingController,
+                                focusNode, onFieldSubmitted) {
+                              book = focusNode;
+                              return TextField(
+                                onSubmitted: (value) => onFieldSubmitted,
+                                focusNode: book,
+                                controller: textEditingController,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  labelText: 'Book Name(Author) - Quantity',
+                                ),
+                              );
+                            },
+                            displayStringForOption: (Book option) =>
+                                '${option.bookName}(${option.authorName}) - ${option.quantity}',
+                            onSelected: (Book selection) {
+                              setState(() {
+                                selectedBookName = selection.bookName;
+                                selectedBookCategory = selection.bookCategory;
+                                selectedBookAuthorName = selection.authorName;
+                                selectedBookPublication = selection.publication;
+                                selectedBookLocation = selection.bookLocation;
+                                selectedBookQuantity = selection.quantity;
+                                selectedBookId = selection.bookId;
+                              });
+                              debugPrint(
+                                  'You just selected ${selection.bookName}');
+                            },
                           )
-                        : Text(selectedBook),
-                    book.hasFocus
-                        ? Card(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: booksList.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                log(booksList[index].toString());
-                                return ListTile(
-                                  title: Text(booksList[index]["book_name"]),
-                                  subtitle:
-                                      Text(booksList[index]["author_name"]),
-                                  onTap: () {
-                                    setState(() {
-                                      book.unfocus();
-                                      selectedBook =
-                                          'Book Name: ${booksList[index]['book_name']}\nCategory: ${booksList[index]['book_category']}\nAuthor: ${booksList[index]['author_name']}\nPublication: ${booksList[index]['publication']}\nLocation: ${booksList[index]['book_location']}\nQuantity: ${booksList[index]['quantity']}';
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : Container(),
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(left: 30),
+                                child: Column(
+                                  children: [
+                                    Text('Book: $selectedBookName'),
+                                    Text('Category: $selectedBookCategory'),
+                                    Text('Author: $selectedBookAuthorName'),
+                                    Text('Publication: $selectedBookPublication'),
+                                    Text('Quantity: $selectedBookQuantity'),
+                                    Text('Location: $selectedBookLocation'),
+                                  ],
+                                ),
+                              ),
+                              Align(
+                                  alignment: Alignment.centerRight,
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedBookName = null;
+                                          selectedBookCategory = null;
+                                          selectedBookAuthorName = null;
+                                          selectedBookPublication = null;
+                                          selectedBookLocation = null;
+                                          selectedBookQuantity = null;
+                                          selectedBookId = null;
+                                        });
+                                      },
+                                      icon: const Icon(Icons.clear_rounded))),
+                            ],
+                          ),
+                    const SizedBox(height: 20),
                     selectedUid == null
                         ? Autocomplete<User>(
                             optionsViewBuilder: (context, onSelected, options) {
@@ -187,7 +222,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                     color: Colors.white,
                                     child: ListView.builder(
                                       shrinkWrap: true,
-                                      padding: EdgeInsets.all(10.0),
+                                      padding: const EdgeInsets.all(10.0),
                                       itemCount: options.length,
                                       itemBuilder:
                                           (BuildContext context, int index) {
@@ -247,7 +282,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                                       BorderRadius.circular(50),
                                                 ),
                                                 child: Image.asset(
-                                                        'assets/no_image.png'),
+                                                    'assets/no_image.png'),
                                               ),
                                               title: Text(
                                                   "${option.name} (new)",
@@ -265,11 +300,10 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                             fieldViewBuilder: (context, textEditingController,
                                 focusNode, onFieldSubmitted) {
                               student = focusNode;
-                              userController = textEditingController;
                               return TextField(
                                 onSubmitted: (value) => onFieldSubmitted,
                                 focusNode: student,
-                                controller: userController,
+                                controller: textEditingController,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -299,7 +333,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                 a.add(User(
                                     photo: '',
                                     name: toCamelCaseWithSpace(
-                                        userController.text),
+                                        textEditingValue.text),
                                     uid: ''));
 
                                 log(a.length.toString());
@@ -315,32 +349,57 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                               debugPrint('You just selected ${selection.name}');
                             },
                           )
-                        : ListTile(
-                            title: Text(selectedName!),
-                            leading: Container(
-                              width: 55,
-                              height: 55,
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: selectedPhoto != ''
-                                  ? CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: selectedPhoto!,
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          CircularProgressIndicator(
-                                              value: downloadProgress.progress),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    )
-                                  : Image.asset('assets/no_image.png'),
+                        : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Expanded(
+                              child: ListTile(
+                                  title: selectedUid == ''
+                                      ? Text("${selectedName!} (new)")
+                                      : Text(selectedName!),
+                                  leading: Container(
+                                    width: 55,
+                                    height: 55,
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: selectedPhoto != ''
+                                        ? CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            imageUrl: selectedPhoto!,
+                                            progressIndicatorBuilder: (context, url,
+                                                    downloadProgress) =>
+                                                CircularProgressIndicator(
+                                                    value: downloadProgress.progress),
+                                            errorWidget: (context, url, error) =>
+                                                const Icon(Icons.error),
+                                          )
+                                        : Image.asset('assets/no_image.png'),
+                                  ),
+                                ),
                             ),
-                          ),
+                              Align(
+                                  alignment: Alignment.centerRight,
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedPhoto = null;
+                                          selectedName = null;
+                                          selectedUid = null;
+                                        });
+                                      },
+                                      icon: const Icon(Icons.clear_rounded))),
+                          ],
+                        ),
+                    const SizedBox(height: 20),
                     CustomButton(
                       text: 'Submit',
-                      onPressed: () {},
+                      onPressed: () {
+                        if(selectedBookId!=null && selectedUid!=null){
+                          log('hello');
+                        }
+                      },
                       icontext: false,
                     )
                   ],

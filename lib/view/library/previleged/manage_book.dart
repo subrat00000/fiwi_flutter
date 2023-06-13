@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:fiwi/cubits/manage_book/manage_book_cubit.dart';
 import 'package:fiwi/cubits/manage_book/manage_book_state.dart';
+import 'package:fiwi/models/book.dart';
 import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,7 +39,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   bool validation = false;
   bool isView = false;
   bool isUpdate = false;
-  List books = [];
+  List<Book> books = [];
 
   @override
   void initState() {
@@ -47,10 +48,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
   }
 
   _loadData() async {
-    final List bookList =
+    List<Book> bookList =
         await BlocProvider.of<ManageBookCubit>(context).getBooks();
     bookList.sort((a, b) =>
-        a['book_name'].toString().compareTo(b['book_name'].toString()));
+        a.bookName.compareTo(b.bookName));
     setState(() {
       books = bookList;
     });
@@ -420,15 +421,15 @@ class _AddBookScreenState extends State<AddBookScreen> {
                       return Card(
                           child: ListTile(
                         onTap: () {
-                          bookName.text = books[index]['book_name'];
-                          selectedBook = books[index]['book_category'];
-                          authorName.text = books[index]['author_name'];
-                          publication.text = books[index]['publication'];
-                          isbn.text = books[index]['isbn'];
-                          bookLocation.text = books[index]['book_location'];
-                          quantity.text = books[index]['quantity'];
+                          bookName.text = books[index].bookName;
+                          selectedBook = books[index].bookCategory;
+                          authorName.text = books[index].authorName;
+                          publication.text = books[index].publication;
+                          isbn.text = books[index].isbn;
+                          bookLocation.text = books[index].bookLocation;
+                          quantity.text = books[index].quantity;
                           _bottomModal(
-                              isView: true, childKey: books[index]['key']);
+                              isView: true, childKey: books[index].bookId);
                         },
                         onLongPress: () {
                           showMenu(
@@ -447,28 +448,28 @@ class _AddBookScreenState extends State<AddBookScreen> {
                             elevation: 8.0,
                           ).then((value) {
                             if (value == 1) {
-                              bookName.text = books[index]['book_name'];
-                              selectedBook = books[index]['book_category'];
-                              authorName.text = books[index]['author_name'];
-                              publication.text = books[index]['publication'];
-                              isbn.text = books[index]['isbn'];
-                              bookLocation.text = books[index]['book_location'];
-                              quantity.text = books[index]['quantity'];
+                              bookName.text = books[index].bookName;
+                              selectedBook = books[index].bookCategory;
+                              authorName.text = books[index].authorName;
+                              publication.text = books[index].publication;
+                              isbn.text = books[index].isbn;
+                              bookLocation.text = books[index].bookLocation;
+                              quantity.text = books[index].quantity;
 
                               _bottomModal(
                                   isUpdate: true,
-                                  childKey: books[index]['key']);
+                                  childKey: books[index].bookId);
                             } else if (value == 2) {
                               BlocProvider.of<ManageBookCubit>(context)
-                                  .deleteBook(books[index]['key']);
+                                  .deleteBook(books[index].bookId);
                               _loadData();
                             }
                           });
                         },
                         title: Text(
-                            '${books[index]['book_name']}(${books[index]['quantity']})'),
+                            '${books[index].bookName}(${books[index].quantity})'),
                         subtitle: Text(
-                            '${books[index]['publication']}(${books[index]['author_name']})'),
+                            '${books[index].publication}(${books[index].authorName})'),
                       ));
                     })
                 : const Center(
