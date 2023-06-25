@@ -50,8 +50,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   _loadData() async {
     List<Book> bookList =
         await BlocProvider.of<ManageBookCubit>(context).getBooks();
-    bookList.sort((a, b) =>
-        a.bookName.compareTo(b.bookName));
+    bookList.sort((a, b) => a.bookName.compareTo(b.bookName));
     setState(() {
       books = bookList;
     });
@@ -116,7 +115,9 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                             fontWeight: FontWeight.w500,
                                             color: Colors.black87)),
                             const SizedBox(height: 20),
-                            (isView || isUpdate)? Text('Unique id: $childKey'):Container(),
+                            (isView || isUpdate)
+                                ? Text('Unique id: $childKey')
+                                : Container(),
                             const SizedBox(height: 20),
                             TextFormField(
                               validator: (value) {
@@ -466,10 +467,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
                             }
                           });
                         },
-                        title: Text(
-                            '${books[index].bookName}(${books[index].quantity})'),
+                        title: Text(books[index].bookName),
                         subtitle: Text(
                             '${books[index].publication}(${books[index].authorName})'),
+                        trailing: Text('Qty: ${books[index].quantity}'),
                       ));
                     })
                 : const Center(

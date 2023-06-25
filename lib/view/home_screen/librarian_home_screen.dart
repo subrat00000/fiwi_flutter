@@ -118,7 +118,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                   children: [
                     const Center(
                         child: Text(
-                      'Manual Book Issue and Allow',
+                      'Express Book Checkout',
                       style: TextStyle(fontSize: 18, color: Colors.black87),
                     )),
                     const SizedBox(height: 20),
@@ -396,8 +396,12 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                     CustomButton(
                       text: 'Submit',
                       onPressed: () {
-                        if(selectedBookId!=null && selectedUid!=null){
-                          log('hello');
+                        if(selectedBookId!=null && selectedUid!=''){
+                          log(selectedUid.toString());
+                        } else if(selectedUid==''){
+                          log('new user');
+                        } else {
+                          log('error');
                         }
                       },
                       icontext: false,
