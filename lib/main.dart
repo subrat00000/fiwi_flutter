@@ -20,6 +20,7 @@ import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/cubits/student_attendance/attendance_cubit.dart';
 import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
+import 'package:fiwi/cubits/track_book/track_book_cubit.dart';
 import 'package:fiwi/routers.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/information.dart';
@@ -126,6 +127,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ManageBookCubit(),
+        ),
+        BlocProvider(
+          create: (context) => TrackBookCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(

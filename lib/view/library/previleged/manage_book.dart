@@ -334,7 +334,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                                   publication.text,
                                                   isbn.text,
                                                   bookLocation.text,
-                                                  quantity.text,
+                                                  int.parse(quantity.text),
                                                   childKey);
                                         } else {
                                           BlocProvider.of<ManageBookCubit>(
@@ -346,7 +346,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                                   publication.text,
                                                   isbn.text,
                                                   bookLocation.text,
-                                                  quantity.text);
+                                                  int.parse(quantity.text));
                                         }
                                         _loadData();
                                         Navigator.pop(context);

@@ -60,7 +60,7 @@ class ManageBookCubit extends Cubit<ManageBookState> {
               bookLocation: e['book_location'],
               bookName: e['book_name'],
               publication: e['publication'],
-              quantity: e['quantity'],
+              quantity: e['quantity'].toString(),
               bookId: e['id'],
               isbn: e['isbn']))
           .toList();
