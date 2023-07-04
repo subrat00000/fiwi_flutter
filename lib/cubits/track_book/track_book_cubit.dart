@@ -17,7 +17,7 @@ class TrackBookCubit extends Cubit<TrackBookState> {
         emit(ExpressCheckoutBookAlreadyAllotedState());
       } else {
         String datetime = DateTime.now().millisecondsSinceEpoch.toString();
-        await ref.child('track').child(userId).child(bookId).set({
+        final postData = {
           'user_id': userId,
           'book_id': bookId,
           'book_status': bookStatus,
@@ -25,11 +25,11 @@ class TrackBookCubit extends Cubit<TrackBookState> {
           'borrow_date': datetime,
           'user_name': userName,
           'return_date': null
-        });
-        await ref
-            .child('books')
-            .child(bookId)
-            .update({'quantity': ServerValue.increment(-1)});
+        };
+        final Map<String, Map> updates = {};
+        updates['/track/$userId/$bookId'] = postData;
+        updates['/books/$bookId/quantity'] = ServerValue.increment(-1);
+        await ref.update(updates);
         emit(ExpressCheckoutSuccessState());
       }
     } catch (e) {
