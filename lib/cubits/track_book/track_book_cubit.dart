@@ -26,14 +26,15 @@ class TrackBookCubit extends Cubit<TrackBookState> {
           'user_name': userName,
           'return_date': null
         };
-        final Map<String, Map> updates = {};
+        final Map<String, Object?> updates = {};
         updates['/track/$userId/$bookId'] = postData;
+        updates['/track/$userId/last_update'] = datetime;
+        updates['/track/$userId/user_id']= userId;
         updates['/books/$bookId/quantity'] = ServerValue.increment(-1);
         await ref.update(updates);
         emit(ExpressCheckoutSuccessState());
       }
     } catch (e) {
-      await ref.child('track').child(userId).child(bookId).remove();
       emit(TrackBookErrorState(e.toString()));
     }
   }
