@@ -9,24 +9,31 @@ class TrackBookCubit extends Cubit<TrackBookState> {
   TrackBookCubit() : super(TrackBookInitialState());
 
   expressCheckout(bookId, bookStatus, {userId, userName}) async {
+    emit(ExpressCheckoutLoadingState());
     try {
-      String datetime = DateTime.now().millisecondsSinceEpoch.toString();
-      await ref.child('track').child(userId).set({
-        'user_id': userId,
-        'book_id': bookId,
-        'book_status': bookStatus,
-        'issue_date': datetime,
-        'borrow_date': datetime,
-        'user_name': userName,
-        'return_date': null
-      });
-      await ref
-          .child('books')
-          .child(bookId)
-          .update({'quantity': ServerValue.increment(-1)});
-      emit(ExpressCheckoutSuccessState());
+      DatabaseEvent book =
+          await ref.child('track').child(userId).child(bookId).once();
+      if (book.snapshot.exists) {
+        emit(ExpressCheckoutBookAlreadyAllotedState());
+      } else {
+        String datetime = DateTime.now().millisecondsSinceEpoch.toString();
+        await ref.child('track').child(userId).child(bookId).set({
+          'user_id': userId,
+          'book_id': bookId,
+          'book_status': bookStatus,
+          'issue_date': datetime,
+          'borrow_date': datetime,
+          'user_name': userName,
+          'return_date': null
+        });
+        await ref
+            .child('books')
+            .child(bookId)
+            .update({'quantity': ServerValue.increment(-1)});
+        emit(ExpressCheckoutSuccessState());
+      }
     } catch (e) {
-      await ref.child('track').child(userId).remove();
+      await ref.child('track').child(userId).child(bookId).remove();
       emit(TrackBookErrorState(e.toString()));
     }
   }

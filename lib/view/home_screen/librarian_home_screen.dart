@@ -121,7 +121,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
             ),
             body: RefreshIndicator(
               onRefresh: () {
-                return Future.delayed(Duration(microseconds: 1), () {
+                return Future.delayed(const Duration(microseconds: 1), () {
                   getUser();
                   getBook();
                 });
@@ -440,49 +440,69 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                 ],
                               ),
                         const SizedBox(height: 20),
-                        BlocListener<TrackBookCubit, TrackBookState>(
-                            listener: (context, state) {
-                          if (state is ExpressCheckoutSuccessState) {
-                            ScaffoldMessenger.of(context)
+                        BlocConsumer<TrackBookCubit, TrackBookState>(
+                          listener: (context, state) {
+                            if (state is ExpressCheckoutSuccessState) {
+                              ScaffoldMessenger.of(context)
                                   .showSnackBar(const SnackBar(
-                                content: Text(
-                                    "Query updated successfully"),
+                                content: Text("Query updated successfully"),
                                 backgroundColor: Colors.green,
                                 behavior: SnackBarBehavior.floating,
                               ));
-                          } else if (state is TrackBookErrorState) {
-                            ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: Text(
-                                    state.error),
+                            } else if (state
+                                is ExpressCheckoutBookAlreadyAllotedState) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("Book is already alloted"),
                                 backgroundColor: Colors.red,
                                 behavior: SnackBarBehavior.floating,
                               ));
-                          }
-                        }),
-                        CustomButton(
-                          text: 'Submit',
-                          onPressed: () {
-                            if (selectedBookId != null && selectedUid != '') {
-                              BlocProvider.of<TrackBookCubit>(context)
-                                  .expressCheckout(selectedBookId, 'borrowed',
-                                      userId: selectedUid, userName: null);
-                            } else if (selectedUid == '') {
-                              BlocProvider.of<TrackBookCubit>(context)
-                                  .expressCheckout(selectedBookId, 'borrowed',
-                                      userId: null, userName: selectedName);
-                            } else {
+                            } else if (state is TrackBookErrorState) {
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                    "Please select all the fields before submit"),
+                                  .showSnackBar(SnackBar(
+                                content: Text(state.error),
                                 backgroundColor: Colors.red,
                                 behavior: SnackBarBehavior.floating,
                               ));
                             }
                           },
-                          icontext: false,
-                        )
+                          builder: (context, state) {
+                            if (state is ExpressCheckoutLoadingState) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return CustomButton(
+                                text: 'Submit',
+                                onPressed: () {
+                                  if (selectedBookId != null &&
+                                      selectedUid != '') {
+                                    BlocProvider.of<TrackBookCubit>(context)
+                                        .expressCheckout(
+                                            selectedBookId, 'borrowed',
+                                            userId: selectedUid,
+                                            userName: null);
+                                  } else if (selectedUid == '') {
+                                    BlocProvider.of<TrackBookCubit>(context)
+                                        .expressCheckout(
+                                            selectedBookId, 'borrowed',
+                                            userId: null,
+                                            userName: selectedName);
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content: Text(
+                                          "Please select all the fields before submit"),
+                                      backgroundColor: Colors.red,
+                                      behavior: SnackBarBehavior.floating,
+                                    ));
+                                  }
+                                },
+                                icontext: false,
+                              );
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ),
