@@ -1,17 +1,7 @@
-import 'dart:developer';
-
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fiwi/cubits/manage_book/manage_book_cubit.dart';
-import 'package:fiwi/cubits/track_book/track_book_cubit.dart';
-import 'package:fiwi/cubits/track_book/track_book_state.dart';
-import 'package:fiwi/models/book.dart';
-import 'package:fiwi/models/user.dart';
-import 'package:fiwi/repositories/repositories.dart';
-import 'package:fiwi/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LibrarianHomeScreen extends StatefulWidget {
   const LibrarianHomeScreen({super.key});
@@ -117,7 +107,6 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                     padding: const EdgeInsets.all(10.0),
                     itemCount: users.length,
                     itemBuilder: (context, index) {
-                       log(itemsList2.toString());
                       return StreamBuilder(
                           stream: FirebaseDatabase.instance
                               .ref('users')
@@ -136,7 +125,7 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                               return Card(
                                   child: ListTile(
                                 onTap: () => Navigator.pushNamed(
-                                    context, '/borrowedbookdetails',
+                                    context, '/acceptissuerequest',
                                     arguments: itemsMap),
                                 leading: Container(
                                   width: 50,

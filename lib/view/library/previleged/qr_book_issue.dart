@@ -10,15 +10,17 @@ import 'package:hive/hive.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
-class QRBookReturnedScreen extends StatefulWidget {
-  final Map trackBook;
-  const QRBookReturnedScreen({super.key, required this.trackBook});
+class QRBookIssueScreen extends StatefulWidget {
+  final List books;
+  final String userId;
+  const QRBookIssueScreen(
+      {super.key, required this.books, required this.userId});
 
   @override
-  State<QRBookReturnedScreen> createState() => QRBookReturnedScreenState();
+  State<QRBookIssueScreen> createState() => QRBookIssueScreenState();
 }
 
-class QRBookReturnedScreenState extends State<QRBookReturnedScreen> {
+class QRBookIssueScreenState extends State<QRBookIssueScreen> {
   Box box = Hive.box('user');
   final trackRef = FirebaseDatabase.instance.ref('library/track');
   StreamSubscription<DatabaseEvent>? _subscription;
@@ -29,7 +31,9 @@ class QRBookReturnedScreenState extends State<QRBookReturnedScreen> {
     final iv = IV.fromLength(16);
 
     final encrypter = Encrypter(AES(key));
-    String jsonData = jsonEncode({'datetime':datetime,'book_id':widget.trackBook['book_id'],'user_id':widget.trackBook['user_id']});
+    String jsonData = jsonEncode(
+        {'datetime': datetime, 'data': widget.books, 'user_id': widget.userId});
+    log(jsonData);
 
     final encrypted = encrypter.encrypt(jsonData, iv: iv);
     return encrypted.base64;
@@ -39,19 +43,22 @@ class QRBookReturnedScreenState extends State<QRBookReturnedScreen> {
   void initState() {
     super.initState();
     _subscription = trackRef
-        .child(widget.trackBook['user_id'])
-        .child(widget.trackBook['book_id'])
-        .child('book_returned')
+        .child(widget.userId)
+        .child('all_book_issued')
         .onValue
         .listen((DatabaseEvent event) {
       log(event.snapshot.value.toString());
       if (event.snapshot.value == true) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Book Status updated Successfully"),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ));
-        Navigator.pop(context);
+        trackRef
+            .child(widget.userId)
+            .update({'all_book_issued': false}).then((value) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Book Status updated Successfully"),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ));
+          Navigator.pop(context);
+        });
       }
     });
   }
