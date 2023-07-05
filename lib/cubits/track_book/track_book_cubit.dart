@@ -24,6 +24,7 @@ class TrackBookCubit extends Cubit<TrackBookState> {
           'book_issued': true,
           'book_borrowed':true,
           'book_returned':false,
+          'book_issue_rejected':false,
           'issue_request_date':datetime,
           'issue_date': datetime,
           'borrow_date': datetime,

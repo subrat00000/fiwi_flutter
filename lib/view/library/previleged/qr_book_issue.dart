@@ -57,7 +57,7 @@ class QRBookIssueScreenState extends State<QRBookIssueScreen> {
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ));
-          Navigator.pop(context);
+          Navigator.popUntil(context, (route) => route.isFirst);
         });
       }
     });

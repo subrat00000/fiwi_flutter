@@ -22,26 +22,28 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
     List localBooks = [];
     List localBookIds = [];
     for (var element in bookList) {
-      localBookIds.add(element['book_id']);
+      if (element['book_issue_rejected'] == false) {
+        localBookIds.add(element['book_id']);
+      }
       DatabaseEvent snapshot = await FirebaseDatabase.instance
           .ref('library/books')
           .child(element['book_id'])
           .once();
       if (snapshot.snapshot.exists) {
         final data = Map<String, dynamic>.from(snapshot.snapshot.value as Map);
+
         localBooks.add(data);
-        
       }
     }
     if (!mounted) {
       return;
     }
     setState(() {
-      books = localBooks;
-      bookIds = localBookIds;
-      itemsListData=bookList;
+      books = localBooks; //books
+      bookIds = localBookIds; //only book ids
+      itemsListData = bookList; //track
     });
-    log(itemsListData.toString());
+    // log(itemsListData.toString());
   }
 
   @override
@@ -53,7 +55,18 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(icon: Icon(Icons.qr_code_2_rounded,color: Colors.black87,),onPressed: (){Navigator.pushNamed(context, '/qrbookissue',arguments: {'books':bookIds,'user_id':widget.data['uid']}).then((_) => Future.delayed(const Duration(seconds: 1), (){Navigator.pop(context);}));},)],
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.qr_code_2_rounded,
+              color: Colors.black87,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/qrbookissue',
+                  arguments: {'books': bookIds, 'user_id': widget.data['uid']});
+            },
+          )
+        ],
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -97,7 +110,10 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                       itemCount: itemsList.length,
                       itemBuilder: (context, index) {
                         final bookData = books.where((element) =>
-                            element['id'] == itemsList[index]['book_id'] && itemsList[index]['book_issued']==false && itemsList[index]['book_borrowed']==false);
+                            element['id'] == itemsList[index]['book_id'] &&
+                            itemsList[index]['book_issued'] == false &&
+                            itemsList[index]['book_borrowed'] == false &&
+                            itemsList[index]['book_issue_rejected'] == false);
                         if (bookData.isNotEmpty) {
                           final book = bookData.first;
                           return Card(
@@ -117,16 +133,26 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                                     Text(
                                         'Issue Request Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_request_date'])))}'),
                                     Text(
-                                        'Issue Date: ${itemsList[index]['issue_date'] !=null?DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date']))):'Not Applicable'}'),
+                                        'Issue Date: ${itemsList[index]['issue_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date']))) : 'Not Applicable'}'),
                                     Text(
-                                        'Borrow Date: ${itemsList[index]['borrow_date'] !=null?DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date']))):'Not Applicable'}'),
+                                        'Borrow Date: ${itemsList[index]['borrow_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date']))) : 'Not Applicable'}'),
                                     Text(
                                         'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}')
                                   ],
                                 ),
                                 Column(
                                   children: [
-                                    
+                                    ElevatedButton(
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.white)),
+                                      onPressed: () {},
+                                      child: const Text(
+                                        'Reject',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
                                     const Text('Status'),
                                     Container(
                                         padding: const EdgeInsets.all(5),
@@ -139,8 +165,11 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                                               Radius.circular(8.0)),
                                         ),
                                         child: itemsList[index]
-                                                    ['book_borrowed'] ==
-                                                true && itemsList[index]['book_returned']== false
+                                                        ['book_borrowed'] ==
+                                                    true &&
+                                                itemsList[index]
+                                                        ['book_returned'] ==
+                                                    false
                                             ? Column(
                                                 children: [
                                                   Image.asset(
@@ -155,14 +184,18 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                                                     true
                                                 ? const Column(
                                                     children: [
-                                                      Icon(Icons.check,color: Colors.green,),
+                                                      Icon(
+                                                        Icons.check,
+                                                        color: Colors.green,
+                                                      ),
                                                       Text('Returned')
                                                     ],
                                                   )
                                                 : itemsList[index]
-                                                        ['book_issued'] ==
-                                                    false
-                                                ? Text('Requested'):Container())
+                                                            ['book_issued'] ==
+                                                        false
+                                                    ? Text('Requested')
+                                                    : Container())
                                   ],
                                 ),
                               ],
