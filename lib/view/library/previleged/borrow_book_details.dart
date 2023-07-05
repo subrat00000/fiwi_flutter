@@ -109,19 +109,25 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                     Text(
                                         'Issue Request Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_request_date'])))}'),
                                     Text(
-                                        'Issue Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date'])))}'),
+                                        'Issue Date: ${itemsList[index]['issue_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date']))) : 'Not Applicable'}'),
                                     Text(
-                                        'Borrow Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date'])))}'),
+                                        'Borrow Date: ${itemsList[index]['borrow_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date']))) : 'Not Applicable'}'),
                                     Text(
                                         'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}')
                                   ],
                                 ),
                                 Column(
                                   children: [
-                                    itemsList[index]['book_returned'] == false && itemsList[index]['book_borrowed']==true
+                                    itemsList[index]['book_returned'] ==
+                                                false &&
+                                            itemsList[index]['book_borrowed'] ==
+                                                true
                                         ? const Text('Return QR')
                                         : Container(),
-                                    itemsList[index]['book_returned'] == false && itemsList[index]['book_borrowed']==true
+                                    itemsList[index]['book_returned'] ==
+                                                false &&
+                                            itemsList[index]['book_borrowed'] ==
+                                                true
                                         ? Card(
                                             elevation: 8,
                                             child: IconButton(
@@ -152,8 +158,11 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                               Radius.circular(8.0)),
                                         ),
                                         child: itemsList[index]
-                                                    ['book_borrowed'] ==
-                                                true && itemsList[index]['book_returned']== false
+                                                        ['book_borrowed'] ==
+                                                    true &&
+                                                itemsList[index]
+                                                        ['book_returned'] ==
+                                                    false
                                             ? Column(
                                                 children: [
                                                   Image.asset(
@@ -168,14 +177,18 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                                     true
                                                 ? const Column(
                                                     children: [
-                                                      Icon(Icons.check,color: Colors.green,),
+                                                      Icon(
+                                                        Icons.check,
+                                                        color: Colors.green,
+                                                      ),
                                                       Text('Returned')
                                                     ],
                                                   )
                                                 : itemsList[index]
-                                                        ['book_issued'] ==
-                                                    false
-                                                ? Text('Requested'):Container())
+                                                            ['book_issued'] ==
+                                                        false
+                                                    ? Text('Requested')
+                                                    : Container())
                                   ],
                                 ),
                               ],
