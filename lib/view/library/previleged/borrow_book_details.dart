@@ -107,22 +107,39 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                         'Book Category: ${book['book_category']}'),
                                     Text('ISBN: ${book['isbn']}'),
                                     Text(
+                                        'Issue Request Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_request_date'])))}'),
+                                    Text(
                                         'Issue Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date'])))}'),
                                     Text(
                                         'Borrow Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date'])))}'),
                                     Text(
-                                        'Return Date: ${book['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}')
+                                        'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}')
                                   ],
                                 ),
                                 Column(
                                   children: [
-                                    Card(
-                                        elevation: 8,
-                                        child: IconButton(
-                                          icon: Icon(Icons.qr_code_2_rounded),
-                                          onPressed: () {getBookDetails(itemsList);},
-                                          tooltip: 'Open QR for Book Return',
-                                        )),
+                                    itemsList[index]['book_returned'] == false
+                                        ? const Text('Return QR')
+                                        : Container(),
+                                    itemsList[index]['book_returned'] == false
+                                        ? Card(
+                                            elevation: 8,
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                  Icons.qr_code_2_rounded),
+                                              onPressed: () {
+                                                Navigator.pushNamed(context,
+                                                        '/qrbookreturned',
+                                                        arguments:
+                                                            itemsList[index])
+                                                    .then((_) => getBookDetails(
+                                                        itemsList));
+                                                getBookDetails(itemsList);
+                                              },
+                                              tooltip:
+                                                  'Open QR for Book Return',
+                                            ))
+                                        : Container(),
                                     const Text('Status'),
                                     Container(
                                         padding: const EdgeInsets.all(5),
@@ -134,15 +151,28 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                           borderRadius: const BorderRadius.all(
                                               Radius.circular(8.0)),
                                         ),
-                                        child: Column(
-                                          children: [
-                                            Image.asset(
-                                              'assets/book_borrowed.png',
-                                              cacheHeight: 25,
-                                            ),
-                                            const Text('Borrowed')
-                                          ],
-                                        ))
+                                        child: itemsList[index]
+                                                    ['book_borrowed'] ==
+                                                true && itemsList[index]['book_returned']== false
+                                            ? Column(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/book_borrowed.png',
+                                                    cacheHeight: 25,
+                                                  ),
+                                                  const Text('Borrowed')
+                                                ],
+                                              )
+                                            : itemsList[index]
+                                                        ['book_returned'] ==
+                                                    true
+                                                ? const Column(
+                                                    children: [
+                                                      Icon(Icons.check,color: Colors.green,),
+                                                      Text('Returned')
+                                                    ],
+                                                  )
+                                                : Container())
                                   ],
                                 ),
                               ],

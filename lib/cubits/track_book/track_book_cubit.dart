@@ -8,7 +8,7 @@ class TrackBookCubit extends Cubit<TrackBookState> {
   var box = Hive.box('user');
   TrackBookCubit() : super(TrackBookInitialState());
 
-  expressCheckout(bookId, bookStatus, {userId, userName}) async {
+  expressCheckout(bookId, {userId, userName}) async {
     emit(ExpressCheckoutLoadingState());
     try {
       DatabaseEvent book =
@@ -20,7 +20,11 @@ class TrackBookCubit extends Cubit<TrackBookState> {
         final postData = {
           'user_id': userId,
           'book_id': bookId,
-          'book_status': bookStatus,
+          'book_issue_request': true,
+          'book_issued': true,
+          'book_borrowed':true,
+          'book_returned':false,
+          'issue_request_date':datetime,
           'issue_date': datetime,
           'borrow_date': datetime,
           'user_name': userName,

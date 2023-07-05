@@ -79,7 +79,9 @@ class BorrowBookScreenState extends State<BorrowBookScreen> {
                                     as Map<dynamic, dynamic>;
                                 return Card(
                                     child: ListTile(
-                                      onTap: ()=>Navigator.pushNamed(context, '/borrowedbookdetails',arguments: itemsMap),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/borrowedbookdetails',
+                                      arguments: itemsMap),
                                   leading: Container(
                                     width: 50,
                                     height: 50,
@@ -132,8 +134,21 @@ class BorrowBookScreenState extends State<BorrowBookScreen> {
                                                   children: [
                                                     Text(
                                                         '${itemsMap['book_name']}'),
-                                                    bookLists[i]['book_status']=='borrowed'?const Icon(Icons.close,color: Colors.red,):Container(),
-                                                    bookLists[i]['book_status']=='returned'? const Icon(Icons.check,color:Colors.green):Container()
+                                                    bookLists[i][
+                                                                'book_borrowed'] ==
+                                                            true && bookLists[i]['book_returned']==false
+                                                        ? Image.asset(
+                                                            'assets/book_borrowed.png',
+                                                            cacheHeight: 25,
+                                                          )
+                                                        : Container(),
+                                                    bookLists[i][
+                                                                'book_returned'] ==
+                                                            true
+                                                        ? const Icon(
+                                                            Icons.check,
+                                                            color: Colors.green)
+                                                        : Container()
                                                   ],
                                                 );
                                               }
