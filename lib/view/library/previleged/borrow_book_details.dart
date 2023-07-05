@@ -118,10 +118,10 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                 ),
                                 Column(
                                   children: [
-                                    itemsList[index]['book_returned'] == false
+                                    itemsList[index]['book_returned'] == false && itemsList[index]['book_borrowed']==true
                                         ? const Text('Return QR')
                                         : Container(),
-                                    itemsList[index]['book_returned'] == false
+                                    itemsList[index]['book_returned'] == false && itemsList[index]['book_borrowed']==true
                                         ? Card(
                                             elevation: 8,
                                             child: IconButton(
@@ -172,7 +172,10 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                                       Text('Returned')
                                                     ],
                                                   )
-                                                : Container())
+                                                : itemsList[index]
+                                                        ['book_issued'] ==
+                                                    false
+                                                ? Text('Requested'):Container())
                                   ],
                                 ),
                               ],
