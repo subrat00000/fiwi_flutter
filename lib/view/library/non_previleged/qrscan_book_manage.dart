@@ -48,9 +48,13 @@ class _QrScanBookManageState extends State<QrScanBookManage> {
       ),
       body: BlocConsumer<QrScanBookCubit, QrScanBookState>(
         listener: (context, state) {
-          if (state is QrScanBookSuccessState) {
+          if (state is QrScanBookIssueSuccessState) {
             message = "Books are issued successfully and You can take the books.";
-          } else if (state is QrScanBookErrorState) {
+          } else if (state is QrScanReturnBookSuccessState) {
+            message = "Book returned successfully.";
+          } else if (state is QrScanBookInvalidUserState) {
+            error = "Invalid Qr Code.";
+          }else if (state is QrScanBookErrorState) {
             error = state.error.toString();
           }
         },
@@ -76,7 +80,7 @@ class _QrScanBookManageState extends State<QrScanBookManage> {
                                     log('Barcode 3! ${barcode.rawValue}');
                                     BlocProvider.of<QrScanBookCubit>(
                                             context)
-                                        .issueBook(barcode.rawValue!);
+                                        .issueOrReturnBook(barcode.rawValue!);
                                     setState(() {
                                       isQrCode = false;
                                     });

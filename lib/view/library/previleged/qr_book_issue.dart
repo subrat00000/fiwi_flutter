@@ -30,7 +30,7 @@ class QRBookIssueScreenState extends State<QRBookIssueScreen> {
 
     final encrypter = Encrypter(AES(key));
     String jsonData = jsonEncode(
-        {'datetime': datetime, 'data': widget.books, 'user_id': widget.userId});
+        {'datetime': datetime, 'data': widget.books, 'user_id': widget.userId,'action_type':'issue'});
     log(jsonData);
 
     final encrypted = encrypter.encrypt(jsonData, iv: iv);

@@ -27,7 +27,7 @@ class QRBookReturnedScreenState extends State<QRBookReturnedScreen> {
     final iv = IV.fromLength(16);
 
     final encrypter = Encrypter(AES(key));
-    String jsonData = jsonEncode({'datetime':datetime,'book_id':widget.trackBook['book_id'],'user_id':widget.trackBook['user_id']});
+    String jsonData = jsonEncode({'datetime':datetime,'book_id':widget.trackBook['book_id'],'user_id':widget.trackBook['user_id'],'action_type':'return'});
 
     final encrypted = encrypter.encrypt(jsonData, iv: iv);
     return encrypted.base64;
