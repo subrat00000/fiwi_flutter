@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -94,16 +96,16 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                             element['book_issue_request'] == true &&
                             element['book_issued'] == false &&
                             element['book_borrowed'] == false &&
-                            element['book_issue_rejected']==false))
+                            element['book_issue_rejected'] == false))
                     .expand((element) => element)
                     .toList();
-               
                 final users = [];
                 for (var element in itemsList2) {
-                  if(!users.contains(element['user_id'])){
+                  if (!users.contains(element['user_id'])) {
                     users.add(element['user_id']);
                   }
                 }
+                log(users.toString());
                 return ListView.builder(
                     padding: const EdgeInsets.all(10.0),
                     itemCount: users.length,
@@ -156,33 +158,38 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                     padding: const EdgeInsets.all(10.0),
                                     itemCount: itemsList2.length,
                                     itemBuilder: (context, i) {
-                                      return StreamBuilder(
-                                          stream: FirebaseDatabase.instance
-                                              .ref('library')
-                                              .child('books')
-                                              .child(itemsList2[i]['book_id'])
-                                              .onValue,
-                                          builder: (context, s) {
-                                            if (!s.hasData ||
-                                                s.data == null ||
-                                                s.data!.snapshot.value ==
-                                                    null) {
-                                              return const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              );
-                                            } else {
-                                              final itemsMap =
-                                                  s.data!.snapshot.value
-                                                      as Map<dynamic, dynamic>;
-                                              return Row(
-                                                children: [
-                                                  Text(
-                                                      '${itemsMap['book_name']}'),
-                                                ],
-                                              );
-                                            }
-                                          });
+                                      if (users[index] ==
+                                          itemsList2[i]['user_id']) {
+                                        return StreamBuilder(
+                                            stream: FirebaseDatabase.instance
+                                                .ref('library')
+                                                .child('books')
+                                                .child(itemsList2[i]['book_id'])
+                                                .onValue,
+                                            builder: (context, s) {
+                                              if (!s.hasData ||
+                                                  s.data == null ||
+                                                  s.data!.snapshot.value ==
+                                                      null) {
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              } else {
+                                                final itemsMap = s
+                                                        .data!.snapshot.value
+                                                    as Map<dynamic, dynamic>;
+                                                return Row(
+                                                  children: [
+                                                    Text(
+                                                        '${itemsMap['book_name']}'),
+                                                  ],
+                                                );
+                                              }
+                                            });
+                                      } else {
+                                        return Container();
+                                      }
                                     }),
                               ));
                             }

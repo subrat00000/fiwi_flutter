@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fiwi/cubits/activate_student/activate_student_cubit.dart';
+import 'package:fiwi/cubits/book_issue/book_issue_cubit.dart';
 import 'package:fiwi/cubits/manage_book/manage_book_cubit.dart';
 import 'package:fiwi/cubits/assign_faculty/assign_faculty_cubit.dart';
 import 'package:fiwi/cubits/auth/auth_cubit.dart';
@@ -130,6 +131,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => TrackBookCubit(),
+        ),
+        BlocProvider(
+          create: (context) => BookIssueCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(
