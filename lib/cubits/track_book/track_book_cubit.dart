@@ -43,4 +43,12 @@ class TrackBookCubit extends Cubit<TrackBookState> {
       emit(TrackBookErrorState(e.toString()));
     }
   }
+  rejectBook(String userId,String bookId)async{
+    try{
+      await ref.child('track').child(userId).child(bookId).update({'book_issue_rejected':true});
+      emit(RejectIssueBookSuccessState());
+    }catch(e){
+      emit(TrackBookErrorState(e.toString()));
+    }
+  }
 }

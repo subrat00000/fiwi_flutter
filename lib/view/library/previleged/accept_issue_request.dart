@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fiwi/cubits/track_book/track_book_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class AcceptIssueRequestScreen extends StatefulWidget {
@@ -44,6 +46,29 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
       itemsListData = bookList; //track
     });
     // log(itemsListData.toString());
+  }
+
+  alertDialot(String uid, String bookId) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text(
+                  'Do you want to Reject Book Issue? This operation is irreversible.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    BlocProvider.of<TrackBookCubit>(context)
+                        .rejectBook(uid, bookId);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -147,7 +172,9 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                                           backgroundColor:
                                               MaterialStatePropertyAll(
                                                   Colors.white)),
-                                      onPressed: () {},
+                                      onPressed: () => alertDialot(
+                                          widget.data['uid'],
+                                          itemsList[index]['book_id']),
                                       child: const Text(
                                         'Reject',
                                         style: TextStyle(color: Colors.red),

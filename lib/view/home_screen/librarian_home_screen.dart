@@ -93,7 +93,8 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                         .where((element) =>
                             element['book_issue_request'] == true &&
                             element['book_issued'] == false &&
-                            element['book_borrowed'] == false))
+                            element['book_borrowed'] == false &&
+                            element['book_issue_rejected']==false))
                     .expand((element) => element)
                     .toList();
                
