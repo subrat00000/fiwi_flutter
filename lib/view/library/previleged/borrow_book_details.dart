@@ -184,11 +184,32 @@ class BorrowBookDetailsScreenState extends State<BorrowBookDetailsScreen> {
                                                       Text('Returned')
                                                     ],
                                                   )
-                                                : itemsList[index]
-                                                            ['book_issued'] ==
-                                                        false
-                                                    ? Text('Requested')
-                                                    : Container())
+                                                : itemsList[index][
+                                                            'book_issue_rejected'] ==
+                                                        true
+                                                    ? const Column(
+                                                        children: [
+                                                          Icon(
+                                                            Icons.block_rounded,
+                                                            color: Colors.red,
+                                                          ),
+                                                          Text(
+                                                            'Rejected',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.red),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : itemsList[index][
+                                                                'book_issued'] ==
+                                                            false
+                                                        ? const Column(
+                                                            children: [
+                                                              Text('Requested'),
+                                                            ],
+                                                          )
+                                                        : Container())
                                   ],
                                 ),
                               ],

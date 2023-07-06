@@ -148,6 +148,13 @@ class BorrowBookScreenState extends State<BorrowBookScreen> {
                                                         ? const Icon(
                                                             Icons.check,
                                                             color: Colors.green)
+                                                        : Container(),
+                                                    bookLists[i][
+                                                                'book_issue_rejected'] ==
+                                                            true
+                                                        ? const Icon(
+                                                            Icons.block_rounded,
+                                                            color: Colors.red)
                                                         : Container()
                                                   ],
                                                 );
