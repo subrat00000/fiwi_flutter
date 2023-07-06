@@ -33,17 +33,17 @@ class _AdminScreenState extends State<AdminScreen> {
     },
     {
       'title': 'Chanage Semester',
-      'icon': 'assets/courses.png',
+      'icon': 'assets/change_semester.png',
       'route': '/changesemester'
     },
     {
       'title': 'Manage Batches',
-      'icon': 'assets/courses.png',
+      'icon': 'assets/manage_batch.png',
       'route': '/showbatch'
     },
     {
       'title': 'Simplify Timetable',
-      'icon': 'assets/role.png',
+      'icon': 'assets/simplify_timetable.png',
       'route': 'simplify_timetable'
     }
   ];
