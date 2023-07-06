@@ -18,6 +18,7 @@ import 'package:fiwi/cubits/manage_role/manage_role_cubit.dart';
 import 'package:fiwi/cubits/phone_signin/phone_signin_cubit.dart';
 import 'package:fiwi/cubits/profile/profile_cubit.dart';
 import 'package:fiwi/cubits/admin_qr/qr_cubit.dart';
+import 'package:fiwi/cubits/qrscan_book/qrscan_book_cubit.dart';
 import 'package:fiwi/cubits/splash_cubit.dart';
 import 'package:fiwi/cubits/student_attendance/attendance_cubit.dart';
 import 'package:fiwi/cubits/timetable/timetable_cubit.dart';
@@ -134,6 +135,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => BookIssueCubit(),
+        ),
+        BlocProvider(
+          create: (context) => QrScanBookCubit(),
         ),
       ],
       child: BlocBuilder<AuthCubit, AuthState>(

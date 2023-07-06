@@ -16,6 +16,7 @@ import 'package:fiwi/view/attendance/previleged/student_attendance.dart';
 import 'package:fiwi/view/attendance/student/qr_scan.dart';
 import 'package:fiwi/view/home_screen.dart';
 import 'package:fiwi/view/library/non_previleged/book_issue_screen.dart';
+import 'package:fiwi/view/library/non_previleged/qrscan_book_manage.dart';
 import 'package:fiwi/view/library/previleged/accept_issue_request.dart';
 import 'package:fiwi/view/library/previleged/borrow_book.dart';
 import 'package:fiwi/view/library/previleged/borrow_book_details.dart';
@@ -92,6 +93,9 @@ class Routers {
       case '/bookissue':
         return MaterialPageRoute(
             builder: (context) => const BookIssueScreen());
+      case '/qrscanbookmanage':
+        return MaterialPageRoute(
+            builder: (context) => const QrScanBookManage());
       case '/expresscheckout':
         return MaterialPageRoute(
             builder: (context) => const ExpressCheckoutScreen());
