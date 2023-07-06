@@ -162,11 +162,10 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                                     Text(
                                         'Borrow Date: ${itemsList[index]['borrow_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date']))) : 'Not Applicable'}'),
                                     Text(
-                                        'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}')
-                                  ],
-                                ),
-                                Column(
-                                  children: [
+                                        'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}'),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
                                     ElevatedButton(
                                       style: const ButtonStyle(
                                           backgroundColor:

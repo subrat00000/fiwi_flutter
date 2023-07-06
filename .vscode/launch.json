@@ -9,29 +9,6 @@
             "request": "launch",
             "type": "dart"
         },
-        {
-            "name": "Emulator 1",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "ONEPLUS A5000"
-        },
-        {
-            "name": "Phone",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "SM M215G"
-        },
-        {
-            "name": "Sudhansu Dada",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "DT89571GA1951304724"
-        }
+        
     ],
-    "compounds": [
-        {
-            "name": "All Devices",
-            "configurations": ["Emulator 1","Phone","Sudhansu Dada"]
-        }
-    ]
 }

@@ -67,6 +67,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           temp.add({code: percent});
         }
       });
+      if (!mounted) {
+      return;
+    }
       setState(() {
         presentPercent = temp;
       });
