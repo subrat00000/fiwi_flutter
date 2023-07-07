@@ -32,7 +32,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   TextSpan(
                     children: [
                       const TextSpan(
-                        text: 'Do you want to delete account. ',
+                        text: 'Do you want to delete account ',
                         style: TextStyle(color: Colors.black),
                       ),
                       TextSpan(
@@ -54,8 +54,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   TextButton(
                     onPressed: () {
                       BlocProvider.of<DeleteAccountCubit>(context)
-                                      .deleteAccount(user['uid']
-                                          );
+                          .deleteAccount(user['uid']);
                       Navigator.of(context).pop();
                     },
                     child: const Text('Yes'),
@@ -166,48 +165,54 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                         padding: const EdgeInsets.all(10.0),
                         itemCount: filteredUser.length,
                         itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text('${filteredUser[index]['name']}(${toCamelCase(filteredUser[index]['role'])})'),
-                              trailing: IconButton(
-                                icon: Icon(
-                                  Icons.delete_outline_rounded,
-                                  color: Colors.red[300],
+                          if (filteredUser[index]['active'] == true) {
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                    '${filteredUser[index]['name']}(${toCamelCase(filteredUser[index]['role'])})'),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.red[300],
+                                  ),
+                                  onPressed: () {
+                                    _activate(filteredUser[index]);
+                                  },
                                 ),
-                                onPressed: () {
-                                  _activate(filteredUser[index]);
+                                subtitle: filteredUser[index]['email'] != null
+                                    ? Text(filteredUser[index]['email'])
+                                    : Text(filteredUser[index]['phone']),
+                                leading: Container(
+                                  width: 55,
+                                  height: 55,
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: filteredUser[index]['photo'] != null &&
+                                          filteredUser[index]['photo'] != ''
+                                      ? CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: filteredUser[index]
+                                              ['photo'],
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                              CircularProgressIndicator(
+                                                  value: downloadProgress
+                                                      .progress),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        )
+                                      : Image.asset('assets/no_image.png'),
+                                ),
+                                onTap: () {
+                                  // Navigator.pushNamed(context, itemsMap[a]['route']);
                                 },
                               ),
-                              subtitle: filteredUser[index]['email'] != null
-                                  ? Text(filteredUser[index]['email'])
-                                  : Text(filteredUser[index]['phone']),
-                              leading: Container(
-                                width: 55,
-                                height: 55,
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: filteredUser[index]['photo'] != null &&
-                                        filteredUser[index]['photo'] != ''
-                                    ? CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: filteredUser[index]['photo'],
-                                        progressIndicatorBuilder: (context, url,
-                                                downloadProgress) =>
-                                            CircularProgressIndicator(
-                                                value:
-                                                    downloadProgress.progress),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                      )
-                                    : Image.asset('assets/no_image.png'),
-                              ),
-                              onTap: () {
-                                // Navigator.pushNamed(context, itemsMap[a]['route']);
-                              },
-                            ),
-                          );
+                            );
+                          } else {
+                            return Container();
+                          }
                         }),
                   ],
                 );
