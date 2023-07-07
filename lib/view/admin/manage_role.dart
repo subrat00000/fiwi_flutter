@@ -32,7 +32,6 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-
             return Padding(
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -261,7 +260,8 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87),
         ),
         title: const Text(
           'Manage Role',
@@ -346,43 +346,49 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
                                     final itemsList =
                                         Map.fromEntries(items.entries.toList());
                                     // return Text(itemsList.toString());
-                                    return Card(
-                                      child: ListTile(
-                                        title: Text(itemsList['name']),
-                                        subtitle: Text(toCamelCase(itemsList['role'])),
-                                        leading: Container(
-                                          width: 55,
-                                          height: 55,
-                                          clipBehavior:
-                                              Clip.antiAliasWithSaveLayer,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
+                                    if (itemsList['active'] == true) {
+                                      return Card(
+                                        child: ListTile(
+                                          title: Text(itemsList['name']),
+                                          subtitle: Text(
+                                              toCamelCase(itemsList['role'])),
+                                          leading: Container(
+                                            width: 55,
+                                            height: 55,
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: itemsList['photo'] != null &&
+                                                    itemsList['photo'] != ''
+                                                ? CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl:
+                                                        itemsList['photo'],
+                                                    progressIndicatorBuilder: (context,
+                                                            url,
+                                                            downloadProgress) =>
+                                                        CircularProgressIndicator(
+                                                            value:
+                                                                downloadProgress
+                                                                    .progress),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        const Icon(Icons.error),
+                                                  )
+                                                : Image.asset(
+                                                    'assets/no_image.png'),
                                           ),
-                                          child: itemsList['photo'] != null &&
-                                                  itemsList['photo'] != ''
-                                              ? CachedNetworkImage(
-                                                  fit: BoxFit.cover,
-                                                  imageUrl: itemsList['photo'],
-                                                  progressIndicatorBuilder: (context,
-                                                          url,
-                                                          downloadProgress) =>
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
-                                                  errorWidget: (context, url,
-                                                          error) =>
-                                                      const Icon(Icons.error),
-                                                )
-                                              : Image.asset(
-                                                  'assets/no_image.png'),
+                                          onTap: () {
+                                            // Navigator.pushNamed(context, itemsMap[a]['route']);
+                                          },
                                         ),
-                                        onTap: () {
-                                          // Navigator.pushNamed(context, itemsMap[a]['route']);
-                                        },
-                                      ),
-                                    );
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
                                   }
                                 });
                           }),
@@ -405,7 +411,8 @@ class _ManageRoleScreenState extends State<ManageRoleScreen> {
                               return Card(
                                 child: ListTile(
                                   title: Text(itemsMap[a[index]]['name']),
-                                  subtitle: Text(toCamelCase(itemsMap[a[index]]['role'])),
+                                  subtitle: Text(
+                                      toCamelCase(itemsMap[a[index]]['role'])),
                                   leading: Container(
                                       clipBehavior: Clip.antiAliasWithSaveLayer,
                                       decoration: BoxDecoration(
