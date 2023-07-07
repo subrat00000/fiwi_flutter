@@ -54,7 +54,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   TextButton(
                     onPressed: () {
                       BlocProvider.of<DeleteAccountCubit>(context)
-                                      .deleteAccount(
+                                      .deleteAccount(user['uid']
                                           );
                       Navigator.of(context).pop();
                     },
