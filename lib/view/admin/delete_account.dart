@@ -23,7 +23,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   List filteredUser = [];
   List users = [];
   String? query;
-  _activate(user, value) {
+  _activate(user) {
     if (user['active'] == true) {
       showDialog(
           context: context,
@@ -32,7 +32,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   TextSpan(
                     children: [
                       const TextSpan(
-                        text: 'Do you want to deactive ',
+                        text: 'Do you want to delete account. ',
                         style: TextStyle(color: Colors.black),
                       ),
                       TextSpan(
@@ -40,7 +40,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                         style: TextStyle(color: Colors.red[300]),
                       ),
                       const TextSpan(
-                        text: '?',
+                        text: '? This is Irreversible.',
                         style: TextStyle(color: Colors.black),
                       ),
                     ],
@@ -53,8 +53,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      BlocProvider.of<ActivateStudentCubit>(context)
-                          .activateStudent(user['uid'], value);
+                      BlocProvider.of<DeleteAccountCubit>(context)
+                                      .deleteAccount(
+                                          );
                       Navigator.of(context).pop();
                     },
                     child: const Text('Yes'),
@@ -174,9 +175,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                   color: Colors.red[300],
                                 ),
                                 onPressed: () {
-                                  BlocProvider.of<DeleteAccountCubit>(context)
-                                      .deleteAccount(
-                                          filteredUser[index]['uid']);
+                                  _activate(filteredUser[index]);
                                 },
                               ),
                               subtitle: filteredUser[index]['email'] != null
