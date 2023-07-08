@@ -360,7 +360,16 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                                                       student.name,
                                                       student.photo);
                                                 },
-                                                (attendance[k]['uids'] as Map)
+                                                ((attendance[k]
+                                                          ['uids'] as Map)
+                                                      .values
+                                                      .toList()
+                                                      .where(
+                                                        (e) =>
+                                                            e['uid'] ==
+                                                            student.uid,
+                                                      )
+                                                      .isNotEmpty)?(attendance[k]['uids'] as Map)
                                                             .values
                                                             .toList()
                                                             .where(
@@ -372,7 +381,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                                                             .toString() ==
                                                         'true'
                                                     ? const Text('P')
-                                                    : const Text('A'),
+                                                    : const Text('A'): const Text("-")
+
+                                                      
+                                                
                                               ),
                                           ],
                                         ),

@@ -155,55 +155,50 @@ class _ActivateStudentScreenState extends State<ActivateStudentScreen> {
                 if (query==null) {
                   filteredUser = users;
                 }
-                return Column(
-                  children: [
-                    ListView.builder(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(10.0),
-                        itemCount: filteredUser.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text(filteredUser[index]['name']),
-                              trailing: Checkbox(
-                                onChanged: (value) {
-                                  _activate(filteredUser[index], value);
-                                },
-                                value: filteredUser[index]['active'],
-                              ),
-                              subtitle: filteredUser[index]['email'] != null
-                                  ? Text(filteredUser[index]['email'])
-                                  : Text(filteredUser[index]['phone']),
-                              leading: Container(
-                                width: 55,
-                                height: 55,
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: filteredUser[index]['photo'] != null &&
-                                        filteredUser[index]['photo'] != ''
-                                    ? CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: filteredUser[index]['photo'],
-                                        progressIndicatorBuilder: (context, url,
-                                                downloadProgress) =>
-                                            CircularProgressIndicator(
-                                                value:
-                                                    downloadProgress.progress),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                      )
-                                    : Image.asset('assets/no_image.png'),
-                              ),
-                              onTap: () {
-                                // Navigator.pushNamed(context, itemsMap[a]['route']);
-                              },
+                return ListView.builder(
+                    padding: const EdgeInsets.all(10.0),
+                    itemCount: filteredUser.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(filteredUser[index]['name']),
+                          trailing: Checkbox(
+                            onChanged: (value) {
+                              _activate(filteredUser[index], value);
+                            },
+                            value: filteredUser[index]['active'],
+                          ),
+                          subtitle: filteredUser[index]['email'] != null
+                              ? Text(filteredUser[index]['email'])
+                              : Text(filteredUser[index]['phone']),
+                          leading: Container(
+                            width: 55,
+                            height: 55,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                          );
-                        }),
-                  ],
-                );
+                            child: filteredUser[index]['photo'] != null &&
+                                    filteredUser[index]['photo'] != ''
+                                ? CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: filteredUser[index]['photo'],
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value:
+                                                downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  )
+                                : Image.asset('assets/no_image.png'),
+                          ),
+                          onTap: () {
+                            // Navigator.pushNamed(context, itemsMap[a]['route']);
+                          },
+                        ),
+                      );
+                    });
               }
             }),
       ),
