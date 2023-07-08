@@ -139,7 +139,7 @@ class _AssignFacultyScreenState extends State<AssignFacultyScreen> {
               } else {
                 final itemsMap = snapshot.data!.values.toList();
                 final itemsList =
-                    itemsMap.expand((data) => data.values).toList();
+                    itemsMap.where((a)=>a!=null).expand((data) => data.values).toList();
 
                 log(assignedUid.toString());
                 // return Text(itemsList.toString());
