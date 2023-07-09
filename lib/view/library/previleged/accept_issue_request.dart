@@ -143,87 +143,82 @@ class AcceptIssueRequestScreenState extends State<AcceptIssueRequestScreen> {
                           final book = bookData.first;
                           return Card(
                               child: ListTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Book Name: ${book['book_name']}'),
-                                    Text('Author Name: ${book['author_name']}'),
-                                    Text('Publication: ${book['publication']}'),
-                                    Text(
-                                        'Book Category: ${book['book_category']}'),
-                                    Text('ISBN: ${book['isbn']}'),
-                                    Text(
-                                        'Issue Request Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_request_date'])))}'),
-                                    Text(
-                                        'Issue Date: ${itemsList[index]['issue_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date']))) : 'Not Applicable'}'),
-                                    Text(
-                                        'Borrow Date: ${itemsList[index]['borrow_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date']))) : 'Not Applicable'}'),
-                                    Text(
-                                        'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}'),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    ElevatedButton(
-                                      style: const ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Colors.white)),
-                                      onPressed: () => alertDialot(
-                                          widget.data['uid'],
-                                          itemsList[index]['book_id']),
-                                      child: const Text(
-                                        'Reject',
-                                        style: TextStyle(color: Colors.red),
+                                Text('Book Name: ${book['book_name']}'),
+                                Text('Author Name: ${book['author_name']}'),
+                                Text('Publication: ${book['publication']}'),
+                                Text(
+                                    'Book Category: ${book['book_category']}'),
+                                Text('ISBN: ${book['isbn']}'),
+                                Text(
+                                    'Issue Request Date: ${DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_request_date'])))}'),
+                                Text(
+                                    'Issue Date: ${itemsList[index]['issue_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['issue_date']))) : 'Not Applicable'}'),
+                                Text(
+                                    'Borrow Date: ${itemsList[index]['borrow_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['borrow_date']))) : 'Not Applicable'}'),
+                                Text(
+                                    'Return Date: ${itemsList[index]['return_date'] != null ? DateFormat('yyyy-MMM-d hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(int.parse(itemsList[index]['return_date']))) : 'Not Applicable'}'),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                ElevatedButton(
+                                  style: const ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStatePropertyAll(
+                                              Colors.white)),
+                                  onPressed: () => alertDialot(
+                                      widget.data['uid'],
+                                      itemsList[index]['book_id']),
+                                  child: const Text(
+                                    'Reject',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                                const Text('Status'),
+                                Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2.0,
                                       ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(8.0)),
                                     ),
-                                    const Text('Status'),
-                                    Container(
-                                        padding: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 2.0,
-                                          ),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(8.0)),
-                                        ),
-                                        child: itemsList[index]
-                                                        ['book_borrowed'] ==
-                                                    true &&
-                                                itemsList[index]
-                                                        ['book_returned'] ==
-                                                    false
-                                            ? Column(
+                                    child: itemsList[index]
+                                                    ['book_borrowed'] ==
+                                                true &&
+                                            itemsList[index]
+                                                    ['book_returned'] ==
+                                                false
+                                        ? Column(
+                                            children: [
+                                              Image.asset(
+                                                'assets/book_borrowed.png',
+                                                cacheHeight: 25,
+                                              ),
+                                              const Text('Borrowed')
+                                            ],
+                                          )
+                                        : itemsList[index]
+                                                    ['book_returned'] ==
+                                                true
+                                            ? const Column(
                                                 children: [
-                                                  Image.asset(
-                                                    'assets/book_borrowed.png',
-                                                    cacheHeight: 25,
+                                                  Icon(
+                                                    Icons.check,
+                                                    color: Colors.green,
                                                   ),
-                                                  const Text('Borrowed')
+                                                  Text('Returned')
                                                 ],
                                               )
                                             : itemsList[index]
-                                                        ['book_returned'] ==
-                                                    true
-                                                ? const Column(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.check,
-                                                        color: Colors.green,
-                                                      ),
-                                                      Text('Returned')
-                                                    ],
-                                                  )
-                                                : itemsList[index]
-                                                            ['book_issued'] ==
-                                                        false
-                                                    ? Text('Requested')
-                                                    : Container())
-                                  ],
-                                ),
+                                                        ['book_issued'] ==
+                                                    false
+                                                ? Text('Requested')
+                                                : Container())
                               ],
                             ),
                           ));

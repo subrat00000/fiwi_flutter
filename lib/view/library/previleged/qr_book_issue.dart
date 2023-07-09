@@ -78,9 +78,9 @@ class QRBookIssueScreenState extends State<QRBookIssueScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded,
               color: Colors.black87),
         ),
-        title: Text(
-          "Qr Book Return",
-          style: const TextStyle(color: Colors.black87, fontSize: 20),
+        title: const Text(
+          "Qr Issue Book",
+          style: TextStyle(color: Colors.black87, fontSize: 20),
           textAlign: TextAlign.start,
         ),
       ),
