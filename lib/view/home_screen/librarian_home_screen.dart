@@ -179,12 +179,8 @@ class LibrarianHomeScreenState extends State<LibrarianHomeScreen> {
                                                 final itemsMap = s
                                                         .data!.snapshot.value
                                                     as Map<dynamic, dynamic>;
-                                                return Row(
-                                                  children: [
-                                                    Text(
-                                                        '${itemsMap['book_name']}'),
-                                                  ],
-                                                );
+                                                return Text(
+                                                    '${itemsMap['book_name']}');
                                               }
                                             });
                                       } else {
